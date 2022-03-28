@@ -1,0 +1,208 @@
+还有好多好多的事情在等待着我去实现
+
+组件 -- 可以视为对象
+组件的实例，可以视为对象的实例
+    一个组件的data必须是一个函数,因为只有这样,每个实例才可以维护它们自己的拷贝. -- 可以类比到'c#'中引用的关系
+props 就是一个组件暴露出来的实例
+props 可以不仅仅是一个字段,也可以是一个对象,这样我们就不需要为每一个属性都绑定一个值
+
+在vue2中,every component must have a single root element 
+
+子组件中(用户)触发某个事件,然后发出一个信号到父组件.父组件接收到该信号后,进行我们想要的操作.
+
+$emit(arg1,arg2) -- arg1 为我们发出的信号名称,arg2 为这个信号中携带的信息 -- 在父级组件中通过$event访问到这个被抛出的信息
+
+v-model 是双向绑定,v-bind 是单向绑定.
+
+$event.target.value.
+
+vue 本质上就是充当了我们和JavaScript之前的翻译器.所有的一切都是Javascript实现的.
+
+动态组件 -- vue 中提供了<component>元素,
+
+有些html元素,对于哪些元素可以出现在其内部有着严格的限制,对于这种情况
+<table>
+<tr is="blog-post-view"/>
+</table>
+
+全局注册意味着即使你已经不再使用一个组件了,该组件仍然会被包裹进最终的构筑里.
+
+基础组件的自动全局化注册 -- require.context
+
+JavaScript 中的函数也是可以有自己的属性的.
+
+DOM 中的模板 vs 模板字符串 (前者无法区分大小写.) --> 所以我们最好还是使用字符串模板
+
+Promise -- 一个承诺 -- 表示一个异步操作后的结果.
+
+prop 就是vue暴露出来的原生组件, 与html的原生组件几乎一模一样,所以两者的用法也几乎相同
+
+v-bind 会告诉Vue这是一个表达式,而不是一个字符串
+
+因为表达式由字符串组成,所以我们需要可以让代码区分出来,哪些是表达式,哪些是字符串
+
+传入一个对象的所有property -- 使用不带名字的v-bind
+
+单向数据流
+    property -- 不应该在子组件中修改这些值 -- property的本意就是从父级组件中获取值的一个桥梁.
+    不要在子组件中修改prop的值,不然会破坏数据单向流的关系.
+
+prop的验证会发生在vue组件实例化之前,所以data,computed这些都是不可用的.
+
+非prop的attribute -- 并没有在子组件中定义的prop,却在父级组件上传递进来了.
+    这些attribute会被添加到子组件根元素上.
+    $attrs -- 包含了父组件中不被作为prop识别的那些元素.(class and style 除外.)
+
+事件名不存在任何自动化的大小写转换.
+
+组件上的model属性,可以更改v-model默认绑定的value值(因为value值可能被用于其它目的.)
+
+.native 的后缀可用于监视组件的原生事件.
+
+它把组件的事件绑定到了内部模块的触发上. -- 所以现在就变成了内部模块与外界进行直接交互.
+    内部模块触发了input事件 -- 直接将信号发送到外部.
+    子模块的触发,会触发组件整体的事件监听器
+    所以,更准确的说,就是将组件的事件监听器,绑定到子级模块上.
+
+虽然porp最适合用于单向数据流,但是在某些情况下,我们必须使用prop的双向绑定,所以在这种情况下,我们使用sync
+
+作用域插槽,可以把子级组件的内容,传递到父级组件的作用域上.
+    插槽prop
+
+动态指令参数
+    该参数的取值如果最终为null,就表示移除了该绑定
+
+在DOM中使用模板时,要特别注意大小写的问题.因为它不会区分大小写.
+
+v-slot: 的缩写 --> #
+
+插槽与v-for的结合使用
+
+keep-alive --> 失活的组件将会被缓存下来
+    要求被缓存的组件具有自己的名字.
+
+越看越发现单文件组件的强大与方便之处
+
+异步啊,异步 --> 异步组件
+
+Time is going day by day. And I do not have so much time .
+
+Vue.nextTick() --> 在下次DOM更新循环之后执行延迟回调
+
+watch 发生在 computed 之前?
+
+混入(mixin) --> 提供了一种非常灵活的方式来分发Vue组件中的可复用功能.
+    选项合并,发生重复时,以组件中的数据为优先
+    混入也可以进行全局注册 --> 一旦使用全局注册,它将影响之后创建的每一个新的Vue实例.
+
+指示了模块如何被解析
+
+runtime --> 是webapck需要的,用于模块化应用在浏览器上进行运行连接时所需要的所有数据.
+    所有的静态资源和bundles 都已经被打包了成了chunk,在这种情况下,我们如何将各种文件进行关联与交互呢?
+    就是利用manifest
+
+html-webpack-plugin --> 会生成一个html文件,并将各种资源链进行注入
+
+VUE CLI 默认使用了autoprefixer --> 所以无需手动开启
+
+部署好像还是一个大坑,吐了.
+
+每个应用将仅仅包含一个store实例 -- 单一状态树
+在计算属性中返回vuex的某个状态.
+store被注入到了所有的组件中.
+在store中定义getter --> 可以认为是store的计算属性.
+getter 也可以通过方法访问
+mutation 更像是一种事件注册的方式,我们通过store.commit()的方式进行调用.
+
+可以向store.commit 传入一个额外的参数,就是传递到相应mutation的参数
+mutation 必须是一个同步函数
+
+在回调函数中进行的状态的改变都是不可追踪的.
+
+Action 提交mutation, action可以包含任意异步操作
+    action 通过 dispatch() 方法来触发
+    dispatch 可以处理promise,并且仍然返回一个promise
+
+Vuex 也被进行了模块化
+
+JavaScript +string --> 如果该字符串由纯数字组成,则该字符串就可以变成一个数字
+
+toggle --> 就是指在几个状态之间迭代切换.
+
+this.$router 可以用来访问web的 router
+this.$route 用来访问当前的路由
+    $route.params.something
+    $route.query --> 问号后面的
+    $route.hash --> '#' 后面的
+    静态路由和动态路由
+    router.push的调用等价于我们对该链接的点击
+$router.push()
+    如果提供了path,则params就会被忽略
+推荐使用命名路由
+    命名路由 --> 命名视图
+        允许我们同级展示多个视图,可以分别给他们传递不同的组件
+路由的重定向
+
+导航守卫不会应用在跳转路由上(中间作为中介的路由上) --> 而是仅仅会作用在目标路由上
+
+如果一个路由仅仅用于作为中间路由,它就可以省略component的配置
+
+可以为路由起别名,这样就可以不受路由tree的限制而自由的使用想要使用url地址
+    如果一个路由有参数,则我们在绝对别名中就需要包含它们
+
+当一个route的props为true时
+            路由的params将作为props传递给他
+            但同时,我们也可以使用props传递一个对象给component.
+不同的历史模式
+
+导航守卫 --> 守卫导航 -->导航守卫是异步解析执行的.
+    router.beforeEach() --> 全局前置守卫
+
+stateless logic and stateful logic --> 无状态的的逻辑和有状态的逻辑
+
+ref() --> 可以把一个基本类型包装成一个变量.
+
+route.addroutes 只是进行了路由的注册,并没有对路由进行导航.
+在导航中进行重定向之后,仍然会经过导航.
+
+store 中的属性要通过computed暴露出来进行使用
+    因为 computed 是响应式的,所以会随着store中值的变化而重新求取计算属性,并且触发更新相关的DOM
+
+watch --> 在数据变化时,执行异步或者开销较大的操作.
+
+transition
+    allow element change slowly --> animating the property changes
+
+the default value of all element is inline
+    display is a pair of key words.
+
+css --> natural flow of text
+
+css --> display
+    inline: will accept margin and padding. --> will only push other elemtn horizontally away,not vertically
+    inline-block: is very similar to inline, but it also can accept a width and height
+    block:block level elements do not sit inline but break past them. --> it is not an inline element.
+        it will take up as much horizontal space as they can.
+    flex: flex-box
+    grid: 
+    none: Entirely removes the element from the page.
+    contents: results in an element's children to appear as if they were direct children of the children's praents,ignoring the element itself.
+
+UA Stylesheet --> User Agent Style Sheet
+    a user agent style sheet is a default style sheet provided by the browser
+
+an element width includes the padding,border,and margin of the element
+    包括了边框,内边距和边框内的内容部分.
+
+git --> 分布式版本控制系统.
+    Unix 的哲学就是没有消息就是好消息
+    暂存区
+        git add --> 把文件添加/修改提交到暂存区
+        git commit --> 把暂存区中的修改提交到当前分支上
+        git跟踪管理的是修改,而并不是文件
+        在本地工作完全不需要考虑远程的情况
+
+如果import from a dictionary, its default value is index.js.
+
+设计上的原则
+    尽量使用图标,而不是使用文字来进行显示
