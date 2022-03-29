@@ -1,4 +1,15 @@
 export default {
+  /**
+   * ...
+   * @param {*} el
+   * @param {Object} binding
+   * binding.instance --> 使用指令的组件实例
+   * binding.value --> 传递给指令的值
+   * binding.oldValue --> 先前的值
+   * binding.arg --> 传递给指令的参数
+   * binding.modifers --> 包含修饰符的对象
+   * @param {*} vnode
+   */
   bind(el, binding, vnode) {
     const dialogHeaderEl = el.querySelector('.el-dialog__header')
     const dragDom = el.querySelector('.el-dialog')

@@ -3,7 +3,7 @@
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
     <sidebar class="sidebar-container" />
     <div :class="{hasTagsView:needTagsView}" class="main-container">
-      <div :class="{'fixed-header':fixedHeader}">
+      <div :class="{'fixed-header':fixedHeader}"><!--导航栏和页面切换栏是否固定在页面最上方-->
         <navbar />
         <tags-view v-if="needTagsView" />
       </div>
@@ -24,15 +24,15 @@ import { mapState } from 'vuex'
 export default {
   name: 'Layout',
   components: {
-    AppMain,
-    Navbar,
-    RightPanel,
-    Settings,
-    Sidebar,
-    TagsView
+    AppMain, // 主页面
+    Navbar, // 导航栏
+    RightPanel, // 右边栏
+    Settings, // 设置
+    Sidebar, // 侧边栏
+    TagsView// 页面切换栏
   },
-  mixins: [ResizeMixin],
-  computed: {
+  mixins: [ResizeMixin], // 对象混合
+  computed: { // 计算属性,这样子如果state发生了变化,这边可以及时得到响应
     ...mapState({
       sidebar: state => state.app.sidebar,
       device: state => state.app.device,

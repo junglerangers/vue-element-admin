@@ -5,16 +5,24 @@ import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
+  // baseURL 将自动加到URL前面,,除非URL是一个绝对URL
+  // process 是 node的核心进程
+  // baseURL:'https://www.myweb.com'
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 5000, // request timeout
+  withCredentials: true
 })
 
 // request interceptor
+// 请求拦截,在请求前拦截它们
+/**
+ * do something before request is sent
+ */
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
+    // 如果已经有了token,就将token放入请求头中然后发出
     if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
@@ -25,12 +33,14 @@ service.interceptors.request.use(
   },
   error => {
     // do something with request error
+    // 对请求错误做出一些事情
     console.log(error) // for debug
     return Promise.reject(error)
   }
 )
 
 // response interceptor
+// 响应拦截
 service.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
@@ -42,9 +52,11 @@ service.interceptors.response.use(
    * Here is just an example
    * You can also judge the status by HTTP Status Code
    */
+  // 20000范围内的状态码就会触发这个
   response => {
     const res = response.data
-
+    console.log('Here is response interceptor')
+    // console.log(res.data)
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 20000) {
       Message({
@@ -52,16 +64,17 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-
+      // console.log(res)
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
+        MessageBox.confirm('你已经被强制登出,你可以退出当前页面,或者重新登录', 'Confirm logout', {
           confirmButtonText: 'Re-Login',
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
           store.dispatch('user/resetToken').then(() => {
+            // 刷新当前页面
             location.reload()
           })
         })
@@ -71,6 +84,7 @@ service.interceptors.response.use(
       return res
     }
   },
+  // 20000范围外的状态码就会触发这个
   error => {
     console.log('err' + error) // for debug
     Message({

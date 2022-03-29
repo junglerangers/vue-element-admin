@@ -1,8 +1,8 @@
 <template>
   <section class="app-main">
-    <transition name="fade-transform" mode="out-in">
-      <keep-alive :include="cachedViews">
-        <router-view :key="key" />
+    <transition name="fade-transform" mode="out-in"><!--动画,过渡先出后进-->
+      <keep-alive :include="cachedViews"><!--包裹的组件将会被缓存,不会重新渲染.include只有匹配的组件才会被缓存-->
+        <router-view :key="key" /><!--路由出口.这里key的作用是保证所有页面都会被重新加载-->
       </keep-alive>
     </transition>
   </section>

@@ -24,14 +24,14 @@ export default {
   },
   data() {
     return {
-      title: 'Vue Element Admin',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
+      title: '工资奖金对账系统', // logo下面的文字说明
+      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'// 网站logo,logo地址
     }
   }
 }
 </script>
-
 <style lang="scss" scoped>
+// scoped 关键字会为该style指定一个特定的作用域.防止同名的style造成相互的干扰
 .sidebarLogoFade-enter-active {
   transition: opacity 1.5s;
 }

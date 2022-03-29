@@ -1,5 +1,6 @@
 <template>
   <div v-if="!item.hidden">
+    <!--如果仅有一个孩子,且该孩子没有子孩子的情况下-->
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
@@ -25,7 +26,7 @@
 </template>
 
 <script>
-import path from 'path'
+import path from 'path'// 如果没有带任何的./或者/,就会从node_module中获得我们想要的模块
 import { isExternal } from '@/utils/validate'
 import Item from './Item'
 import AppLink from './Link'
@@ -33,8 +34,8 @@ import FixiOSBug from './FixiOSBug'
 
 export default {
   name: 'SidebarItem',
-  components: { Item, AppLink },
-  mixins: [FixiOSBug],
+  components: { Item, AppLink }, // 这里指的是这个单文件组件中使用到的其它的组件
+  mixins: [FixiOSBug], // 对象混合
   props: {
     // route object
     item: {
@@ -57,7 +58,7 @@ export default {
     return {}
   },
   methods: {
-    hasOneShowingChild(children = [], parent) {
+    hasOneShowingChild(children = [], parent) { // 如果只有一个children
       const showingChildren = children.filter(item => {
         if (item.hidden) {
           return false

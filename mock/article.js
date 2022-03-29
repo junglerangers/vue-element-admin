@@ -3,13 +3,14 @@ const Mock = require('mockjs')
 const List = []
 const count = 100
 
-const baseContent = '<p>I am testing data, I am testing data.</p><p><img src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943"></p>'
+const baseContent = '<p>我是一个测试数据</p><p><img src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943"></p>'
 const image_uri = 'https://wpimg.wallstcn.com/e4558086-631c-425c-9430-56ffb46e70b3'
 
+// 生成一系列的测试文章
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',
-    timestamp: +Mock.Random.date('T'),
+    timestamp: +Mock.Random.date('T'), // 时间戳,通过'+'号,让其变味了一个数字
     author: '@first',
     reviewer: '@first',
     title: '@title(5, 10)',
@@ -44,7 +45,7 @@ module.exports = [
       if (sort === '-id') {
         mockList = mockList.reverse()
       }
-
+      // 返回当前页面的数据
       const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1))
 
       return {

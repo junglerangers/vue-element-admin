@@ -14,7 +14,7 @@ const chartsRouter = {
   children: [
     {
       path: 'keyboard',
-      component: () => import('@/views/charts/keyboard'),
+      component: () => import('@/views/charts/keyboard'), // 模块的动态导入,如果这个模块没有被访问到,就不会加载,提高了访问速度.
       name: 'KeyboardChart',
       meta: { title: 'Keyboard Chart', noCache: true }
     },

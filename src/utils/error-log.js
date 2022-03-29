@@ -29,7 +29,7 @@ if (checkNeed()) {
         info,
         url: window.location.href
       })
-      console.error(err, info)
+      console.error(err, info)// 错误捕获直接输出到了控制台上.
     })
   }
 }

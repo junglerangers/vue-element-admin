@@ -206,3 +206,903 @@ git --> 分布式版本控制系统.
 
 设计上的原则
     尽量使用图标,而不是使用文字来进行显示
+
+webpack
+    全局注册和局部注册
+    传递静态和动态(v-bind)的prop
+vue 将字符串中的语句视为了JavaScript表达式
+通过v-bind来告诉vue这是一个JavaScript表达式，而不是一个字符串
+作为一个约定，应该避免在组件内部修改任何一个其本身的prop
+prop会在一个组件的实例创建之前进行验证，所以实例的property在validator函数或者default函数中是不可用的
+
+jsconfig.json -- 配置文件，配置javascript的编写
+
+eslint -- 专门用于检查JavaScript的编程语句是否符合规范
+
+babel -- 一个JavaScript编译器，能够保证JavaScript的向后兼容
+
+声明
+
+中文是合法的标识符，可以用作变量名 -，-
+
+函数也是一种数据类型，可以将其赋值给一个变量
+
+空字符串是false，空数组和空对象是true
+
+JavaScript中，所有数字都是以64位浮点数的形式进行存储的
+
+NaN -- Not a Number.
+    typeof NaN is number.
+    NaN === NaN is false.
+
+字符串与数组仅仅是相似，无法通过数组的操作来修改字符串。
+
+JavaScript使用Unicode字符集
+
+回调函数 -- 事件循环
+
+JavaScript采用了轮询的机制来判断
+
+export 语句输出的接口与其对应的值是动态绑定关系，通过export，可以实时取到模块内部的值
+
+import 输入的变量都只是只读的(但是传入一个对象就可以修改其属性的值)
+
+import 命令具有提升效果 import 是静态执行，相当于会在运行之前预编译
+
+import 是单例模式
+
+最好是把import的对象都当成是只读的
+
+default 相当于一个模块默认的对外接口
+
+v-bind : 来告诉这是一个表达式，不是一个字符串
+
+组件是可复用的实例
+
+props是组件上注册的属性实例
+
+子组件可以通过调用内置的$emit方法并传入事件名称来触发一个事件
+
+$emit('enlargeText') -- @enlarge-text=''
+
+因为html中不区分大小写，所以enlargeText --> enlarge-text
+
+抛出一个事件，抛出一个带值的事件
+
+$emit('enlargeText',0.1) 
+
+@enlarge-text='fonSize+$event'.
+
+将其从字符串，转变为JavaScript语句
+
+如果事件处理函数是一个方法，那么它会作为第一个参数传递给这个方法
+
+方法和属性
+
+props是暴露出来的属性，emits是暴露出来的事件
+
+类似有一种类和实例的关系
+
+JavaScript表达式和字符串
+
+单向数据流，从父组件到子组件
+
+计算属性和属性：computed and data
+
+应该避免修改任何props -- props是从外部接入的数据，并不是它们本身
+
+validator,default,required.
+
+Singleton -- one and only one.
+
+验证抛出的事件，验证属性
+
+v-model:
+    prop:modelValue
+    method:update:modelValue
+
+字符串模板
+
+modelValue 是个默认值
+
+slot 是个插槽
+
+作用域分离开来
+
+以另一种方式为函数取名，通过等于号的方式
+
+通过一个圆括号来调用函数
+执行函数的方法就是在其后面加上一对圆括号
+
+function statement and function expression
+
+function statement and function expression
+
+值传递和引用传递
+
+development and stage and production
+
+JavaScript变量提升
+    变量声明获得了提升
+    变量初始化没有获得提升
+
+undefiened and is not defined
+
+dependencies and decDependencies
+使用需要的依赖，以及 开发需要的依赖
+
+REPL -- Read-Eval-Print-Loop -- 读取-求值-输出-循环 -- 交互式顶层构建
+
+let 声明的变量只在代码块内有效
+
+let 所声明的变量一定要在声明后使用
+
+Release Candidate -- RC --发布前的最终版本
+
+函数表达式和函数声明语句
+
+NPM -- node package management
+
+X.Y.Z -- 主版本号.次版本号.补丁版本号 -- 不向下兼容.向下兼容.bug修复
+
+REPL -- 交互式解释器 -- 一个终端
+
+package.lock.json -- 会固化当前软件依赖包的版本(以免依赖包更新时会发生影响(因为一般不会将node_modules上传到git上,git上只会有一个目录列表))
+
+定时器到期时，回调函数会被放入消息队列中(用户触发的事件，如点击等也会在消息队列中排队)
+
+调用堆栈完成后，再触发消息队列
+
+等待时间是发生在它们各自的线程之中的
+
+作业队列会尽快地执行异步函数的结果,而不是将其放在调用堆栈之后
+
+异步函数调用和老式函数回调
+
+'...' in JavaScript中为 Spread Operator,是一种迭代方式的缩写
+
+先找到同名的属性，然后赋值给相应的变量
+
+一个属性包括属性名与值
+
+解构赋值
+    默认值生效的条件是，对象的属性值严格等于undefined.
+    对属性的解构赋值
+
+Polyfill -- 通常是一个JavaScript代码块，用于为较老的浏览器提供其原生不支持的功能
+
+jsconfig.json -- 用于在vscode对JavaScript project进行配置
+
+yaml -- 一种语言， 一种专门用于写配置文件的语言
+
+state -- vue -- actions
+
+dom -- document object model
+
+一个dom是一个html文档和脚本语言(Javascript)之间交互的桥梁
+    允许我们从程序中访问该文档结构，修改其样式、内容和结构
+    dom是脚本语言用于操作html页面的接口
+    dom将文档组织成一个对象模型
+
+vue 将所有的操作挂载到了一个对象上，然后我们就可以在该对象上实现所有的操作
+
+结构、内容和样式
+
+利用v-on指令来添加一个事件监听器
+v-model 双向绑定
+
+创建一个Vue实例时，传入选项对象
+
+箭头函数没有this
+
+v-bind -- 绑定属性
+v-on -- 绑定事件
+
+动态参数
+
+html 不区分大小写
+
+SPA -- single page application
+
+原始数据
+计算属性
+
+计算属性时根据它们的响应式依赖进行缓存的 -- 计算属性可以进行缓存，只有在其依赖的源数据发生改变时才会跟随变化
+
+watch 侦听属性 -- 在绑定的属性发生改变时被调用
+
+如果想使用v-if同时切换多个元素
+只要使用template模板将其括起来就可以了，最终的展示结果里template将会被隐藏
+
+元素将会被高效的复用，尽量减少渲染的次数
+
+v-show 本质上就等价于display元素
+
+在v-for里遍历一个对象
+
+嵌套情况下使用方法
+
+可以在template上使用v-for来循环渲染多个数据
+
+v-for 的优先级比 v-if 高
+
+组件有自己独立的作用域
+
+is关键字，因为在html中ul中只能放li
+
+<textarea>{{something}}</textarea> -- 这种插值方式并不会生效
+
+单个复选框绑定到bool上，多个复选框绑定到一个数组上
+
+组件中的data必须时一个函数，因为每个组件都要维护自己的属性和data
+
+通过prop向子组件传递数据
+
+事件监听器，子组件发出信号，父组件接受信号并将其绑定到相应的事件上
+
+不应该在一个子组件内部修改prop
+
+<router-view>中将渲染被匹配到的组件
+
+vue-element-admin
+
+router and route -- router 管理 route
+
+this.$router
+
+js中的this指向该函数所在的作用域指向的对象
+    箭头函数可以解决this的指向问题
+
+嵌套路由 
+
+__dirname -- 当前模块的目录名
+--filename -- 当前模块的文件名
+
+正向代理，隐藏了请求客户端，服务器不知道真正的请求者是谁
+
+__dirname 指示了待执行js文件的文件目录
+
+path.resolve() 路径拼接
+
+正向代理 --不知道请求服务的人是谁
+反向代理 --不知道真正服务你的人是谁
+
+反向代理服务器 -- Nginx -- 负载均衡
+正向代理的代理对象是客户端
+反向代理的代理对象是服务器
+
+CLI -- Command Line Interface
+
+计算属性中的值是实时响应的，一旦发生了改变，所有用到该值的地方都会发生响应
+
+箭头函数的this -- 该函数所在的作用域所指向的对象
+
+mapState -- computed的简易形式
+
+在ES6中...代表一种类似遍历的方法 -- 学名为对象扩展符
+
+abstract syntax tree -- 抽象语法树
+
+ECMAScript 是静态import的,不会产生动态import的情况
+
+面向切片编程 -- AOP 提取出对象所公用的功能，然后通过后前装饰所有入口和出口的方式来实现代码的精简。
+
+Process 是 Node的全局对象,提供当前Node进程的信息.不需要require或者import就可以直接使用
+
+lint -- 静态程序分析工具
+    用来标记源代码中某些可疑的,不具有结构的段落
+
+.apply(thisArg,[argsArray]) and .call() -- 一种另类的函数调用方式
+    function.apply() -- 就会直接调用这个函数
+
+hook 钩子编程
+    通过拦截软件模块间的函数调用,来实现修改或者扩展函数的功能
+
+Promise表示一个异步操作的最终完成结果(成功或者失败)
+
+webpack-chain -- 是webpack原始配置的上层抽象
+
+lazy-loading -- 延迟加载,减少一开始就加载整个网站的巨大延迟
+    直到网站真正需要的时候才加载
+
+<link></link> 外部资源链接元素
+
+静态称之为JavaScript
+动态称之为chunk
+
+
+webpack-chain 提供了对原始 webpack 配置的上层抽
+
+vender -- 第三方依赖库的合集
+
+chunk 是 javascript 打包后的代码块
+
+sourcemap:
+    一份对压缩后的代码位置的标注文件,方便调试和测试
+
+webpack:
+    内部依赖图
+    本质上就是一种将文件打包的工具,但是涉及到了很多很多的东西,还有很多很多新的概念...
+    Loaders 帮助 webpack 理解其他类型的文件(除了js and json)
+    loaders 两个主要的属性test and use
+    loaders 用于转化文件,plugins用于优化、注入环境变量和组件管理等.
+    webpack 的 bundle 中也存在着区分变与不变的思想
+    runtime以及配套的manifest数据 -- 在浏览器运行过程中,webpack用来连接模块化应用程序所需要的代码
+    fullhash -- 项目级别的hash,只要项目中任何一个文件发生变动,该值就会变化.
+    chunkhash -- 根据不同的入口文件进行依赖文件解析,构建对应的chunk,生成对应的哈希值,只有在对应的chunk文件内容发生变动时,再次执行打包
+    contenthash -- 只有当文件自己的内容发生变动时,其打包的hash值就会发生变动
+    静态模块打包工具
+VUE CLI
+    已经将各个插件的配置项集成到了它自己的配置文件中?
+SOURCEMAP(.map):
+    sourceMapingURL
+
+ts = typescript
+
+模块化编程
+
+module federation
+
+Javascript-based task runner.
+
+cwd -- change working directory
+
+task runner -- 帮助用户智能完成一些任务
+
+PostCSS -- to use Javascript for CSS processing
+
+AST -- Abstract Syntax Tree
+    PostCSS use the Node.js Framework
+
+start a project from scratch -- 从头开始一个项目
+
+plug and play module -- 即插即用模块
+
+静态方法和实例方法
+
+polyfill -- 一个代码块,通常用于支持老版浏览器不支持的功能
+
+Promise
+    一个抽象的异步处理对象
+    异步函数 -- 放到消息队列中
+    Promise 只能使用异步调用方式
+    method chain -- 方法链
+    promise.then 可以返回一个promise对象
+    Promise.all() 等待所有Promise执行完毕(或者报错后)再执行回调函数 and Promise.race() 只要其中任意一个Promise执行完毕,就会执行回调函数,但是其他Promise的执行并不会被取消
+
+Bind()函数会创建一个新函数
+    thisArg -- 该参数会作为原函数运行时的this 指向
+
+
+package-lock.json
+    锁定安装时包的依赖版本
+
+live-reloading -- 实时重新加载
+
+webpack 解决重复引用
+SplitChunksPlugin -- 可以将公有的依赖模块提取出来
+放置到已有的入口chunk中,或者提取到一个新生成的chunk中
+
+SplitChunksPlugin -- 也包含了区分变与不变的思想
+
+lint -- 静态程序分析工具
+
+路由挂载
+
+导航守卫
+
+每个Vuex的核心就是仓库
+    改变store中状态的的唯一途径就是显式的提交mutation
+
+.reduce() -- 累加函数,遍历处理数组中的每一个元素,然后返回一个单一的值
+    .reduce(callback,initialvalue)
+        callback(accumulator,current value)
+            累加器,当前值
+
+在回调函数中进行的任何状态改变都是不可追踪的
+    mutation都是同步事务
+    action中会有异步    Action函数接受一个与store实例相同方法和属性的context对象
+        store.dispatch()
+    
+Vuex允许我们将store分割成模块,每个模块有自己的store,mutation,action
+
+router.beforeEach -- 全局前置守卫
+    导航守卫中的next:
+        但凡涉及到有next参数的例子,必须调用next()才能继续往下执行下一个钩子
+            next() -- 跳转到to
+            next(path) -- 跳转到path
+            next(error) -- 返回错误
+
+双感叹号 -- 将一个值转换为其本身相应的布尔值,第一个感叹号取反(变为false或者true),第二个感叹号将其变为本身所代表的false或者true
+单加号
+    +false --> 0
+    +true --> 1
+    也可以将一个字符串转换为一个数字
+
+... 对象扩展符
+    对象混合
+
+.splice() -- 添加或者删除元素
+
+.some(callback) -- 在callback函数中测试每一个元素,只有在所有元素都不通过的情况下才会返回false,至少有一个元素通过,就返回true
+    .some() -- 返回true或者false
+.contact() -- 连接两个数组
+
+object(target,source)
+    object.assign() -- 将几个对象合并,将source的数据提交到target上
+
+avatar -- 头像
+
+next() 会放行,直接访问to中的地址
+next('/login'),会跳转到login,但是在跳转之前,会执行一次beforeEach(to,from,next);
+
+如果执行了刷新操作,则store里的路由都是空的,此时需要重新刷新路由
+
+ next({ ...to, replace: true }) -- 无限访问当前路由(也就是无限触发beforeEach(路由钩子))
+
+ /login?redirect -- 可以在登录之后直接跳转到相应的页面
+
+ 等待新的路由显示吗?
+
+ 导航守卫可以是异步解析执行
+
+ //store.dispatch() 返回一个Promise.
+
+ 调试用的语句 node --inspect ./node_modules/@vue/cli-service/bin/vue-cli-service.js serve
+
+ Promise 表示一个承诺,一个异步操作,一个可以立即返回的结果,不需要等待,所以不会把进程卡死
+
+ 我好像理解了.一个网站是一个程序,一个浏览器是运行这个程序的环境.
+每个网站都是该环境中的一个线程.
+但是基于网站开发者的角度,我们可以直接将网站看成自己的主进程.
+在网站中采用异步操作可以防止出现卡死的情况.
+比如说,在访问者浏览网站时,在后台加载需要花费较长时间的数据.以便减少用户的等待时间.
+实际是线程中的线程 -- 但是可以视为进程中的线程
+ 所以我们要使用异步
+
+ <section> 表示html页面中的一个独立部分.
+
+ <transition>元素作为单个元素/组件的过渡效果
+    只会把过渡效果应用到其包裹的内容上,而不会额外渲染DOM元素,也不会出现在可被检查的组件层级中.
+    transition 自带6个class切换,实现我们想要的动画效果
+    CSS动画和CSS过渡
+    transition的过渡模式:
+        in-out:先进后出
+        out-in:后进先出
+
+Vue的组件混合
+    mixin
+
+$route.meta
+    非递归合并所有meta字段(从父字段到子字段)的方法
+
+模块的动态导入
+
+RouteRecordRaw -- 路由记录
+
+路由是整体匹配的,而不是一层层逐级匹配的
+
+router-view 相当于路由的占位符,访问指定路由时,获得的页面将展示在router-view中
+
+<template slot='title'> -- 但是这种方式已经被废弃了
+    等价于
+<template v-slot:title>
+
+组件的递归调用
+
+dom节点树
+
+虚拟dom节点树 -- cerateNodeDescription
+
+route -- meta 元数据
+    利用route.meta来存储每个页面有访问权限的角色.
+
+我好像终于理解了async 和 await 的用法了,哇哦.
+
+'name|rule':value
+    name:属性名
+    rule:规则
+    value:属性值
+
+XMR = XML HttpRequest
+    通过XMLHttpRequest可以在不刷新页面的情况下请求特定的URL,获取数据.
+    XMLHttpRequest在AJAX编程中被大量使用.
+
+AJAX == Asynchronous Javascript and XMLHttpRequest.
+    允许在当前页面下进行部分更新
+
+对象名.方法(属性)名 === 对象名[方法(属性)名]
+
+~ -- 按位取反
+    ~~ 取整的简写
+
+Vue中允许你自定义过滤器
+
+Vue中的渲染函数
+    DOM节点树和虚拟DOM
+    createElement -- createNodeDescription
+    createDescription(html tag,数据对象,子级节点)
+
+前端路由和后端路由 -- 前端渲染和后端渲染
+
+webpack_chain
+    ChainedMap
+
+JQuery.end() -- 可以返回上一层级
+
+前端需要一个服务器,后端也需要一个服务器?
+
+
+用户 -- 前端服务器 -- 后端服务器
+
+用户 发出请求 到前端服务器 ,服务器根据需求向后端服务器 发出请求.
+
+用户 -- 前端服务器 -- 后端服务器
+
+vue.config.js 配合 package.json 来使用
+
+所以VueClI 是前端,express是后端?
+
+webpack dev-server 是前端服务器,express是后端服务器?
+
+resource hint -- 用来辅助浏览器做资源优化的指令
+
+mixin -- 混入
+    vue提供了一种非常灵活的方式,来复用vue组件中的功能.
+
+因为Mock.js会重写浏览器的XMLHttpRequest方法.所以会影响到使用了该方法的其它库.
+与其它使用这个方法的库发生不兼容.
+
+本地的Mock Server就相当于一个实际的Server -- 所以存在真正的network
+
+require的返回是同步的.如果有多个依赖,就需要一个个下载.
+
+CommonJS -- require -- 同步模块依赖,需要一个个加载相应的模块,容易发生堵塞.
+AMD -- Asynchronous Modul Definition. 使用了异步回调的语法来并行下载多个依赖项.
+
+--save-dev -- 存储到package.json的devDependencies
+--save -- 存储到package.json中的Dependencies.
+
+webpack 是基于node.js的环境中
+所以前端的服务器就是基于node.js的环境运行的
+
+loader and plugin
+    loader 是根据在import时不同的文件名,使用不同的loader,对文件进行预处理.
+    plugin 则是在编译的不同阶段,会触发不同的事件.对编译的各个阶段进行干预
+    webpack-server
+    webpack-cli
+
+package.json中的script对象会自动检索./node_modules/.bin 目录下的命令.
+
+dist 是内容分发和最小化的网络,经过了我们的压缩
+dist 和src之间的大小差别真的是 so 大呀.
+
+mock-server 是一个真正的server.所以它会经过网络,
+
+在不同的环境中使用不同的api,所以在测试环境下,我就可以走mock-server,而在生产环境下,我就可以设置真正的url
+
+因为使用了动态的base_url -- 所以axios访问就可以实现跟着环境变量走
+
+axios 和 mock中的base_url是配套的
+    不管选择开发环境还是选择生产环境,请求都是配套的. -- 这里就是后端的路由
+    vue-router 就是前端路由
+
+只有在本地完善整个验证流程之后,才能够在使用异步的方式进行数据库和request请求
+    因为异步方式下,无法马上返回错误请求的数据
+
+eslint 格式自动调整命令 eslint -- --fix
+
+vue.use() 
+    安装vue.js的插件
+    需要在调用new Vue()之前进行调用
+    会自动阻止多次注册相同的插件.
+
+全局定义过滤器需要在vue的初始化之前
+    当全局过滤器和局部过滤器重复时,会使用局部过滤器
+
+Vue.use(element)
+    会接受一个全局对象,包括size 和 zIndex
+    size 指明了组件的默认大小,zIndex 指明了弹框的初始z-index
+
+css z-index
+    控制了元素发生覆盖情况时的垂直顺序
+
+$route.param -- 传入url的参数.
+$route.query -- url中?后面的部分.
+
+el-table
+    border -- 是否带有纵向边框
+
+子模板里的所有内容都是在子级作用域内编译的
+    插槽(slot)里的内容,在父级模板上添加,就是在父级模板上渲染,如果想要在父级模板上访问子级内容,就使用作用域插槽.
+    作用域插槽
+        绑定在插槽<slot>元素上的attribute被称为插槽prop,现在在父级作用域中,就能够使用本来只能在子组件作用域下的对象.
+        具名插槽.
+        每个插槽都是从子级组件绑定,都是只绑定一个对象.然后在父级组件上进行引用.
+        <template v-slot:name="test"></template>
+
+        <slot name="test"></slot>
+
+        ES2015解构
+
+        具名插槽的缩写 <template v-slot:header> -- <template #header>  --该缩写只有再具有参数时有用,即#后面必须带着一个参数
+
+        在组件中可以对<slot>使用v-for 然后通过作用域插槽的方式,在父级组件中使用循环中的子对象.
+
+委托类似于指针 -- 存有对某个方法的引用的一种引用类型变量
+    委托指向一个与其具有相同标签的方法. -- 具有相同的参数以及相同的返回值.
+    委托的多播 -- 天生的发布者-订阅者模式
+        按照顺序执行,传递进来的参数传递给每一个函数.
+    
+slot-scope
+    就是接收传递给插槽的prop,已经被废弃,新版统一使用v-slot
+
+el-table 使用了某种特殊的方式,允许迭代使用同一个插槽.
+    将子组件中的信息传递到父级组件上.
+
+.sync -- update:propname 的一种缩写 -- 应该是父级组件上的缩写,子级组件还是要自己修改的吧?
+    .sync 等价于 
+        v-bind:title = "doc.title"
+        v-on:update:title = "doc.title = $event"
+
+el-dialog
+    visible.sync = "" -- v-model 的缩写
+
+el-tree
+    ref -- 引用名称,相当于tree的名称?
+    check-strictly -- 确认父级菜单和子级菜单是否互相关联 -- 确认/删除 子级/父级 是否会相互影响
+    props -- 返回一个对象 -- 该对象具有两个属性label和chidren
+        label就是用来展示的标题
+        children就是用子级菜单
+        node-key 定义了 每个菜单item的主键
+
+Object.assign({},project1,project2) -- 合并对象,然后赋予.
+
+Vue LifeCycle
+    创建新的Vue实例
+        初始化事件和组件生命循环
+    beforeCreate -- 在实例初始化之后,进行数据侦听和事件/侦听器的配置之前同步调用.
+        初始化injections&reactivity
+    created
+        编译模板到渲染函数中 or
+        将innerHTML内容作为模板进行编译
+    beforeMount
+        创建全局el对象实例
+    Mounted
+        虚拟节点重新渲染
+    
+Thread.start() 是前端线程.
+
+async means this function will always return a promise.
+await wait until that promise settles and returns its result
+await only works in an async function
+
+
+Javascript
+    exp1&&exp2 : if exp1 can convert to true,return exp2, else return exp1.
+        这种对于&&的理解方式是不是更好
+    
+Vue -- 可复用性&组合
+    组合式API
+    setup选项 -- 接受context和props参数 -- setup 返回的内容会被暴露给组件的其它部分
+    独立的组合式函数
+
+
+箭头函数
+    this
+        指向该函数作用域所指向的对象.
+    通过箭头函数,可以取到其本来在作用域外的对象.
+
+使用Vue侦听一个数组或者一个对象时,因为这些值都是响应式的,所有可能需要通过depp_clone的方式来进行watch
+
+
+响应性原理:
+    一旦这个对象拥有了getter 和 setter -- 我们就可以简单的把这个对象称之为响应式对象 -- 发布者订阅者模式
+    当一个值被读取时进行追踪
+    当某个值改变时进行检测
+    重新运行代码来读取原始值
+    Vue通过一个副作用(effect)来跟踪当前正在运行的函数
+
+HTML -- Proxy
+    to create a proxy for another object
+
+Vuex
+    状态 --> 视图 --> 操作
+    状态展现在视图上,在视图上进行操作,操作会修改状态
+    把组件的共享状态抽取出来 -- 全局单例管理模式
+    每一个Vuex的核心就是一个store
+    Vuex中存储的状态是响应式的 -- 改变的唯一方式显示的提交mutation
+
+Virtual Node --> VNode
+
+Proxy --> enables you to create a proxy for another object
+
+除了修改Vuex中的内容,还要修改JS-Cookie中的内容
+
+Cookie --> 存储在用户本地终端上的数据,通常用于辨别用户的身份.
+
+Vuex是存储到网站上的,Cookie是存储到用户本地终端上的.
+
+Mock中的响应url地址是和axios中的请求url地址配套的.
+
+Vuex中的值用于vue组件中,js-cookie中的值用于其它的文件中
+
+nested model --> 嵌套模型
+
+router-link --> 用来指定链接
+router-view --> 用来指定展示的地方
+
+Vue --> watch(监听器)
+    预设为当值有所变化时才会触发,如果我们希望在初始化完成之后,就先立即执行一次,就可以将immediate设置为true
+    immediate:true --> 如果想要在watch绑定时(初始化)时,就先执行一次handler,就设置该选项.
+
+组合式API:
+    逻辑关注点 --> 如果可以将同一个逻辑关注点的相关代码放在一起,就会更好
+    --> setup 选项 --> setup 选项 在组件创建之前执行 --> 所以无法使用this,data,computed等数据
+    响应性和引用是两个不同的概念.
+        响应性是vue中的概念,vue利用es5中的一个函数Object.defineProperty把这些property全部转换为getter/setter
+        只有具有了响应性,vue才能够watch它们,并在它们发生变化时,重新渲染所有用到这些property的组件
+        由于Javascript的限制,Vue不能检测数组和对象的变化 --> 也就是说不能简单的将它们变为响应性对象. --> 但是vue通过一些办法来保证了对象和数组的响应性
+        Vue不能检测以下数组的变动:
+            当你利用索引值直接设置一个数组项时
+            当你修改数组的长度时
+        异步更新队列 -->
+            只要侦听到数据变化,Vue将开启一个队列,并缓冲在同一事件循环中发生的所有数据变更.如果一个watcher被多次触发,只会被推入到队列中一次
+        ref可以将一个值包装成一个响应式对象. --> 对象和数组是不是都要通过ref包装一下
+            就先暂且理解成无法vue无法追踪对象和数组的变化,
+    在一个vue组件中,data中的数据会被自动包装成响应式的.
+    setup --> 中的内容没有被data包裹-->所以没有被vue包装成响应式的?
+
+副作用 --> 副作用是许多关键功能的起点
+
+axios
+    Server -- node.js html module
+    Client -- XMLHttpRequest module
+
+函数的副作用
+
+Vue的响应式系统 --> 深入响应性原理 --> 被代理的JavaScript对象
+    当一个值被读取时进行追踪
+        Vue 通过一个副作用(effect)来跟踪当前正在运行的函数
+        函数被包裹进一个副作用中,该副作用会被推进一个数组中,这个数组会被用来检测当前正在运行的副作用
+    当一个值被改变时进行检测
+        一个组件的data函数中返回的Javascript对象,会被ES6中的Proxy进行代理,Proxy会将每个property代理上一个get and set
+        Proxy是一个对象,它包装了另一个对象,并允许你拦截对该对象的任何交互.
+        在Proxy的代理中,检查当前运行的副作用,并将其与target和property记录在一起,所以vue就知道了该副作用的依赖项就是该target的property
+    重新运行计算代码来求取新的值
+        在Proxy代理的set函数中,重新触发该副作用(计算代码)
+
+Proxy
+    ...arguments --> 就是对一个函数的的传入参数直接复制一遍,传递给相应的函数.
+    handler = {
+        get(target,property,receiver){
+            return Reflect.get(...arguments)
+        }
+    }
+    这里的...arguments --> target,property,receiver.
+
+对于&&更好的理解方式: fun1&&fun2
+    在fun1为true的情况下,继续运行fun2
+
+NPM Version
+    major.minor.patch
+    主版本号:发生了大变更(比如更换了框架,更换了设计模式等)
+    次版本号:发生了向前兼容的更改(比如增加了新的功能,修改功能,修改UI等)
+    补丁版本号:修复了bug等
+
+directive
+    指代的是自定义指令
+    directive中的生命周期,比如
+        mounted(el,binding){
+            el --> 指代的是被应用该指令的元素
+            binding --> 指代的是传递给该指令的参数
+                binding.value --> 值
+                binding.arg --> 参数
+        }
+
+VUE --> MVVM
+    帮助我们将关注点 --> 操作DOM修改数据 --> 修改Javascript对象,让ViewModel自己管理如何展示.
+    
+.sync 表示双向绑定
+
+CORS(Cross-orign resource sharing) --> 跨域问题 --> 安全风险
+    没有同源策略限制的接口请求/没有同源策略限制的DOM查询 --> 提高攻击成本
+    script,img这样获取资源的标签没有跨域限制?
+    所谓同源,指的是协议相同(http或者https),host相同,端口号相同
+
+http 和 https 协议是无状态的
+
+SSL --> 安全套接字层
+    通过SSL证书来验证服务器身份,并为浏览器和服务器之间的通信进行加密
+
+Cookie是在客户端上的,Session是在服务器上
+
+about:blank
+    about:URL scheme --> use to process internal commands.
+
+Javascript中出现计算表达式时,一定要小心字符串不能自动转换为数字,一定要自己先处理一下
+
+css --> 层叠样式表
+    层叠 --> 所谓层叠,就是对于一个具体的元素,就是层层叠叠的样式,会出现样式继承和覆盖的情况.
+    后面的元素
+    类选择器比元素选择器具有更高的优先级
+    字体和颜色是可以被继承的,宽度,(内外)边界,边框都是不会被继承的
+    伪元素 --> 允许你对被选择元素的特定部分进行样式定制
+    伪类 --> 允许对被选择元素的特殊状态进行样式制定.
+    transform:translate --> 表示平移,第一个参数为横坐标,第二个参数为纵坐标 --> 如果为百分比的话,就表示平移的幅度,以元素自身的的尺度作为衡量标准
+    transform:rotate --> 表示旋转角度
+    width:inherit --> 是继承了它parent的值
+    position:fixed元素的定位是相对于整个document 
+    display展示
+    Every Element in web-design is a rectangular box
+    padding,border,margin
+        如果没有声明宽度,则宽度将保持100%的宽度,并且内边距和边框将向内推
+        如果显示声明了宽度,padding将向外推
+        padding是内边框,会占用
+        fixed-element 继承的宽度来自离其最近的parent viewport
+
+setTimeout()的妙用 --> 现在不太确定其正确性,因为它本质上是一个宏任务
+    setTimeout会将其程序放入子线程中,待主线程执行完毕之后再取执行,所以,哪怕是
+    setTimeout(function,0)也会有非常好的效果 --> 可以用于在vue中获取页面渲染完成后的结果
+
+Javascript 中的宏任务和微任务
+    执行顺序: 单宏 --> 全微 --> 单宏 --> 全微 ...
+    微任务:then,catch,finally
+    Javascript中的全局上下文也是一个宏任务
+
+Javascript 中的argument应该是一个保留关键字,指代了传入了当前函数的参数列表
+
+数据从父级组件传递到子级组件,子级组件传递事件到父级组件
+
+如果参见vue-element-admin,同级组件之间的数据传递都是通过store来实现的
+
+所以正常情况下,数据的传递都是应该从父级组件传递到子级组件
+
+CSS --> list-style
+    list-style-type --> 表格每项前面的符号样式
+    list-style-position --> inside or outside
+    list-style-image --> 表格每项前面的图标的样式
+
+CSS --> FlexBox --> 弹性布局
+    flexContainer and flexItems
+    main size and cross size
+
+CSS --> line-height --> defines the amount of space above and below inline elments --> 每一行的高度
+
+CSS级联规则 --> 更具体的规则具有更高的优先级
+
+flex-flow is a shorthand for the flex-direction and flex-wrap
+
+一定要先确定好样式与设计,再开始写代码,不然通通都是白写
+
+Sass(Scss) 相当于 css 的一个预处理器
+    $ --> 创建一个新的变量
+    支持层级解构(嵌套结构)
+    可以包括其它的Sass文件 --> 支持对css进行模块化的方法,使用'_'开头,这个文件就会被识别为部分文件,所以程序就不会把这个文件单独解析为一个css文件
+        使用@use的方式来使用partial scss
+    mixin --> @mixin and @include --> @mixin可以充当一个函数,允许传入参数
+
+css中的width等价于内容的实际宽度+内边框宽度+边框宽度
+
+box-sizing
+    content-box --> 边框长度没有包括在width内
+    border-box --> 边框长度包括在width内
+
+在vue的单文件组件中,通过document和window与窗口进行交互
+
+在beforeMount中添加监听事件
+在beforeDestrory中取消监听事件
+
+在css中,z-index值较大的元素会覆盖z-index值较小的元素
+在css中的&就是指代上一级选择器,就相当于一个对象中的this关键字
+css中的!important声明将会把这一条覆盖其它的任何一条
+
+模块化的布局
+
+line-height --> 控制了行之间的间距
+
+vue中组件的递归调用
+
+对于html中的元素,所有的自适应应该是没有必要的,有部分元素,就应该取固定值
+
+this.$route中存储着从父级到子级所有路由的数组

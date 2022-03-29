@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie' // 一个轻量级的Javascript Cookie 处理文件
 
 const TokenKey = 'Admin-Token'
 

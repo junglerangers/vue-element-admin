@@ -31,7 +31,7 @@ export default {
       immediate: true
     },
     async theme(val) {
-      const oldVal = this.chalk ? this.theme : ORIGINAL_THEME
+      const oldVal = this.chalk ? this.theme : ORIGINAL_THEME // 这里为什么是使用this.theme呢?而不是使用old_val之类的
       if (typeof val !== 'string') return
       const themeCluster = this.getThemeCluster(val.replace('#', ''))
       const originalCluster = this.getThemeCluster(oldVal.replace('#', ''))

@@ -16,7 +16,7 @@ const componentsRouter = {
       path: 'tinymce',
       component: () => import('@/views/components-demo/tinymce'),
       name: 'TinymceDemo',
-      meta: { title: 'Tinymce' }
+      meta: { title: 'Tinymce' }// 猜测,嵌套的路由记录中的meta会覆盖父级组件中的meta
     },
     {
       path: 'markdown',

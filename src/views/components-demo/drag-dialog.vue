@@ -17,6 +17,7 @@
 </template>
 
 <script>
+// Javascript文件被引用,里面的语句就会被执行
 import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 
 export default {

@@ -1,4 +1,5 @@
 <script>
+// item本质上就是一个icon和一个title
 export default {
   name: 'MenuItem',
   functional: true,
@@ -12,14 +13,14 @@ export default {
       default: ''
     }
   },
-  render(h, context) {
+  render(h, context) { // 渲染函数
     const { icon, title } = context.props
     const vnodes = []
 
     if (icon) {
-      if (icon.includes('el-icon')) {
+      if (icon.includes('el-icon')) { // 如果是el中的icon图片
         vnodes.push(<i class={[icon, 'sub-el-icon']} />)
-      } else {
+      } else { // 如果是传统的icon的图片
         vnodes.push(<svg-icon icon-class={icon}/>)
       }
     }

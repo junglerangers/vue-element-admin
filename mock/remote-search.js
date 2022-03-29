@@ -5,17 +5,17 @@ const count = 100
 
 for (let i = 0; i < count; i++) {
   NameList.push(Mock.mock({
-    name: '@first'
+    name: '@first'// mock 中的占位符,代表取一个符合要求的随机值.
   }))
 }
 NameList.push({ name: 'mock-Pan' })
 
 module.exports = [
-  // username search
+  // username search -- 搜索功能,搜索包含该查询字符串所有的名字
   {
-    url: '/vue-element-admin/search/user',
-    type: 'get',
-    response: config => {
+    url: '/vue-element-admin/search/user', // 路由
+    type: 'get', // 访问方式
+    response: config => { // 名字检索功能
       const { name } = config.query
       const mockNameList = NameList.filter(item => {
         const lowerCaseName = item.name.toLowerCase()
@@ -28,7 +28,7 @@ module.exports = [
     }
   },
 
-  // transaction list
+  // transaction list -- 返回模拟的事务列表
   {
     url: '/vue-element-admin/transaction/list',
     type: 'get',

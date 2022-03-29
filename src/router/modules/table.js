@@ -2,7 +2,7 @@
 
 import Layout from '@/layout'
 
-const tableRouter = {
+const tableRouter = { // 在路由中设置默认首选项,默认跳转到complex-table
   path: '/table',
   component: Layout,
   redirect: '/table/complex-table',

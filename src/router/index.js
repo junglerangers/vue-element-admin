@@ -11,7 +11,7 @@ import componentsRouter from './modules/components'
 import chartsRouter from './modules/charts'
 import tableRouter from './modules/table'
 import nestedRouter from './modules/nested'
-
+// route的name被用于kepp-alive中保存缓存
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -42,7 +42,7 @@ export const constantRoutes = [
   {
     path: '/redirect',
     component: Layout,
-    hidden: true,
+    hidden: true, // 该路由是否显示在侧边栏上
     children: [
       {
         path: '/redirect/:path(.*)',
@@ -79,7 +79,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+        meta: { title: '仪表盘1号', icon: 'dashboard', affix: true }// affix如果设置为true,则标签将附加在视图上进行展示
       }
     ]
   },
@@ -91,7 +91,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/documentation/index'),
         name: 'Documentation',
-        meta: { title: 'Documentation', icon: 'documentation', affix: true }
+        meta: { title: '文档', icon: 'documentation', affix: true }
       }
     ]
   },
@@ -104,7 +104,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/guide/index'),
         name: 'Guide',
-        meta: { title: 'Guide', icon: 'guide', noCache: true }
+        meta: { title: '导航', icon: 'guide', noCache: true }
       }
     ]
   },
@@ -127,6 +127,7 @@ export const constantRoutes = [
 /**
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
+ * 异步路由,之所以取为这个名字,是因为这部分路由是根据用户的账号动态获取权限的
  */
 export const asyncRoutes = [
   {
@@ -136,17 +137,17 @@ export const asyncRoutes = [
     alwaysShow: true, // will always show the root menu
     name: 'Permission',
     meta: {
-      title: 'Permission',
+      title: '权限控制',
       icon: 'lock',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
     children: [
       {
         path: 'page',
-        component: () => import('@/views/permission/page'),
+        component: () => import('@/views/permission/page'), // 路由路径和文件的路径是一致的
         name: 'PagePermission',
         meta: {
-          title: 'Page Permission',
+          title: '页面控制',
           roles: ['admin'] // or you can only set roles in sub nav
         }
       },
@@ -155,7 +156,7 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/directive'),
         name: 'DirectivePermission',
         meta: {
-          title: 'Directive Permission'
+          title: '指令控制'
           // if do not set roles, means: this page does not require permission
         }
       },
@@ -164,8 +165,16 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/role'),
         name: 'RolePermission',
         meta: {
-          title: 'Role Permission',
+          title: '角色控制',
           roles: ['admin']
+        }
+      },
+      {
+        path: 'users',
+        component: () => import('@/views/permission/userManage'),
+        name: 'UsersManage',
+        meta: {
+          title: '用户管理'
         }
       }
     ]
@@ -179,7 +188,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/icons/index'),
         name: 'Icons',
-        meta: { title: 'Icons', icon: 'icon', noCache: true }
+        meta: { title: '图标', icon: 'icon', noCache: true }
       }
     ]
   },
@@ -196,7 +205,7 @@ export const asyncRoutes = [
     redirect: '/example/list',
     name: 'Example',
     meta: {
-      title: 'Example',
+      title: '示例',
       icon: 'el-icon-s-help'
     },
     children: [
@@ -204,20 +213,20 @@ export const asyncRoutes = [
         path: 'create',
         component: () => import('@/views/example/create'),
         name: 'CreateArticle',
-        meta: { title: 'Create Article', icon: 'edit' }
+        meta: { title: '文章新建', icon: 'edit' }
       },
       {
         path: 'edit/:id(\\d+)',
         component: () => import('@/views/example/edit'),
         name: 'EditArticle',
-        meta: { title: 'Edit Article', noCache: true, activeMenu: '/example/list' },
+        meta: { title: '文章编辑', noCache: true, activeMenu: '/example/list' },
         hidden: true
       },
       {
         path: 'list',
         component: () => import('@/views/example/list'),
         name: 'ArticleList',
-        meta: { title: 'Article List', icon: 'list' }
+        meta: { title: '文章列表', icon: 'list' }
       }
     ]
   },
@@ -230,7 +239,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/tab/index'),
         name: 'Tab',
-        meta: { title: 'Tab', icon: 'tab' }
+        meta: { title: '侧边栏', icon: 'tab' }
       }
     ]
   },
@@ -268,7 +277,7 @@ export const asyncRoutes = [
         path: 'log',
         component: () => import('@/views/error-log/index'),
         name: 'ErrorLog',
-        meta: { title: 'Error Log', icon: 'bug' }
+        meta: { title: '错误日志', icon: 'bug' }
       }
     ]
   },
@@ -389,7 +398,7 @@ export const asyncRoutes = [
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
+  scrollBehavior: () => ({ y: 0 }), // 控制页面切换之间的滚动行为
   routes: constantRoutes
 })
 

@@ -3,6 +3,7 @@ export { parseTime, formatTime } from '@/utils'
 
 /**
  * Show plural label if time is plural number
+ * 时间格式的处理,保证在英语中,单数,复数显示正确
  * @param {number} time
  * @param {string} label
  * @return {string}
@@ -20,9 +21,9 @@ function pluralize(time, label) {
 export function timeAgo(time) {
   const between = Date.now() / 1000 - Number(time)
   if (between < 3600) {
-    return pluralize(~~(between / 60), ' minute')
+    return pluralize(~~(between / 60), ' minute') // ~~ 等价于 Math.floor() --> 获得不大于当前数字的最大整数,~~本质上只是去掉了小数部分.
   } else if (between < 86400) {
-    return pluralize(~~(between / 3600), ' hour')
+    return pluralize(~~(between / 3600), ' hour') // pluralize --> 让英文单词的单复数形式正确显示
   } else {
     return pluralize(~~(between / 86400), ' day')
   }
@@ -30,6 +31,7 @@ export function timeAgo(time) {
 
 /**
  * Number formatting
+ * 数字格式化
  * like 10000 => 10k
  * @param {number} num
  * @param {number} digits
@@ -53,6 +55,7 @@ export function numberFormatter(num, digits) {
 
 /**
  * 10000 => "10,000"
+ * 数值的千分制表示
  * @param {number} num
  */
 export function toThousandFilter(num) {
@@ -61,6 +64,7 @@ export function toThousandFilter(num) {
 
 /**
  * Upper case first char
+ * 首字母大写
  * @param {String} string
  */
 export function uppercaseFirst(string) {

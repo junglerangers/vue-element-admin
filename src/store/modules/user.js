@@ -30,10 +30,10 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
+  login({ commit }, userInfo) { // 这里的login是一个自定义的函数
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login({ username: username.trim(), password: password }).then(response => { // 这里的login是一个引用进来的函数
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -61,10 +61,10 @@ const actions = {
           reject('getInfo: roles must be a non-null array!')
         }
 
-        commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
+        commit('SET_ROLES', roles)// 权限
+        commit('SET_NAME', name)// 姓名
+        commit('SET_AVATAR', avatar)// 头像
+        commit('SET_INTRODUCTION', introduction)// 介绍
         resolve(data)
       }).catch(error => {
         reject(error)
