@@ -26,12 +26,22 @@
           {{ scope.row.dep }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="类型" width="100">
+      <el-table-column align="center" label="生效时间" width="100">
         <template slot-scope="scope">
           {{ scope.row.type }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="状态" width="100">
+      <el-table-column align="center" label="人员类型" width="100">
+        <template slot-scope="scope">
+          {{ scope.row.type }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="人员状态" width="100">
+        <template slot-scope="scope">
+          {{ scope.row.type }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="失效时间" width="100">
         <template slot-scope="scope">
           {{ scope.row.state === true?'启用':'停用' }}
         </template>
@@ -41,7 +51,10 @@
           <el-button-group>
             <el-button type="primary" size="small" icon="el-icon-user" title="添加新用户" @click="handleAddUser" />
             <el-button type="primary" size="small" icon="el-icon-download" title="数据导出" />
-            <el-button type="primary" size="small" icon="el-icon-upload2" title="数据上传" />
+            <!-- input type="file" 点击然后取消时,有概率出现浏览器卡死的情况 -->
+            <el-button type="primary" size="small" icon="el-icon-upload2">
+              <input ref="upload" class="myinput" type="file" accept=".xlsx" @focus="importExcel">
+            </el-button>
             <el-button type="primary" size="small" icon="el-icon-view" title="数据可视化" />
           </el-button-group>
         </template>
@@ -72,16 +85,8 @@
 import $ from 'jquery'
 import { getUserList } from '@/api/user'
 import search from './components/search'
-const md5 = require('js-md5')
-
-const defaultUser = {
-  workNumber: '',
-  name: '',
-  dep: '',
-  type: '',
-  state: true,
-  remark: ''
-}
+import * as defaultUser from '@/dataModel/EmployeeModel'
+// import xlsx from 'xlsx'
 
 export default {
   components: {
@@ -95,9 +100,9 @@ export default {
       dialogType: 'new', // 对话框属性
       userList: [], // 所有用户列表
       footerWidth: 0, // 控制底边栏的宽度
+      test: '',
       total: 0, // 数据总数量
       dataModel: {
-        token: md5(''), // 控制筛选条件是否发生改变 --> 如果可以,最好只传一个token然后后台解码之后执行
         currentPage: 1, // 当前页码
         /** 以下为筛选条件 */
         size: 20, // 每页数据数量
@@ -144,6 +149,10 @@ export default {
       this.dialogType = 'new'
       this.dialogVisible = true
     },
+    handleEdit(scope) {
+      this.dialogType = 'edit'
+      this.dialogVisible = true
+    },
     handleSizeChange(val) {
       this.currentPage = 1
       this.size = val
@@ -157,6 +166,13 @@ export default {
       this.dataModel = { ...searchModel }
       console.log(this.dataModel)
     },
+    importExcel(e) {
+      // if (e.target.files.length > 0) {
+      //   const file = e.target.files
+      //   console.log(file)
+      // }
+      // return
+    },
     /**
      * 宽度自适应
      */
@@ -164,12 +180,19 @@ export default {
       var parentwidth = $('.app-container').width()
       console.log(parentwidth)
       $('.footer').width(parentwidth)
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => {})
     }
   }
 }
 </script>
 
-<style>
+<style lang ='scss'>
 .footer{
   position: fixed;
   bottom: 0;
@@ -182,5 +205,30 @@ export default {
 .table{
   margin-bottom: 30px;
   margin-top: 30px;
+}
+.myinput{
+  position:absolute;
+  opacity: 0;
+  top:0;
+  left: 0;
+}
+.el-dialog{
+  display: flex;
+  flex-direction: column;
+  margin: 0 !important;
+  position:absolute;
+  top:50%;
+  left:50%;
+   width: fit-content;
+  transform: translate(-50%,-50%);
+  max-height: calc(100% - 30px);
+  max-width: calc(100% - 30px);
+}
+.el-dialog .el-dialog__body{
+  flex:1;
+  overflow:auto;
+}
+.margin20{
+  margin: 0 20px;
 }
 </style>
