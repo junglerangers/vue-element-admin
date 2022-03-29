@@ -1,5 +1,6 @@
 <template>
   <div ref="main" class="app-container">
+    <svg-icon icon-class="scale" />
     <search @search="searchHandler" />
     <el-table
       v-loading="loading"

@@ -5,8 +5,9 @@
 /**
  * @param {string} path
  * @returns {Boolean}
+ * @description 正则表达式检查,如果符合网站地址,邮件地址,电话地址
  */
-export function isExternal(path) { // 正则表达式检查,如果符合网站地址,邮件地址,电话地址
+export function isExternal(path) {
   return /^(https?:|mailto:|tel:)/.test(path)
 }
 
