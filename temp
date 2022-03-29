@@ -1107,7 +1107,7 @@ vue中组件的递归调用
 
 this.$route中存储着从父级到子级所有路由的数组
 
-<<<<<<< HEAD
+
 Echarts Study
     echarts.init() --> 在HTML中定义有高度和宽度的父容器,在调用该方法前要保证其已经有高宽了
     myChart.setOption(option)
@@ -1123,5 +1123,3 @@ Echarts Study
     提供数据 --> 指定数据到视觉的映射
 
 input type='file' --> 就会变成读取文件的形式
-=======
-
