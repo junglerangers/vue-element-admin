@@ -1,7 +1,7 @@
 import store from '@/store'
 
 const { body } = document
-const WIDTH = 992 // refer to Bootstrap's responsive design
+const WIDTH = 992 // refer to Bootstrap's responsive design --> 根据这个宽度来区分其是移动端还是电脑端
 
 export default {
   watch: {

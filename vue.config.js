@@ -1,4 +1,4 @@
-'use strict'
+'use strict' // 严格模式
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
 
