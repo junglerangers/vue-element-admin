@@ -2,11 +2,10 @@
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
-        <h1 v-else class="sidebar-title">{{ title }} </h1>
+        <img :src="logo" class="sidebar-logo">
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
+        <img v-if="showLogo" :src="logo" class="sidebar-logo">
         <h1 class="sidebar-title">{{ title }} </h1>
       </router-link>
     </transition>
@@ -14,6 +13,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'SidebarLogo',
   props: {
@@ -25,7 +25,13 @@ export default {
   data() {
     return {
       title: '工资奖金对账系统', // logo下面的文字说明
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'// 网站logo,logo地址
+      logo: '@/icons/svg/scale.svg'// 网站logo,logo地址
+    }
+  },
+  computed: {
+    showLogo() {
+      console.log(this.logo)
+      return this.$store.state.settings.sidebarLogo
     }
   }
 }
