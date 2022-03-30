@@ -3,12 +3,14 @@
     <svg-icon icon-class="scale_white" />
     <search @search="searchHandler" />
     <el-table
+      id="mytable"
       v-loading="loading"
       element-loading-text="数据拼命加载中"
       element-loading-spinner="el-icon-loading"
       element-loading-background="rgba(0, 0, 0, 0.8)"
       :data="userList"
       class="table"
+      cell-class-name="tableCellClass"
       border
     >
       <el-table-column type="index" :index="CurrentIndex" width="50" align="center" label="序号" />
@@ -231,5 +233,11 @@ export default {
 }
 .margin20{
   margin: 0 20px;
+}
+.tableCellClass{
+  padding: 0px!important;
+}
+#mytable .el-table--mini .el-table__cell{
+  padding: 0px;
 }
 </style>

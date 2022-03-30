@@ -12,9 +12,25 @@
             <el-dropdown-item command="姓名">姓名</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <el-button slot="append" icon="el-icon-search">搜索</el-button>
+        <template slot="append">
+          <el-button type="primary" icon="el-icon-search">搜索</el-button>
+          <el-button type="primary" :icon="advanceSearchIcon" title="高级搜索" @click="showAdvanceSearch" />
+        </template>
       </el-input>
     </div>
+    <transition name="advancesearchshow">
+      <el-form v-if="visible" :inline="true" :model="formInline" class="search-form">
+        <el-form-item label="审批人">
+          <el-input v-model="test" placeholder="审批人" />
+        </el-form-item>
+        <el-form-item label="活动区域">
+          <el-select v-model="test" placeholder="活动区域">
+            <el-option label="区域一" value="shanghai" />
+            <el-option label="区域二" value="beijing" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+    </transition>
   </div>
 </template>
 
@@ -32,6 +48,17 @@ export default {
         type: '', // 人员类型
         workNumber: '', // 人员工号
         name: '' // 人员姓名
+      },
+      test: '',
+      visible: true
+    }
+  },
+  computed: {
+    advanceSearchIcon: function() {
+      if (this.visible === false) {
+        return 'el-icon-more'
+      } else {
+        return 'el-icon-arrow-down'
       }
     }
   },
@@ -41,6 +68,9 @@ export default {
     },
     handleCommand(command) {
       this.searchtype = command
+    },
+    showAdvanceSearch() {
+      this.visible = !this.visible
     }
   }
 }
@@ -49,5 +79,17 @@ export default {
 <style>
 .el-select .el-input{
   width: 180px;
+}
+.search-form{
+  margin-top:20px;
+}
+.none{
+  display: none;
+}
+.advancesearchshow-enter-active, .advancesearchshow-leave-active{
+  transition: opacity .5s;
+}
+.advancesearchshow-enter,.advancesearchshow-leave-to{
+  opacity: 0;
 }
 </style>
