@@ -93,7 +93,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/profile/index'),
         name: 'Profile',
-        meta: { title: 'Profile', icon: 'user', noCache: true }
+        meta: { title: '个人设置', icon: 'user', noCache: true }
       }
     ]
   }
@@ -106,6 +106,63 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
+    path: '/users',
+    component: Layout,
+    redirect: '/users/index',
+    name: 'users',
+    meta: {
+      title: '用户管理',
+      icon: 'lock',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/userManage/index'),
+        name: 'usersManage',
+        meta: {
+          title: '用户管理',
+          icon: 'lock',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/salary',
+    component: Layout,
+    redirect: '/salary/index',
+    alwaysShow: true,
+    name: 'salary',
+    meta: {
+      title: '薪酬管理',
+      icon: 'lock',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'salaryList',
+        component: () => import('@/views/salary/index'),
+        name: 'salaryList',
+        meta: {
+          title: '薪酬一览',
+          icon: 'lock',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'addNewSalary',
+        component: () => import('@/views/salary/add'),
+        name: 'addNewSalary',
+        meta: {
+          title: '薪酬新增',
+          icon: 'lock',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/page',
@@ -114,7 +171,7 @@ export const asyncRoutes = [
     meta: {
       title: '权限控制',
       icon: 'lock',
-      roles: ['admin', 'editor'] // you can set roles in root nav
+      roles: ['admin'] // you can set roles in root nav
     },
     children: [
       {
@@ -125,18 +182,9 @@ export const asyncRoutes = [
           title: '角色控制',
           roles: ['admin']
         }
-      },
-      {
-        path: 'users',
-        component: () => import('@/views/permission/userManage'),
-        name: 'UsersManage',
-        meta: {
-          title: '用户管理'
-        }
       }
     ]
   },
-
   /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,
   // chartsRouter,
