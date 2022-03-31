@@ -58,37 +58,37 @@ export default {
           left: '2%',
           right: '2%',
           bottom: '3%',
-          containLabel: true
+          containLabel: true // 是否包含坐标轴的刻度标签
         },
         xAxis: [{
-          type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          axisTick: {
-            alignWithLabel: true
+          type: 'category', // 类目轴,适用于离散的类目数据
+          data: ['星期二', '星期三', '星期四', '星期五', '星期六', '星期天', '星期一'],
+          axisTick: { // 坐标轴刻度相关设置
+            alignWithLabel: true // 保证刻度线和标签对齐
           }
         }],
         yAxis: [{
-          type: 'value',
+          type: 'value', // 数值轴,适用于连续的数据
           axisTick: {
             show: false
           }
         }],
         series: [{
-          name: 'pageA',
+          name: '信息1',
           type: 'bar',
-          stack: 'vistors',
-          barWidth: '60%',
+          stack: 'vistors', // 数据堆叠,配置相同的stack可以堆叠放置
+          barWidth: '60%', // 柱条的宽度
           data: [79, 52, 200, 334, 390, 330, 220],
           animationDuration
         }, {
-          name: 'pageB',
+          name: '信息2',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
           data: [80, 52, 200, 334, 390, 330, 220],
           animationDuration
         }, {
-          name: 'pageC',
+          name: '信息3',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',

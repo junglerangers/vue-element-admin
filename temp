@@ -1125,3 +1125,11 @@ Echarts Study
 input type='file' --> 就会变成读取文件的形式
 
 el-row --> gutter --> 栅格间隔
+
+debouncing for JavaScript
+    debouncing is a programming practice used to ensure that time-consuming tasks do not fire so often.
+    it limits the rate at which a function gets invoked.
+
+Vue 在mounted中监听事件
+    在beforeDestrory中取消监听事件
+    在mounted(){this.$nextTick(()=>this.init())}中初始化

@@ -38,7 +38,7 @@ export default {
   },
   watch: {
     chartData: {
-      deep: true,
+      deep: true, // 为了发现对象內部值的变化,使用deep-true属性`
       handler(val) {
         this.setOptions(val)
       }

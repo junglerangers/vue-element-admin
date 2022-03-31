@@ -50,7 +50,7 @@ export default {
         name: '' // 人员姓名
       },
       test: '',
-      visible: true
+      visible: false
     }
   },
   computed: {

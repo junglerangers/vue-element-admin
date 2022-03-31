@@ -250,6 +250,7 @@ export function getTime(type) {
  * @param {number} wait
  * @param {boolean} immediate
  * @return {*}
+ * @description 去抖动,防止一个函数在短时间内被反复调用
  */
 export function debounce(func, wait, immediate) {
   let timeout, args, context, timestamp, result

@@ -1,7 +1,6 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" title="edit" :before-close="handleClose">
+  <el-dialog :visible.sync="dialogVisible" :before-close="handleClose">
     <el-descriptions class="margin-top" title="人员详细信息" :column="4" size="small" border>
-
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
@@ -184,8 +183,46 @@
       </el-descriptions-item>
     </el-descriptions>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      <el-button @click="toggleDialogVisible">取 消</el-button>
+      <el-button type="primary" @click="userRequest">确 定</el-button>
     </span>
   </el-dialog>
 </template>
+
+<script>
+export default {
+  model: {
+    prop: 'currentUser',
+    event: 'change'
+  },
+  props: {
+    currentUser: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    },
+    dialogVisible: {
+      type: Boolean,
+      required: true
+    }
+  },
+  methods: {
+    userRequest: function() {
+      console.log('request')
+      this.toggleDialogVisible()
+      this.$emit('change')
+    },
+    toggleDialogVisible() {
+      this.$emit('toggleVisible')
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => {})
+    }
+  }
+}
+</script>

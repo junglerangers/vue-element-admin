@@ -68,6 +68,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <user-dialog v-model="CurrentUser" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
     <div class="block footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="dataModel.currentPage"
@@ -88,13 +89,17 @@
 import $ from 'jquery'
 import { getUserList } from '@/api/user'
 import search from './components/search'
+import userDialog from './components/userDialog.vue'
 import * as defaultUser from '@/dataModel/EmployeeModel'
+import resize from './mixins/resize'
 // import xlsx from 'xlsx'
 
 export default {
   components: {
-    search
+    search,
+    userDialog
   },
+  mixins: [resize],
   data: function() {
     return {
       loading: false,
@@ -138,7 +143,7 @@ export default {
     }, 100)
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.adjustFooterWidth)
+    // window.removeEventListener('resize', this.adjustFooterWidth)
   },
   methods: {
     async getUserList() {
@@ -183,13 +188,6 @@ export default {
       var parentwidth = $('.app-container').width()
       console.log(parentwidth)
       $('.footer').width(parentwidth)
-    },
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-        .then(_ => {
-          done()
-        })
-        .catch(_ => {})
     }
   }
 }
@@ -203,6 +201,7 @@ export default {
   /* line-height: var(--footer-height); */
   background: #304156;
   text-align: center;
+  transition: all 0.8s;
   /* color: #fff; */
 }
 .table{
@@ -214,6 +213,8 @@ export default {
   opacity: 0;
   top:0;
   left: 0;
+  height: 100%;
+  width:100%;
 }
 .el-dialog{
   display: flex;
@@ -236,8 +237,5 @@ export default {
 }
 .tableCellClass{
   padding: 0px!important;
-}
-#mytable .el-table--mini .el-table__cell{
-  padding: 0px;
 }
 </style>

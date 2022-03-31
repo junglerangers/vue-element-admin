@@ -4,17 +4,17 @@ export default {
   data() {
     return {
       $_sidebarElm: null,
-      $_resizeHandler: null
+      $_resizeHandler: null // this is a function
     }
   },
   mounted() {
-    this.$_resizeHandler = debounce(() => {
+    this.$_resizeHandler = debounce(() => { // 变量初始化
       if (this.chart) {
         this.chart.resize()
       }
     }, 100)
-    this.$_initResizeEvent()
-    this.$_initSidebarResizeEvent()
+    this.$_initResizeEvent() // windows监听resize事件初始化
+    this.$_initSidebarResizeEvent() // 侧边栏监听transitioned事件初始化
   },
   beforeDestroy() {
     this.$_destroyResizeEvent()
@@ -39,7 +39,7 @@ export default {
     $_destroyResizeEvent() {
       window.removeEventListener('resize', this.$_resizeHandler)
     },
-    $_sidebarResizeHandler(e) {
+    $_sidebarResizeHandler(e) { // 如果在transitioned事件中发生了width的变化,就调用resize事件
       if (e.propertyName === 'width') {
         this.$_resizeHandler()
       }
