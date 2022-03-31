@@ -1124,6 +1124,45 @@ Echarts Study
 
 input type='file' --> 就会变成读取文件的形式
 
+<<<<<<< Updated upstream
+=======
+git 既可以切换到指定的分支,也可以切换到指定的提交,如果切换到指定的提交,它就是处于detached状态
+
+Echarts:
+    在系列中设置数据
+    在数据集中设置数据 --> 提供数据,指定数据到视觉的映射
+    将数据和配置分离开来
+        options={
+            legend:{},
+            tooltip:{},
+            dataset:{
+                source:[]
+            },
+            xAxis:{type:category}, // 声明横轴为类目轴
+            yAxis:{},
+            series:[{},{},{}]
+        }
+    类目轴 --> 就是x轴坐标刻度值不是连贯的
+    非类目轴,坐标刻度值是连贯的
+    将 dataset 映射为 series
+    维度
+    series.encode --> 将类型映射到x轴上或者映射到y轴上
+    数据到图形的映射
+        数据集的行或者列映射为系列
+        系列映射为维度
+        将维度映射到特定的坐标轴(标签)上
+    把数据集映射到系列上 --> 一行就是一个系列,一个系列就是一个维度
+    都是以二维数组的形式进行存储
+        每一行(列),都是一个维度
+    
+    echart初始化
+    为初始化后的echart实例赋予options
+        axisPointer -- 坐标轴指示器
+        legend -- 图例组件
+        tooltip -- 提示框组件
+            tooltip.trigger -- 触发方式
+        使用transform进行数据转换
+>>>>>>> Stashed changes
 el-row --> gutter --> 栅格间隔
 
 debouncing for JavaScript
@@ -1132,4 +1171,8 @@ debouncing for JavaScript
 
 Vue 在mounted中监听事件
     在beforeDestrory中取消监听事件
+<<<<<<< Updated upstream
     在mounted(){this.$nextTick(()=>this.init())}中初始化
+=======
+    在mounted(){this.$nextTick(()=>this.init())}中初始化
+>>>>>>> Stashed changes
