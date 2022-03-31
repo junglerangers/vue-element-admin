@@ -63,21 +63,21 @@ export default {
         xAxis: [{
           type: 'category',
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          axisTick: {
-            alignWithLabel: true
+          axisTick: { // 坐标轴相关刻度设置
+            alignWithLabel: true // 保证刻度线与标签对齐
           }
         }],
         yAxis: [{
           type: 'value',
           axisTick: {
-            show: false
+            show: false // 是否展示
           }
         }],
         series: [{
-          name: 'pageA',
+          name: '信息1',
           type: 'bar',
-          stack: 'vistors',
-          barWidth: '60%',
+          stack: 'vistors', // 同个类目轴上系列配置相同的stack值可以堆叠放置
+          barWidth: '60%', // 柱条的宽度
           data: [79, 52, 200, 334, 390, 330, 220],
           animationDuration
         }, {
