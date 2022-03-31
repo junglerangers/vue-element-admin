@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" :before-close="handleClose">
+  <el-dialog :visible.sync="localdialogVisible" :before-close="handleClose">
     <el-descriptions class="margin-top" title="人员详细信息" :column="4" size="small" border>
       <el-descriptions-item>
         <template slot="label">
@@ -204,7 +204,14 @@ export default {
     },
     dialogVisible: {
       type: Boolean,
+      default: false,
       required: true
+    }
+  },
+  data: function() {
+    return {
+      test: '',
+      localdialogVisible: this.dialogVisible
     }
   },
   methods: {

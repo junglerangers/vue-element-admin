@@ -160,6 +160,7 @@ export default {
     handleEdit(scope) {
       this.dialogType = 'edit'
       this.dialogVisible = true
+      console.log(this.dialogVisible)
     },
     handleSizeChange(val) {
       this.currentPage = 1
