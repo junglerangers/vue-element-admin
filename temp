@@ -1182,3 +1182,11 @@ Vue 在mounted中监听事件
 
 $el --> 当前实例使用的根元素
 .stop --> 阻止单击事件继续传播(阻止事件冒泡)
+the difference between var and let
+    var is function scoped
+    let is block scoped
+        use let is better?
+    
+JavaScript String
+    split -- string to array
+    join -- array to string

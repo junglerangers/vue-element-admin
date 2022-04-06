@@ -1,73 +1,7 @@
 <template>
-  <div class="app-container">
-    薪酬总体一览
-    <el-table
-      id="mytable"
-      v-loading="loading"
-      element-loading-text="数据拼命加载中"
-      element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(0, 0, 0, 0.8)"
-      :data="userList"
-      class="table"
-      cell-class-name="tableCellClass"
-      border
-    >
-      <el-table-column type="index" :index="CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="center" label="工号" width="200">
-        <template slot-scope="scope">
-          {{ scope.row.workNumber }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="姓名" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.name }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="科室" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.dep }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="生效时间" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.type }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="人员类型" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.type }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="人员状态" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.type }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="失效时间" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.state === true?'启用':'停用' }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center">
-        <template slot="header">
-          <el-button-group>
-            <el-button type="primary" size="small" icon="el-icon-user" title="添加新用户" @click="handleAddUser" />
-            <el-button type="primary" size="small" icon="el-icon-download" title="数据导出" />
-            <!-- input type="file" 点击然后取消时,有概率出现浏览器卡死的情况 -->
-            <el-button type="primary" size="small" icon="el-icon-upload2">
-              <input ref="upload" class="myinput" type="file" accept=".xlsx" @focus="importExcel">
-            </el-button>
-            <el-button type="primary" size="small" icon="el-icon-view" title="数据可视化" />
-          </el-button-group>
-        </template>
-        <template slot-scope="scope">
-          <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
-          <el-button type="text" size="small" icon="el-icon-close" title="禁用" circle @click="handleAbandon(scope)">禁用</el-button>
-          <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
-          <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">详情</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+  <div>
+    薪酬管理(薪酬总览页面)
+    <!-- 显示所有的薪酬公式和计算信息,每一期为一条信息 -->
   </div>
 </template>
 
