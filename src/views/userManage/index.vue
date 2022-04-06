@@ -88,8 +88,7 @@
 
 import $ from 'jquery'
 import { getUserList } from '@/api/user'
-import search from './components/search'
-import userDialog from './components/userDialog.vue'
+import { search, userDialog } from './components'
 import * as defaultUser from '@/dataModel/EmployeeModel'
 import resize from './mixins/resize'
 // import xlsx from 'xlsx'

@@ -1124,8 +1124,6 @@ Echarts Study
 
 input type='file' --> 就会变成读取文件的形式
 
-<<<<<<< Updated upstream
-=======
 git 既可以切换到指定的分支,也可以切换到指定的提交,如果切换到指定的提交,它就是处于detached状态
 
 Echarts:
@@ -1162,7 +1160,6 @@ Echarts:
         tooltip -- 提示框组件
             tooltip.trigger -- 触发方式
         使用transform进行数据转换
->>>>>>> Stashed changes
 el-row --> gutter --> 栅格间隔
 
 debouncing for JavaScript
@@ -1171,8 +1168,13 @@ debouncing for JavaScript
 
 Vue 在mounted中监听事件
     在beforeDestrory中取消监听事件
-<<<<<<< Updated upstream
     在mounted(){this.$nextTick(()=>this.init())}中初始化
-=======
-    在mounted(){this.$nextTick(()=>this.init())}中初始化
->>>>>>> Stashed changes
+
+the difference between var and let
+    var is function scoped
+    let is block scoped
+        use let is better?
+    
+JavaScript String
+    split -- string to array
+    join -- array to string

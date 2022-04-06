@@ -109,9 +109,10 @@ export const asyncRoutes = [
     path: '/users',
     component: Layout,
     redirect: '/users/index',
+    alwaysShow: true,
     name: 'users',
     meta: {
-      title: '用户管理',
+      title: '用户模块',
       icon: 'lock',
       roles: ['admin']
     },
@@ -141,21 +142,31 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: 'salaryList',
+        path: 'index',
         component: () => import('@/views/salary/index'),
         name: 'salaryList',
         meta: {
-          title: '薪酬一览',
+          title: '薪酬总览',
           icon: 'lock',
           roles: ['admin']
         }
       },
       {
-        path: 'addNewSalary',
-        component: () => import('@/views/salary/add'),
-        name: 'addNewSalary',
+        path: 'detail',
+        component: () => import('@/views/salary/detail'),
+        name: 'salaryDetail',
         meta: {
-          title: '薪酬新增',
+          title: '薪酬个人明细',
+          icon: 'lock',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'termList',
+        component: () => import('@/views/salary/termList'),
+        name: 'salaryTermList',
+        meta: {
+          title: '薪酬每期明细',
           icon: 'lock',
           roles: ['admin']
         }
@@ -165,7 +176,7 @@ export const asyncRoutes = [
   {
     path: '/permission',
     component: Layout,
-    redirect: '/permission/page',
+    redirect: '/permission/role',
     alwaysShow: true, // will always show the root menu
     name: 'Permission',
     meta: {
@@ -180,6 +191,40 @@ export const asyncRoutes = [
         name: 'RolePermission',
         meta: {
           title: '角色控制',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/formular',
+    component: Layout,
+    redirect: '/formular/index',
+    alwaysShow: true,
+    name: 'formular',
+    meta: {
+      title: '公式管理',
+      icon: 'lock',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/formula/index'),
+        name: 'formularIndex',
+        meta: {
+          title: '公式一览',
+          icon: 'lock',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'detail',
+        component: () => import('@/views/formula/detail'),
+        name: 'formularDetail',
+        meta: {
+          title: '公式详情',
+          icon: 'lock',
           roles: ['admin']
         }
       }
