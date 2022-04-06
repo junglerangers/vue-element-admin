@@ -1124,8 +1124,6 @@ Echarts Study
 
 input type='file' --> 就会变成读取文件的形式
 
-<<<<<<< Updated upstream
-=======
 git 既可以切换到指定的分支,也可以切换到指定的提交,如果切换到指定的提交,它就是处于detached状态
 
 Echarts:
@@ -1162,7 +1160,6 @@ Echarts:
         tooltip -- 提示框组件
             tooltip.trigger -- 触发方式
         使用transform进行数据转换
->>>>>>> Stashed changes
 el-row --> gutter --> 栅格间隔
 
 debouncing for JavaScript
@@ -1171,8 +1168,17 @@ debouncing for JavaScript
 
 Vue 在mounted中监听事件
     在beforeDestrory中取消监听事件
-<<<<<<< Updated upstream
     在mounted(){this.$nextTick(()=>this.init())}中初始化
-=======
-    在mounted(){this.$nextTick(()=>this.init())}中初始化
->>>>>>> Stashed changes
+
+因为Vue中的prop不是响应性的,所以不能跟着更改
+
+利用 prop 将值从父组件传递到子级组件
+利用computed 赋予该值响应性
+利用$emit() 在父级组件上修改该值
+(
+    如果该值在子组件中作为v-model 的一员
+    则赋予该计算属性set,调用$()进行修改,即可实现
+)
+
+$el --> 当前实例使用的根元素
+.stop --> 阻止单击事件继续传播(阻止事件冒泡)

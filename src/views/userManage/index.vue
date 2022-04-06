@@ -62,9 +62,9 @@
           </el-button-group>
         </template>
         <template slot-scope="scope">
-          <el-button type="info" size="small" icon="el-icon-edit" title="编辑" round @click="handleEdit(scope)" />
-          <el-button type="warning" size="small" icon="el-icon-close" title="禁用" round @click="handleAbandon(scope)" />
-          <el-button type="danger" size="small" icon="el-icon-delete" title="删除" round @click="handleDelete(scope)" />
+          <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
+          <el-button type="text" size="small" icon="el-icon-close" title="禁用" circle @click="handleAbandon(scope)">禁用</el-button>
+          <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -88,8 +88,7 @@
 
 import $ from 'jquery'
 import { getUserList } from '@/api/user'
-import search from './components/search'
-import userDialog from './components/userDialog.vue'
+import { search, userDialog } from './components'
 import * as defaultUser from '@/dataModel/EmployeeModel'
 import resize from './mixins/resize'
 // import xlsx from 'xlsx'
