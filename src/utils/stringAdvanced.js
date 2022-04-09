@@ -12,7 +12,7 @@ function getColorByCode(code) {
  * @description 将一个字符串根据运算符号拆分成一个数组,并且保留运算符号,同时根据其代码生成相应的颜色
  * @returns Array
  */
-export function splictStringByOperation(rawString) {
+export function splictStringByOperator(rawString) {
   const strArray = rawString.split('')
   const strTemp = []; const strResult = []
   let temp = ''
@@ -36,4 +36,26 @@ export function splictStringByOperation(rawString) {
     strResult.push({ element: temp, type: getColorByCode(temp) })
   }
   return strResult
+}
+
+/**
+ * 检索字符串,找到最后位于运算符号后面的字符串
+ * @param {String} str
+ * @returns String
+ */
+export function getLastStrByOperator(str) {
+  if (str) {
+    let index = str.length - 1
+    let result = ''
+    let temp
+    while (index >= 0) {
+      temp = str.charAt(index)
+      if (/[\+\-\*%()\\=]/.test(temp)) {
+        break
+      }
+      result += temp
+      index--
+    }
+    return result.split('').reverse().join('')
+  }
 }
