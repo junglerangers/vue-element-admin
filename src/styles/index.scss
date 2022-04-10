@@ -56,7 +56,9 @@ a:hover {
 div:focus {
   outline: none;
 }
-
+.el-table .el-table__cell{
+  padding: 0px!important;
+}
 .fr {
   float: right;
 }

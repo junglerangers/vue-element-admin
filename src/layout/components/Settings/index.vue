@@ -1,37 +1,48 @@
 <template>
   <div class="drawer-container">
-    <div>
-      <h3 class="drawer-title">Page style setting</h3>
-
-      <div class="drawer-item">
-        <span>Theme Color</span>
-        <theme-picker style="float: right;height: 26px;margin: -3px 8px 0 0;" @change="themeChange" />
-      </div>
-
-      <div class="drawer-item">
-        <span>Open Tags-View</span>
-        <el-switch v-model="tagsView" class="drawer-switch" />
-      </div>
-
-      <div class="drawer-item">
-        <span>Fixed Header</span>
-        <el-switch v-model="fixedHeader" class="drawer-switch" />
-      </div>
-
-      <div class="drawer-item">
-        <span>Sidebar Logo</span>
-        <el-switch v-model="sidebarLogo" class="drawer-switch" />
-      </div>
-
-    </div>
+    任务列表
+    <el-table
+      style="width: 100%"
+      :data="events"
+      :max-height="800"
+    >
+      <el-table-column
+        prop="taskName"
+        label="任务名称"
+      />
+      <el-table-column
+        prop="startTime"
+        label="开始时间"
+      />
+      <el-table-column
+        prop="endTime"
+        label="结束时间"
+      />
+      <el-table-column
+        prop="taskState"
+        label="任务状态"
+      >
+        <template v-slot="scope">
+          <el-tag>{{ scope.row.taskState }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作"
+      >
+        <template slot-scope="scope">
+          <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)" />
+        </template>
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 
 <script>
-import ThemePicker from '@/components/ThemePicker'
+// import ThemePicker from '@/components/ThemePicker'
+import { mapState } from 'vuex'
 
 export default {
-  components: { ThemePicker },
+  components: { },
   data() {
     return {}
   },
@@ -68,7 +79,10 @@ export default {
           value: val
         })
       }
-    }
+    },
+    ...mapState({
+      events: state => state.app.events
+    })
   },
   methods: {
     themeChange(val) {
@@ -76,6 +90,9 @@ export default {
         key: 'theme',
         value: val
       })
+    },
+    handleDelete(scope) {
+      this.$store.commit('app/DEL_EVENT', scope.row.taskID)
     }
   }
 }

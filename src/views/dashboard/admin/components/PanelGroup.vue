@@ -44,7 +44,7 @@
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" justify="center" align="center">
       <div>
-        <el-button type="primary" round>更新人员信息</el-button>
+        <el-button type="primary" round @click="updateUsersInfo">更新人员信息</el-button>
       </div>
       <div>
         <el-button type="primary" class="margin20" round>更新部门信息</el-button>
@@ -55,14 +55,56 @@
 
 <script>
 import CountTo from 'vue-count-to'
+import { mapActions } from 'vuex'
 
 export default {
   components: {
     CountTo
   },
+  computed: {
+  },
   methods: {
+    ...mapActions({
+      addEvent: 'app/addEvent',
+      changeEventState: 'app/changeEventState'
+    }),
     handleSetLineChartData(type) {
       this.$emit('handleSetLineChartData', type)
+    },
+    updateUsersInfo() {
+      var datetime = new Date()
+      this.$message({
+        message: '任务调用成功,开始导入本期人员数据',
+        type: 'success'
+      })
+      const date = datetime.toISOString().split('T')[0]
+      const time = datetime.getHours() + ':' + datetime.getMinutes() + ':' + datetime.getSeconds()
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: 'test',
+        startTime: date + ' ' + time,
+        endTime: '',
+        taskState: '运行中'
+      }
+      this.addEvent(task)
+      this.getTestInfo(task)
+    },
+    async getTestInfo(task) {
+      console.log('进入异步')
+      await new Promise(resolve => {
+        setTimeout(() => {
+          resolve('Done!')
+        }, Math.random() * 5000)
+      }).then(value => {
+        console.log(value)
+        const h = this.$createElement
+        this.$notify({
+          title: '任务完成通知',
+          message: h('i', { style: 'color: teal' }, '恭喜您!' + task.taskName + '已经完成')
+        })
+        task.taskState = '已经完成'
+        this.changeEventState(task)
+      })
     }
   }
 }

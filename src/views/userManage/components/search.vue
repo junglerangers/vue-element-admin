@@ -19,7 +19,7 @@
       </el-input>
     </div>
     <transition name="advancesearchshow">
-      <el-form v-if="visible" :inline="true" :model="formInline" class="search-form">
+      <el-form v-if="visible" v-model="test" :inline="true" class="search-form">
         <el-form-item label="审批人">
           <el-input v-model="test" placeholder="审批人" />
         </el-form-item>
@@ -41,17 +41,14 @@
             <el-option label="区域二" value="beijing" />
           </el-select>
         </el-form-item>
-        <el-form-item label="活动区域">
-          <el-select v-model="test" placeholder="活动区域">
-            <el-option label="区域一" value="shanghai" />
-            <el-option label="区域二" value="beijing" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="活动区域">
-          <el-select v-model="test" placeholder="活动区域">
-            <el-option label="区域一" value="shanghai" />
-            <el-option label="区域二" value="beijing" />
-          </el-select>
+        <el-form-item label="参加工作时间" class="timePicker">
+          <el-col :span="11">
+            <el-date-picker type="month" placeholder="开始时间" style="width: 100%;" />
+          </el-col>
+          <el-col class="line center" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-time-picker type="month" placeholder="结束时间" style="width: 100%;" />
+          </el-col>
         </el-form-item>
         <el-form-item label="活动区域">
           <el-select v-model="test" placeholder="活动区域">
@@ -130,5 +127,12 @@ export default {
 }
 .search-form .el-form-item{
   width: 23%;
+}
+.timePicker{
+  width: fit-content!important;
+  margin-right: 30px!important;
+}
+.center{
+  text-align: center;
 }
 </style>
