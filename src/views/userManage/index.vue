@@ -10,7 +10,6 @@
       element-loading-background="rgba(0, 0, 0, 0.8)"
       :data="userList"
       class="table"
-      cell-class-name="tableCellClass"
       border
     >
       <el-table-column type="index" :index="CurrentIndex" width="50" align="center" label="序号" />
@@ -172,7 +171,7 @@ export default {
     },
     searchHandler(searchModel) {
       this.dataModel = { ...searchModel }
-      console.log(this.dataModel)
+      // console.log(this.dataModel)
     },
     importExcel(e) {
       // if (e.target.files.length > 0) {

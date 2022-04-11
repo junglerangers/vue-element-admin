@@ -2,8 +2,10 @@
   <div ref="rightPanel" :class="{show:show}" class="rightPanel-container">
     <div class="rightPanel-background" />
     <div class="rightPanel">
-      <div class="handle-button" :style="{'top':buttonTop+'px','background-color':theme}" @click="show=!show">
-        <i :class="show?'el-icon-close':'el-icon-message'" />
+      <div class="handle-button" :style="{'top':buttonTop+'px','background-color':theme}" @click="handleClick">
+        <el-badge :value="eventNum" :hidden="eventNum ===0 ">
+          <i :class="show?'el-icon-close':'el-icon-notebook-1'" />
+        </el-badge>
       </div>
       <div class="rightPanel-items">
         <slot />
@@ -14,6 +16,7 @@
 
 <script>
 import { addClass, removeClass } from '@/utils'
+import { mapState } from 'vuex'
 
 export default {
   name: 'RightPanel',
@@ -35,7 +38,10 @@ export default {
   computed: {
     theme() {
       return this.$store.state.settings.theme
-    }
+    },
+    ...mapState({
+      eventNum: state => state.app.unConfirmedEventnum
+    })
   },
   watch: {
     show(value) {
@@ -71,6 +77,10 @@ export default {
       const elx = this.$refs.rightPanel
       const body = document.querySelector('body')
       body.insertBefore(elx, body.firstChild)
+    },
+    handleClick() {
+      this.show = !this.show
+      this.$store.commit('app/CLEAR_EVENT_NUM')
     }
   }
 }
@@ -97,7 +107,7 @@ export default {
 
 .rightPanel {
   width: 100%;
-  max-width: 260px;
+  max-width: 460px;
   height: 100vh;
   position: fixed;
   top: 0;

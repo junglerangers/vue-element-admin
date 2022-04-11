@@ -254,15 +254,13 @@ export function getTime(type) {
  */
 export function debounce(func, wait, immediate) {
   let timeout, args, context, timestamp, result
-
   const later = function() {
-    // 据上一次触发时间间隔
-    const last = +new Date() - timestamp
-
+    // 距上一次触发时间间隔
+    const last = +new Date() - timestamp // 当前时间减去上一次触发时的时间戳
     // 上次被包装函数被调用时间间隔 last 小于设定时间间隔 wait
     if (last < wait && last > 0) {
-      timeout = setTimeout(later, wait - last)
-    } else {
+      timeout = setTimeout(later, wait - last) // 调整延时器至合适的值
+    } else { // 如果调用间隔大于设置的间隔,代表可以调用该函数了
       timeout = null
       // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
       if (!immediate) {
@@ -272,18 +270,19 @@ export function debounce(func, wait, immediate) {
     }
   }
 
-  return function(...args) {
+  return function(...localarg) {
+    args = localarg
     context = this
-    timestamp = +new Date()
-    const callNow = immediate && !timeout
+    timestamp = +new Date() // 当前时间戳
+    const callNow = immediate && !timeout // 如果要求马上调用并且没有延时
     // 如果延时不存在，重新设定延时
     if (!timeout) timeout = setTimeout(later, wait)
     if (callNow) {
+      // console.log('there is debounce now')
       result = func.apply(context, args)
       context = args = null
     }
-
-    return result
+    return result // 这里的result 返回的是上一次调用该函数后的返回值.
   }
 }
 

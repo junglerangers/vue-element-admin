@@ -7,9 +7,9 @@
             {{ searchtype }}<i class="el-icon-arrow-down el-icon--right" />
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="期数">期数</el-dropdown-item>
-            <el-dropdown-item command="时间范围">时间范围</el-dropdown-item>
-            <el-dropdown-item command="金额范围">金额范围</el-dropdown-item>
+            <el-dropdown-item command="工号">工号</el-dropdown-item>
+            <el-dropdown-item command="科室">科室</el-dropdown-item>
+            <el-dropdown-item command="姓名">姓名</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <template slot="append">
@@ -19,7 +19,7 @@
       </el-input>
     </div>
     <transition name="advancesearchshow">
-      <el-form v-if="visible" v-model="test" :inline="true" class="search-form">
+      <el-form v-if="visible" :inline="true" :model="formInline" class="search-form">
         <el-form-item label="审批人">
           <el-input v-model="test" placeholder="审批人" />
         </el-form-item>
@@ -76,7 +76,7 @@ export default {
     return {
       depList: [], // 科室列表
       typeList: [], // 人员类型列表
-      searchtype: '期数',
+      searchtype: '工号',
       searchContent: '',
       /** 搜索模型 */
       search: {
