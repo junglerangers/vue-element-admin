@@ -1121,7 +1121,32 @@ Echarts Study
             series:[] --> 会对应到source的每一列(除了第一列之外的)
         }
     提供数据 --> 指定数据到视觉的映射
-
+    title
+        Echarts 3 中可以存在任意多个标题组件
+        left --> 离容器左侧的距离
+        使用transform进行数据转换,在原有dataset的数据集上生成一个新的数据集
+    transform
+        type --> 转换类型
+        config --> 转换的配置方式
+            关系运算符
+            以嵌套的方式使用多个关系运算符(稍稍有点坑爹)
+            解析器 --> 指定解析器来对值进行解析后再做比较
+        fromDatasetIndex
+        fromDatasetId
+        数据转换可以被链式声明
+        一个transform可以输出多个data
+    dataset
+        index --> 从零开始
+    series
+        datasetIndex --> 引用的数据集编号
+        type --> 展示的图表类型
+        允许多个数据集,多个系列,这种多对多的关系允许我们最大限度的对数据进行可视化展示.
+    支持我们修改轴线,刻度,刻度标签
+    series.pie
+        radius --> 半径
+        center --> 圆心
+    每个series都是一个单独的图
+    图例是辅助用户理解图表内容的工具
 input type='file' --> 就会变成读取文件的形式
 
 git 既可以切换到指定的分支,也可以切换到指定的提交,如果切换到指定的提交,它就是处于detached状态
@@ -1160,6 +1185,29 @@ Echarts:
         tooltip -- 提示框组件
             tooltip.trigger -- 触发方式
         使用transform进行数据转换
+    axisPointer --> 坐标轴指示器配置项
+    xAxis
+        boundaryGap --> 坐标轴两边留白策略
+            类目轴中值为true或者false
+            非类目轴中为具有两个值的数组
+        splitArea -->
+            坐标轴在grid区域中的分割区域
+            直角坐标系内绘图网络
+            show
+                控制了在grid x轴上分隔开的区域是否显示
+        splitline -->
+            show
+                控制了在grid 上是否显示分隔线
+    grid --> 在Echart3 中可以存在任意多个grid组件
+    legend --> 图例组件
+    axisLabel --> 坐标轴刻度标签的相关设置
+    tooltip[0,1,2,3,4] --> 在tooltip提示框中展示0,1,2,3,4维度的信息
+    encode --> 将指定维度映射到指定的数轴上(如x轴或者y轴) --> 可以使用维度名称,或者使用维度索引(从0开始)
+    dimensions
+        ordinal --> 离散型(如果类型没有被定义,则会自动猜测其类型)
+    
+    数据可视化是数据到视觉元素的映射过程(视觉编码)
+    
 el-row --> gutter --> 栅格间隔
 
 debouncing for JavaScript
@@ -1190,3 +1238,27 @@ the difference between var and let
 JavaScript String
     split -- string to array
     join -- array to string
+
+这一点要时刻记在心中 --> js 是单线程的
+    浏览器内核是多线程的
+
+SQL
+    Relational Database.
+    a database is an organized collection of data
+    operational database and analytical database
+        operational database:
+            used to collect, modify, and maintain data on a day to day basis --> dynamic
+        analytical database:
+    database can be divided into operational database and analytical database.
+    数据库是基于集合论和一阶谓词逻辑实现的
+    Relational Database Systems
+        RDBMS --> relational database management system.
+            PC-based RDBMS
+        a centrally located database.
+        and then big data bang! --> data warehouse --> store data in the cloud.
+
+Algorithm
+    before they were computers, they were algorithms
+    a computational procedure.
+    input and output
+    Is for computational porblem.
