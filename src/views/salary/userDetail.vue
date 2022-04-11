@@ -55,9 +55,6 @@
             <el-button type="primary" size="small" icon="el-icon-user" title="添加新用户" @click="handleAddUser" />
             <el-button type="primary" size="small" icon="el-icon-download" title="数据导出" />
             <!-- input type="file" 点击然后取消时,有概率出现浏览器卡死的情况 -->
-            <el-button type="primary" size="small" icon="el-icon-upload2">
-              <input ref="upload" class="myinput" type="file" accept=".xlsx" @focus="importExcel">
-            </el-button>
             <el-button type="primary" size="small" icon="el-icon-view" title="数据可视化" />
           </el-button-group>
         </template>
@@ -70,3 +67,10 @@
     </el-table>
   </div>
 </template>
+
+<script>
+export default {
+  components: {
+  }
+}
+</script>

@@ -62,7 +62,7 @@ export default {
     },
     handleClick(e) {
       const files = e.target.files
-      const rawFile = files[0] // only use files[0]
+      const rawFile = files[0] // only use files[0] 获得第一个文件
       if (!rawFile) return
       this.upload(rawFile)
     },
@@ -81,7 +81,11 @@ export default {
     readerData(rawFile) {
       this.loading = true
       return new Promise((resolve, reject) => {
+        var time = new Date()
         const reader = new FileReader()
+        /**
+         * 该事件在读取完成时触发
+         */
         reader.onload = e => {
           const data = e.target.result
           const workbook = XLSX.read(data, { type: 'array' })
@@ -89,8 +93,11 @@ export default {
           const worksheet = workbook.Sheets[firstSheetName]
           const header = this.getHeaderRow(worksheet)
           const results = XLSX.utils.sheet_to_json(worksheet)
-          this.generateData({ header, results })
+          console.log(header)
+          console.log(results)
+          // this.generateData({ header, results })
           this.loading = false
+          console.log(new Date() - time)
           resolve()
         }
         reader.readAsArrayBuffer(rawFile)

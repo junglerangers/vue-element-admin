@@ -42,7 +42,7 @@
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" justify="center" align="center">
+    <el-col :xs="12" :sm="12" :lg="6" justify="center" align="center" style="height:108px">
       <div>
         <el-button type="primary" round @click="updateUsersInfo">更新人员信息</el-button>
       </div>
@@ -117,7 +117,9 @@ export default {
   .card-panel-col {
     margin-bottom: 32px;
   }
-
+  .el-button{
+    box-shadow: 0 3px 10px #333;
+  }
   .card-panel {
     height: 108px;
     cursor: pointer;
@@ -126,7 +128,7 @@ export default {
     overflow: hidden;
     color: #666;
     background: #fff;
-    box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
+    box-shadow: 0 3px 10px #333;
     border-color: rgba(0, 0, 0, .05);
 
     &:hover {

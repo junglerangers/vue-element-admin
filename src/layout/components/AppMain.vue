@@ -1,5 +1,6 @@
 <template>
   <section class="app-main">
+    <vue-canvas-nest />
     <transition name="fade-transform" mode="out-in"><!--动画,过渡先出后进-->
       <keep-alive :include="cachedViews"><!--包裹的组件将会被缓存,不会重新渲染.include只有匹配的组件才会被缓存-->
         <router-view :key="key" /><!--路由出口.这里key的作用是保证所有页面都会被重新加载-->
@@ -9,8 +10,12 @@
 </template>
 
 <script>
+import vueCanvasNest from 'vue-canvas-nest'
 export default {
   name: 'AppMain',
+  components: {
+    vueCanvasNest
+  },
   computed: {
     cachedViews() {
       return this.$store.state.tagsView.cachedViews

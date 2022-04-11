@@ -23,7 +23,7 @@
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <img :src="avatarURL" class="user-avatar">
           <p class="avatar-tip">[名字]-[角色],欢迎您!</p>
           <i class="el-icon-caret-bottom" />
         </div>
@@ -48,6 +48,7 @@ import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
+import * as localAvatar from '@/assets/images/avatar16.png'
 
 export default {
   components: {
@@ -57,6 +58,11 @@ export default {
     Screenfull,
     SizeSelect,
     Search
+  },
+  data() {
+    return {
+      avatarURL: localAvatar.default
+    }
   },
   computed: {
     ...mapGetters([

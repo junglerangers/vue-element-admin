@@ -13,6 +13,10 @@ export default {
       default: ''
     }
   },
+  /**
+   * 如果传进来的icon是el-icon的,就直接使用其原本的方式
+   * 如果不是,就用自定义组件svg-item包裹一下
+   */
   render(h, context) { // 渲染函数
     const { icon, title } = context.props
     const vnodes = []

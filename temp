@@ -1283,3 +1283,20 @@ fun(...args) 的含义
 3.在遇到问题时,不停不停的尝试真是太浪费时间了(适当的尝试是值得提倡的),可以考虑去看一下源码,或者重新学习一下这方面的知识.
 
 element-ui 将每一行分为了24个列
+
+one div element is used for block-level organization and
+one span element is used for inline organization
+
+FlexBox Way is an efficient way to manage.
+so, flexbox is better.
+flexbox is dynamic
+give the container the ability to alter items width/height
+    some must be set on  container(parent)
+    some must be set on item(children)
+
+align-item is set on cross-axis
+
+css
+    如果float:right
+    并且container的右边已经没有足够的空间放下这个float:right的控件
+    那么float:right就会另起一行,然后float:right

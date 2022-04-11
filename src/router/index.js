@@ -79,7 +79,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '仪表盘', icon: 'dashboard', affix: true }// affix如果设置为true,则标签将附加在视图上进行展示
+        meta: { title: '仪表盘', icon: 'dashboard3', affix: true }// affix如果设置为true,则标签将附加在视图上进行展示
       }
     ]
   },
@@ -113,7 +113,7 @@ export const asyncRoutes = [
     name: 'users',
     meta: {
       title: '用户模块',
-      icon: 'lock',
+      icon: 'users',
       roles: ['admin']
     },
     children: [
@@ -123,7 +123,7 @@ export const asyncRoutes = [
         name: 'usersManage',
         meta: {
           title: '用户管理',
-          icon: 'lock',
+          icon: 'num1',
           roles: ['admin']
         }
       }
@@ -137,7 +137,7 @@ export const asyncRoutes = [
     name: 'salary',
     meta: {
       title: '薪酬管理',
-      icon: 'lock',
+      icon: 'salary-icon',
       roles: ['admin']
     },
     children: [
@@ -147,7 +147,7 @@ export const asyncRoutes = [
         name: 'salaryList',
         meta: {
           title: '薪酬总览',
-          icon: 'lock',
+          icon: 'num1',
           roles: ['admin']
         }
       },
@@ -157,7 +157,7 @@ export const asyncRoutes = [
         name: 'salaryUserDetail',
         meta: {
           title: '薪酬个人明细',
-          icon: 'lock',
+          icon: 'num2',
           roles: ['admin']
         }
       },
@@ -167,7 +167,7 @@ export const asyncRoutes = [
         name: 'salaryTermList',
         meta: {
           title: '薪酬每期明细',
-          icon: 'lock',
+          icon: 'num3',
           roles: ['admin']
         }
       }
@@ -181,7 +181,7 @@ export const asyncRoutes = [
     name: 'Permission',
     meta: {
       title: '权限控制',
-      icon: 'lock',
+      icon: 'biz-permission',
       roles: ['admin'] // you can set roles in root nav
     },
     children: [
@@ -190,6 +190,7 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/role'),
         name: 'RolePermission',
         meta: {
+          icon: 'num1',
           title: '角色控制',
           roles: ['admin']
         }
@@ -204,7 +205,7 @@ export const asyncRoutes = [
     name: 'formular',
     meta: {
       title: '公式管理',
-      icon: 'lock',
+      icon: 'formular',
       roles: ['admin']
     },
     children: [
@@ -214,7 +215,7 @@ export const asyncRoutes = [
         name: 'formularIndex',
         meta: {
           title: '公式一览',
-          icon: 'lock',
+          icon: 'num1',
           roles: ['admin']
         }
       },
@@ -224,7 +225,7 @@ export const asyncRoutes = [
         name: 'formularDetail',
         meta: {
           title: '公式详情',
-          icon: 'lock',
+          icon: 'num2',
           roles: ['admin']
         }
       }
