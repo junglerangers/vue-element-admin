@@ -118,7 +118,7 @@ export default {
     margin-bottom: 32px;
   }
   .el-button{
-    box-shadow: 0 3px 10px #333;
+    box-shadow: -2px 3px 3px 0px #333;
   }
   .card-panel {
     height: 108px;
@@ -128,7 +128,7 @@ export default {
     overflow: hidden;
     color: #666;
     background: #fff;
-    box-shadow: 0 3px 10px #333;
+    box-shadow: -6px 7px 10px 0px #333;
     border-color: rgba(0, 0, 0, .05);
 
     &:hover {
