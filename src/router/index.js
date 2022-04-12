@@ -152,22 +152,32 @@ export const asyncRoutes = [
         }
       },
       {
-        path: 'userDetail',
-        component: () => import('@/views/salary/userDetail'),
-        name: 'salaryUserDetail',
-        meta: {
-          title: '薪酬个人明细',
-          icon: 'num2',
-          roles: ['admin']
-        }
-      },
-      {
         path: 'termList',
         component: () => import('@/views/salary/termList'),
         name: 'salaryTermList',
         meta: {
           title: '薪酬每期明细',
+          icon: 'num2',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'userDetail',
+        component: () => import('@/views/salary/userDetail'),
+        name: 'salaryUserDetail',
+        meta: {
+          title: '薪酬个人明细',
           icon: 'num3',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'salaryCategory',
+        component: () => import('@/views/salary/salaryCategory'),
+        name: 'salaryCategory',
+        meta: {
+          title: '薪酬类别表',
+          icon: 'num4',
           roles: ['admin']
         }
       }

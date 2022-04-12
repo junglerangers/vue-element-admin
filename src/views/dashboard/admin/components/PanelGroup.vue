@@ -56,7 +56,7 @@
 <script>
 import CountTo from 'vue-count-to'
 import { mapActions } from 'vuex'
-import { test } from '@/api/test'
+import { getGridList } from '@/api/codeDict'
 
 export default {
   components: {
@@ -109,7 +109,10 @@ export default {
     },
     test() {
       console.log('This is test')
-      test()
+      var params = {
+        decode: '0101'
+      }
+      getGridList(params).then(data => console.log(data))
     }
   }
 }
