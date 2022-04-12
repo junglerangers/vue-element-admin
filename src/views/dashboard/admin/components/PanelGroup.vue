@@ -47,7 +47,7 @@
         <el-button type="primary" round @click="updateUsersInfo">更新人员信息</el-button>
       </div>
       <div>
-        <el-button type="primary" class="margin20" round>更新部门信息</el-button>
+        <el-button type="primary" class="margin20" round @click="test">更新部门信息</el-button>
       </div>
     </el-col>
   </el-row>
@@ -56,6 +56,7 @@
 <script>
 import CountTo from 'vue-count-to'
 import { mapActions } from 'vuex'
+import { test } from '@/api/test'
 
 export default {
   components: {
@@ -105,6 +106,10 @@ export default {
         task.taskState = '已经完成'
         this.changeEventState(task)
       })
+    },
+    test() {
+      console.log('This is test')
+      test()
     }
   }
 }
