@@ -11,7 +11,6 @@
       element-loading-background="rgba(0, 0, 0, 0.8)"
       :data="userList"
       class="table"
-      cell-class-name="tableCellClass"
       border
     >
       <el-table-column align="center" label="工号" width="200">
@@ -129,9 +128,4 @@ export default {
 .margin20{
   margin: 0 20px;
 }
-.tableCellClass{
-  padding: 0px!important;
-}
 </style>
-
-    Search

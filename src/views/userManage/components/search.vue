@@ -8,7 +8,6 @@
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="工号">工号</el-dropdown-item>
-            <el-dropdown-item command="科室">科室</el-dropdown-item>
             <el-dropdown-item command="姓名">姓名</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -42,13 +41,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="参加工作时间" class="timePicker">
-          <el-col :span="11">
-            <el-date-picker type="month" placeholder="开始时间" style="width: 100%;" />
-          </el-col>
-          <el-col class="line center" :span="2">-</el-col>
-          <el-col :span="11">
-            <el-time-picker type="month" placeholder="结束时间" style="width: 100%;" />
-          </el-col>
+          <el-date-picker
+            v-model="value1"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+          />
         </el-form-item>
         <el-form-item label="活动区域">
           <el-select v-model="test" placeholder="活动区域">

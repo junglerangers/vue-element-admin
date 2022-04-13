@@ -1,6 +1,6 @@
 <template>
   <el-dialog :visible.sync="localDialogVisible" :before-close="handleClose">
-    <el-descriptions class="margin-top" title="人员详细信息" :column="4" size="small" border>
+    <el-descriptions class="margin-top" title="人员详细信息" :column="4" size="mini" border>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
@@ -169,7 +169,7 @@
           <i class="el-icon-location-outline" />
           人员性质
         </template>
-        <el-select v-model="test" placeholder="请选择" size="mini">
+        <el-select v-model="test" placeholder="请选择" size="mini" style="width:90px">
           <el-option key="1" value="1" label="不区分" />
           <el-option key="2" value="2" label="儿童" />
         </el-select>
@@ -179,12 +179,12 @@
           <i class="el-icon-tickets" />
           备注
         </template>
-        <el-input />
+        <el-input v-model="test" :readonly="false" />
       </el-descriptions-item>
     </el-descriptions>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="toggleDialogVisible">取 消</el-button>
-      <el-button type="primary" @click="userRequest">确 定</el-button>
+      <el-button type="primary" @click="userRequest">保 存</el-button>
+      <el-button @click="toggleDialogVisible">关 闭</el-button>
     </span>
   </el-dialog>
 </template>

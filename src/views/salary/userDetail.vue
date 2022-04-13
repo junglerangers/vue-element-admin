@@ -13,7 +13,6 @@
       element-loading-background="rgba(0, 0, 0, 0.8)"
       :data="userList"
       class="table"
-      cell-class-name="tableCellClass"
       border
     >
       <el-table-column align="center" label="工号" width="200">
