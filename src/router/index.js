@@ -290,6 +290,24 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/test',
+    component: Layout,
+    redirect: '/test/one',
+    name: 'test',
+    meta: {
+      title: 'excel',
+      icon: 'excel'
+    },
+    children: [
+      {
+        path: 'one',
+        component: () => import('@/views/salary/components/userDialog'),
+        name: 'testone',
+        meta: { title: 'test' }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

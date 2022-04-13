@@ -66,7 +66,7 @@ export default {
       if (!rawFile) return
       this.upload(rawFile)
     },
-    upload(rawFile) {
+    async upload(rawFile) {
       this.$refs['excel-upload-input'].value = null // fix can't select the same excel
 
       if (!this.beforeUpload) {
@@ -75,7 +75,7 @@ export default {
       }
       const before = this.beforeUpload(rawFile)
       if (before) {
-        this.readerData(rawFile)
+        await this.readerData(rawFile)
       }
     },
     readerData(rawFile) {
