@@ -65,6 +65,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <div class="block footer" :style="{width:footerWidth}">
+      <el-pagination
+        :current-page.sync="pageHandler.currentPage"
+        :page-sizes="[20,100,200,400]"
+        :page-size="pageHandler.records"
+        layout="sizes, prev, pager, next"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -99,6 +110,7 @@ export default {
   },
   computed: {
     currentIndex: function() {
+      console.log(this.currentPage)
       return this.pageHandler.size * (this.currentPage - 1) + 1
     }
   },
@@ -111,7 +123,8 @@ export default {
       const res = await getGridList(this.seaerchHandler)
       console.log(res)
       this.salaryList = res.data
-      this.pageHandler = res.pageHandler
+      this.pageHandler.records = res.pageHandler.records
+      this.pageHandler.currentPage = 1
       this.loading = false
     },
     handleEdit(scope) {
@@ -122,7 +135,29 @@ export default {
     },
     handleDelete(scope) {
 
+    },
+    handleSizeChange(val) {
+      this.currentPage = 1
+      this.size = val
+      // this.getUserList()
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val
+      // this.getUserList()
     }
   }
 }
 </script>
+
+<style lang="scss">
+  .footer{
+  position: fixed;
+  bottom: 0;
+  /* width: 100%; */
+  /* line-height: var(--footer-height); */
+  background: #304156;
+  text-align: center;
+  transition: all 0.8s;
+  /* color: #fff; */
+}
+</style>

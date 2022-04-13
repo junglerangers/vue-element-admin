@@ -197,3 +197,14 @@ aside {
 .multiselect--active {
   z-index: 1000 !important;
 }
+
+.trt_fixed_footer{
+  position: fixed;
+  bottom: 0;
+  /* width: 100%; */
+  /* line-height: var(--footer-height); */
+  background: #304156;
+  text-align: center;
+  transition: all 0.8s;
+  /* color: #fff; */
+}

@@ -2,7 +2,7 @@
   <div>
     <el-button @click="togglevisible">test</el-button>
     <el-dialog :visible.sync="visible">
-      <div class="app-container">
+      <div class="userdialog-container">
         <div class="header">
           个人收入明细
         </div>
@@ -84,7 +84,7 @@ export default {
 </script>
 
 <style lang="scss">
-.app-container{
+.userdialog-container{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

@@ -1,8 +1,10 @@
 <template>
   <div class="app-container">
-    可以看到一个人每一期的详细信息
-    每一个人的详细信息列表(竖着的三列)
+    <div>
+      可以看到一个人每一期的详细信息
+      每一个人的详细信息列表(竖着的三列)
     <!-- 每一个人的详细信息为一条记录 -->
+    </div>
     <el-table
       id="mytable"
       v-loading="loading"
