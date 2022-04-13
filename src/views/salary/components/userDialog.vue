@@ -83,7 +83,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .userdialog-container{
     display: flex;
     flex-direction: row;

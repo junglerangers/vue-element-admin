@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import { getGridList } from '@/api/salary'
+// import { getGridList } from '@/api/salary'
 
 export default {
   components: {
@@ -119,13 +119,13 @@ export default {
   },
   methods: {
     async getSalaryList() {
-      this.loading = true
-      const res = await getGridList(this.seaerchHandler)
-      console.log(res)
-      this.salaryList = res.data
-      this.pageHandler.records = res.pageHandler.records
-      this.pageHandler.currentPage = 1
-      this.loading = false
+      // this.loading = true
+      // const res = await getGridList(this.seaerchHandler)
+      // console.log(res)
+      // this.salaryList = res.data
+      // this.pageHandler.records = res.pageHandler.records
+      // this.pageHandler.currentPage = 1
+      // this.loading = false
     },
     handleEdit(scope) {
 
@@ -149,7 +149,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .footer{
   position: fixed;
   bottom: 0;

@@ -170,7 +170,7 @@ export default {
 }
 </script>
 
-<style lang ='scss'>
+<style lang ='scss' scoped>
 .table{
   margin-bottom: 30px;
   margin-top: 30px;

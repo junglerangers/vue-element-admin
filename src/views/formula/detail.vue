@@ -288,7 +288,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .inputFormular{
     margin-top: 20px;
     margin-bottom: 20px;

@@ -112,7 +112,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .el-select .el-input{
   width: 180px;
 }
