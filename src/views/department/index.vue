@@ -19,39 +19,39 @@
       border
     >
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="center" label="薪酬类型代码" width="100">
+      <el-table-column align="center" label="科室编号" width="100">
         <template slot-scope="scope">
-          {{ scope.row.DCODE }}
+          {{ scope.row.DEPT_CODE }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="薪酬类型" width="100">
+      <el-table-column align="center" label="科室名称" width="200">
         <template slot-scope="scope">
-          {{ scope.row.DNAME }}
+          {{ scope.row.DEPT_NAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="年份" width="100">
+      <el-table-column align="center" label="上级科室编号" width="100">
         <template slot-scope="scope">
-          {{ scope.row.YEARNO }}
+          {{ scope.row.SUPER_CODE }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="月份" width="100">
+      <el-table-column align="center" label="科室层级" width="100">
         <template slot-scope="scope">
-          {{ scope.row.MONTHNO }}
+          {{ scope.row.DEPT_LEVEL }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建人员" width="100">
+      <el-table-column align="center" label="生效日期" width="100">
         <template slot-scope="scope">
-          {{ scope.row.CREATEUSER }}
+          {{ scope.row.BEGINDATE| timeFormatter }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建日期" width="100">
+      <el-table-column align="center" label="失效日期" width="100">
         <template slot-scope="scope">
-          {{ scope.row.CREATEDATE| timeFormatter }}
+          {{ scope.row.ENDDATE| timeFormatter }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="停用标志" width="100">
         <template slot-scope="scope">
-          {{ scope.row.ISDEL }}
+          {{ scope.row.IS_STOP }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="锁定标志" width="100">
@@ -72,7 +72,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <salaryTypeDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
+    <localDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -89,16 +89,16 @@
 </template>
 
 <script>
-import { getMstPageQuery } from '@/api/salary'
-import { search, salaryTypeDialog } from './components'
-import * as defaultModel from '@/dataModel/SalaryTypeModel'
+import { getGridList, getTreeList, localUpdate, localDelete, localAdd, pageQuery } from '@/api/department'
+import { search, localDialog } from './components'
+import * as defaultModel from '@/dataModel/CodeDictModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 
 export default {
   components: {
     search,
-    salaryTypeDialog
+    localDialog
   },
   mixins: [resize, tablePage],
   data: function() {
@@ -110,13 +110,13 @@ export default {
       dataList: [], // 所有数据列表
       total: 0, // 数据总数量
       searchModel: {
-        'autoid': '',
-        'dcode': '',
-        'yearno': '',
-        'monthno': '',
-        'num': '',
-        'islock': '',
-        'remark': ''
+        'depT_CODE': 'string',
+        'depT_NAME': 'string',
+        'iS_STOP': 'string',
+        'spelL_CODE': 'string',
+        'wbX_CODE': 'string',
+        'supeR_CODE': 'string',
+        'monthNo': new Date()
       }
     }
   },
@@ -149,13 +149,15 @@ export default {
       this.loading = true
       var temp = {
         'queryModel': {
+          'monthNo': '2022-04'
         },
         'pageHandler': {
           'size': this.page_size,
           'currentPage': this.page_currentPage
         }
       }
-      const res = await getMstPageQuery(temp)
+      console.log(temp)
+      const res = await pageQuery(temp)
       console.log(res.data)
       this.dataList = res.data
       this.total = res.pageHandler.records

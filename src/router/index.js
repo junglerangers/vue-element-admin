@@ -109,10 +109,9 @@ export const asyncRoutes = [
     path: '/users',
     component: Layout,
     redirect: '/users/index',
-    alwaysShow: true,
     name: 'users',
     meta: {
-      title: '用户模块',
+      title: '员工模块',
       icon: 'users',
       roles: ['admin']
     },
@@ -122,8 +121,31 @@ export const asyncRoutes = [
         component: () => import('@/views/userManage/index'),
         name: 'usersManage',
         meta: {
-          title: '用户管理',
-          icon: 'num1',
+          title: '员工管理',
+          icon: 'users',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/department',
+    component: Layout,
+    redirect: '/department/index',
+    name: 'department',
+    meta: {
+      title: '部门模块',
+      icon: 'department',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/department/index'),
+        name: 'departmentManage',
+        meta: {
+          title: '部门管理',
+          icon: 'department',
           roles: ['admin']
         }
       }
@@ -146,67 +168,34 @@ export const asyncRoutes = [
         component: () => import('@/views/salary/index'),
         name: 'salaryList',
         meta: {
-          title: '薪酬总览',
+          title: '工资单主表',
           icon: 'num1',
           roles: ['admin']
         }
       },
       {
-        path: 'termList',
-        component: () => import('@/views/salary/termList'),
-        name: 'salaryTermList',
+        path: 'salaryDetail',
+        component: () => import('@/views/salary/salaryDetail'),
+        name: 'salaryDetail',
         meta: {
-          title: '薪酬每期明细',
+          title: '工资单明细表',
           icon: 'num2',
           roles: ['admin']
         }
       },
       {
-        path: 'userDetail',
-        component: () => import('@/views/salary/userDetail'),
-        name: 'salaryUserDetail',
+        path: 'salaryType',
+        component: () => import('@/views/salary/salaryType'),
+        name: 'salaryType',
         meta: {
-          title: '薪酬个人明细',
+          title: '薪酬类别表',
           icon: 'num3',
           roles: ['admin']
         }
-      },
-      {
-        path: 'salaryCategory',
-        component: () => import('@/views/salary/salaryCategory'),
-        name: 'salaryCategory',
-        meta: {
-          title: '薪酬类别表',
-          icon: 'num4',
-          roles: ['admin']
-        }
       }
     ]
   },
-  {
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/role',
-    alwaysShow: true, // will always show the root menu
-    name: 'Permission',
-    meta: {
-      title: '权限控制',
-      icon: 'biz-permission',
-      roles: ['admin'] // you can set roles in root nav
-    },
-    children: [
-      {
-        path: 'role',
-        component: () => import('@/views/permission/role'),
-        name: 'RolePermission',
-        meta: {
-          icon: 'num1',
-          title: '角色控制',
-          roles: ['admin']
-        }
-      }
-    ]
-  },
+
   {
     path: '/formular',
     component: Layout,
@@ -241,73 +230,154 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/report',
+    component: Layout,
+    redirect: '/report/reportList',
+    alwaysShow: true,
+    name: 'report',
+    meta: {
+      title: '报表模块',
+      icon: 'Report',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'reportList',
+        component: () => import('@/views/report/reportList'),
+        name: 'reportList',
+        meta: {
+          title: '报表一览',
+          icon: 'num1',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'reporDetail',
+        component: () => import('@/views/report/report'),
+        name: 'reportDetail',
+        meta: {
+          title: '报表详情',
+          icon: 'num2',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  // {
+  //   path: '/permission',
+  //   component: Layout,
+  //   redirect: '/permission/role',
+  //   alwaysShow: true, // will always show the root menu
+  //   name: 'Permission',
+  //   meta: {
+  //     title: '权限控制',
+  //     icon: 'biz-permission',
+  //     roles: ['admin'] // you can set roles in root nav
+  //   },
+  //   children: [
+  //     {
+  //       path: 'role',
+  //       component: () => import('@/views/permission/role'),
+  //       name: 'RolePermission',
+  //       meta: {
+  //         icon: 'num1',
+  //         title: '角色控制',
+  //         roles: ['admin']
+  //       }
+  //     }
+  //   ]
+  // },
+  {
+    path: '/codeDict',
+    component: Layout,
+    redirect: '/codeDict/index',
+    name: 'codeDict',
+    meta: {
+      title: '字典模块',
+      icon: 'codeDict',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/codeDict/index'),
+        name: 'codeDictIndex',
+        meta: {
+          title: '字典管理',
+          icon: 'codeDict',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
   /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,
   // chartsRouter,
   // nestedRouter,
   // tableRouter,
 
-  {
-    path: '/error',
-    component: Layout,
-    redirect: 'noRedirect',
-    name: 'ErrorPages',
-    meta: {
-      title: 'Error Pages',
-      icon: '404'
-    },
-    children: [
-      {
-        path: '401',
-        component: () => import('@/views/error-page/401'),
-        name: 'Page401',
-        meta: { title: '401', noCache: true }
-      },
-      {
-        path: '404',
-        component: () => import('@/views/error-page/404'),
-        name: 'Page404',
-        meta: { title: '404', noCache: true }
-      }
-    ]
-  },
+  // {
+  //   path: '/error',
+  //   component: Layout,
+  //   redirect: 'noRedirect',
+  //   name: 'ErrorPages',
+  //   meta: {
+  //     title: 'Error Pages',
+  //     icon: '404'
+  //   },
+  //   children: [
+  //     {
+  //       path: '401',
+  //       component: () => import('@/views/error-page/401'),
+  //       name: 'Page401',
+  //       meta: { title: '401', noCache: true }
+  //     },
+  //     {
+  //       path: '404',
+  //       component: () => import('@/views/error-page/404'),
+  //       name: 'Page404',
+  //       meta: { title: '404', noCache: true }
+  //     }
+  //   ]
+  // },
 
-  {
-    path: '/excel',
-    component: Layout,
-    redirect: '/excel/export-excel',
-    name: 'Excel',
-    meta: {
-      title: 'Excel',
-      icon: 'excel'
-    },
-    children: [
-      {
-        path: 'upload-excel',
-        component: () => import('@/views/excel/upload-excel'),
-        name: 'UploadExcel',
-        meta: { title: 'Upload Excel' }
-      }
-    ]
-  },
-  {
-    path: '/test',
-    component: Layout,
-    redirect: '/test/one',
-    name: 'test',
-    meta: {
-      title: 'excel',
-      icon: 'excel'
-    },
-    children: [
-      {
-        path: 'one',
-        component: () => import('@/views/salary/components/userDialog'),
-        name: 'testone',
-        meta: { title: 'test' }
-      }
-    ]
-  },
+  // {
+  //   path: '/excel',
+  //   component: Layout,
+  //   redirect: '/excel/export-excel',
+  //   name: 'Excel',
+  //   meta: {
+  //     title: 'Excel',
+  //     icon: 'excel'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'upload-excel',
+  //       component: () => import('@/views/excel/upload-excel'),
+  //       name: 'UploadExcel',
+  //       meta: { title: 'Upload Excel' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/test',
+  //   component: Layout,
+  //   redirect: '/test/one',
+  //   name: 'test',
+  //   meta: {
+  //     title: 'excel',
+  //     icon: 'excel'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'one',
+  //       component: () => import('@/views/salary/components/userDialog'),
+  //       name: 'testone',
+  //       meta: { title: 'test' }
+  //     }
+  //   ]
+  // },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

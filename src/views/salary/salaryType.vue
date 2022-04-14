@@ -29,29 +29,24 @@
           {{ scope.row.DNAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="年份" width="100">
+      <el-table-column align="center" label="类别编码" width="100">
         <template slot-scope="scope">
-          {{ scope.row.YEARNO }}
+          {{ scope.row.TCODE }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="月份" width="100">
+      <el-table-column align="center" label="类别名称" width="100">
         <template slot-scope="scope">
-          {{ scope.row.MONTHNO }}
+          {{ scope.row.TNAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建人员" width="100">
+      <el-table-column align="center" label="生效日期" width="100">
         <template slot-scope="scope">
-          {{ scope.row.CREATEUSER }}
+          {{ scope.row.BEGINDATE| timeFormatter }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建日期" width="100">
+      <el-table-column align="center" label="失效日期" width="100">
         <template slot-scope="scope">
-          {{ scope.row.CREATEDATE| timeFormatter }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="停用标志" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.ISDEL }}
+          {{ scope.row.ENDDATE| timeFormatter }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="锁定标志" width="100">
@@ -89,7 +84,7 @@
 </template>
 
 <script>
-import { getMstPageQuery } from '@/api/salary'
+import { getGridList, getTreeList, localUpdate, localDelete, localAdd, pageQuery } from '@/api/salaryType'
 import { search, salaryTypeDialog } from './components'
 import * as defaultModel from '@/dataModel/SalaryTypeModel'
 import resize from '@/mixins/resize'
@@ -110,13 +105,14 @@ export default {
       dataList: [], // 所有数据列表
       total: 0, // 数据总数量
       searchModel: {
-        'autoid': '',
         'dcode': '',
-        'yearno': '',
-        'monthno': '',
-        'num': '',
-        'islock': '',
-        'remark': ''
+        'tcode': '',
+        'tname': '',
+        'remark': '',
+        'supercode': '',
+        'formula': '',
+        'monthNo': new Date(),
+        'islock': ''
       }
     }
   },
@@ -149,14 +145,16 @@ export default {
       this.loading = true
       var temp = {
         'queryModel': {
+          'monthNo': '2022-04'
         },
         'pageHandler': {
           'size': this.page_size,
           'currentPage': this.page_currentPage
         }
       }
-      const res = await getMstPageQuery(temp)
-      console.log(res.data)
+      console.log(temp)
+      const res = await pageQuery(temp)
+      // console.log(res.data)
       this.dataList = res.data
       this.total = res.pageHandler.records
       this.loading = false

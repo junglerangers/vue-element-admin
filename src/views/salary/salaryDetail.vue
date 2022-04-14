@@ -1,3 +1,4 @@
+
 <template>
   <div ref="main" class="app-container">
     <div class="block">
@@ -19,44 +20,44 @@
       border
     >
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="center" label="薪酬类型代码" width="100">
+      <el-table-column align="center" label="科室" width="100">
         <template slot-scope="scope">
-          {{ scope.row.DCODE }}
+          {{ scope.row.DEPT_NAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="薪酬类型" width="100">
+      <el-table-column align="center" label="姓名" width="100">
         <template slot-scope="scope">
-          {{ scope.row.DNAME }}
+          {{ scope.row.ENAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="年份" width="100">
+      <el-table-column align="center" label="工号" width="100">
         <template slot-scope="scope">
-          {{ scope.row.YEARNO }}
+          {{ scope.row.ENUM }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="月份" width="100">
+      <el-table-column align="center" label="人员类型" width="100">
         <template slot-scope="scope">
-          {{ scope.row.MONTHNO }}
+          {{ scope.row.KIND_NAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建人员" width="100">
+      <el-table-column align="center" label="工作类型" width="100">
         <template slot-scope="scope">
-          {{ scope.row.CREATEUSER }}
+          {{ scope.row.EMP_CLASSNAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建日期" width="100">
+      <el-table-column align="center" label="应发合计" width="100">
         <template slot-scope="scope">
-          {{ scope.row.CREATEDATE| timeFormatter }}
+          {{ scope.row.T01 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="停用标志" width="100">
+      <el-table-column align="center" label="扣款合计" width="100">
         <template slot-scope="scope">
-          {{ scope.row.ISDEL }}
+          {{ scope.row.T02 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="锁定标志" width="100">
+      <el-table-column align="center" label="实发合计" width="100">
         <template slot-scope="scope">
-          {{ scope.row.ISLOCK }}
+          {{ scope.row.T03 }}
         </template>
       </el-table-column>
       <el-table-column align="center">
@@ -89,7 +90,7 @@
 </template>
 
 <script>
-import { getMstPageQuery } from '@/api/salary'
+import { getSlvPageQuery } from '@/api/salary'
 import { search, salaryTypeDialog } from './components'
 import * as defaultModel from '@/dataModel/SalaryTypeModel'
 import resize from '@/mixins/resize'
@@ -110,13 +111,14 @@ export default {
       dataList: [], // 所有数据列表
       total: 0, // 数据总数量
       searchModel: {
-        'autoid': '',
         'dcode': '',
-        'yearno': '',
-        'monthno': '',
-        'num': '',
-        'islock': '',
-        'remark': ''
+        'tcode': '',
+        'tname': '',
+        'remark': '',
+        'supercode': '',
+        'formula': '',
+        'monthNo': new Date(),
+        'islock': ''
       }
     }
   },
@@ -149,14 +151,16 @@ export default {
       this.loading = true
       var temp = {
         'queryModel': {
+          'mstid': '5'
+
         },
         'pageHandler': {
           'size': this.page_size,
           'currentPage': this.page_currentPage
         }
       }
-      const res = await getMstPageQuery(temp)
-      console.log(res.data)
+      console.log(temp)
+      const res = await getSlvPageQuery(temp)
       this.dataList = res.data
       this.total = res.pageHandler.records
       this.loading = false

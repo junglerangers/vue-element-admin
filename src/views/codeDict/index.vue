@@ -1,12 +1,6 @@
 <template>
   <div ref="main" class="app-container">
-    <div class="block">
-      <el-date-picker
-        v-model="searchModel.monthNo"
-        type="month"
-        placeholder="请选择相应月份"
-      />
-    </div>
+    <svg-icon icon-class="scale_white" />
     <search @search="searchHandler" />
     <el-table
       id="mytable"
@@ -19,44 +13,39 @@
       border
     >
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="center" label="薪酬类型代码" width="100">
+      <el-table-column align="center" label="代码ID" width="200">
         <template slot-scope="scope">
-          {{ scope.row.DCODE }}
+          {{ scope.row.dcode }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="薪酬类型" width="100">
+      <el-table-column align="center" label="代码名称" width="100">
         <template slot-scope="scope">
-          {{ scope.row.DNAME }}
+          {{ scope.row.dname }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="年份" width="100">
+      <el-table-column align="center" label="代码类别" width="100">
         <template slot-scope="scope">
-          {{ scope.row.YEARNO }}
+          {{ scope.row.supercode }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="月份" width="100">
+      <el-table-column align="center" label="系统ID" width="100">
         <template slot-scope="scope">
-          {{ scope.row.MONTHNO }}
+          {{ scope.row.syscode }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建人员" width="100">
+      <el-table-column align="center" label="创建用户" width="100">
         <template slot-scope="scope">
-          {{ scope.row.CREATEUSER }}
+          {{ scope.row.createuser }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建日期" width="100">
         <template slot-scope="scope">
-          {{ scope.row.CREATEDATE| timeFormatter }}
+          {{ scope.row.createdate| timeFormatter }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="停用标志" width="100">
+      <el-table-column align="center" label="作废判别" width="100">
         <template slot-scope="scope">
-          {{ scope.row.ISDEL }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="锁定标志" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.ISLOCK }}
+          {{ scope.row.isdel }}
         </template>
       </el-table-column>
       <el-table-column align="center">
@@ -72,7 +61,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <salaryTypeDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
+    <localDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -89,16 +78,16 @@
 </template>
 
 <script>
-import { getMstPageQuery } from '@/api/salary'
-import { search, salaryTypeDialog } from './components'
-import * as defaultModel from '@/dataModel/SalaryTypeModel'
+import { getGridList, getTreeList, localUpdate, localDelete, localAdd } from '@/api/codeDict'
+import { search, localDialog } from './components'
+import * as defaultModel from '@/dataModel/CodeDictModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 
 export default {
   components: {
     search,
-    salaryTypeDialog
+    localDialog
   },
   mixins: [resize, tablePage],
   data: function() {
@@ -110,13 +99,11 @@ export default {
       dataList: [], // 所有数据列表
       total: 0, // 数据总数量
       searchModel: {
-        'autoid': '',
-        'dcode': '',
-        'yearno': '',
-        'monthno': '',
-        'num': '',
-        'islock': '',
-        'remark': ''
+        dcode: '',
+        dname: '',
+        supercode: '',
+        syscode: '',
+        remark: ''
       }
     }
   },
@@ -147,16 +134,7 @@ export default {
       //     size: this.page_size
       //   }
       this.loading = true
-      var temp = {
-        'queryModel': {
-        },
-        'pageHandler': {
-          'size': this.page_size,
-          'currentPage': this.page_currentPage
-        }
-      }
-      const res = await getMstPageQuery(temp)
-      console.log(res.data)
+      const res = await getGridList({})
       this.dataList = res.data
       this.total = res.pageHandler.records
       this.loading = false

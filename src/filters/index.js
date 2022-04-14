@@ -70,3 +70,11 @@ export function toThousandFilter(num) {
 export function uppercaseFirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+export function timeFormatter(timeString) {
+  if (!timeString) {
+    return null
+  }
+  var date = new Date(timeString)
+  return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate()
+}
