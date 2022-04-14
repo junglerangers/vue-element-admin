@@ -1,6 +1,5 @@
 <template>
   <div ref="main" class="app-container">
-    <svg-icon icon-class="scale_white" />
     <search @search="searchHandler" />
     <el-table
       id="mytable"
@@ -55,28 +54,27 @@
             <el-button type="primary" size="small" icon="el-icon-download" title="数据导出" />
             <!-- input type="file" 点击然后取消时,有概率出现浏览器卡死的情况 -->
             <el-button type="primary" size="small" icon="el-icon-upload2">
-              <input ref="upload" class="myinput" type="file" accept=".xlsx" @focus="importExcel">
+              <input ref="upload" class="myinput" type="file" accept=".xlsx" title="数据上传" @focus="importExcel">
             </el-button>
-            <el-button type="primary" size="small" icon="el-icon-view" title="数据可视化" />
           </el-button-group>
         </template>
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
-          <el-button type="text" size="small" icon="el-icon-close" title="禁用" circle @click="handleAbandon(scope)">禁用</el-button>
+          <el-button type="text" size="small" icon="el-icon-close" title="停用" circle @click="handleAbandon(scope)">禁用</el-button>
           <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <user-dialog v-model="CurrentUser" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
+    <user-dialog v-model="CurrentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
         :page-sizes="page_sizes"
         :page-size="page_size"
         :layout="page_layout"
-        :total="total"
-        @size-change="handleSizeChange(getUserList)"
-        @current-change="handleCurrentChange(getUserList)"
+        :total="page_total"
+        @size-change="handleSizeChange(getDataList)"
+        @current-change="handleCurrentChange(getDataList)"
       />
     </div>
     <!-- 用户界面创建/编辑框 -->
@@ -86,8 +84,8 @@
 <script>
 import { getUserList } from '@/api/user'
 import { search, userDialog } from './components'
-import * as defaultUser from '@/dataModel/EmployeeModel'
-import resize from './mixins/resize'
+import * as defaultModel from '@/dataModel/EmployeeModel'
+import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 // import xlsx from 'xlsx'
 
@@ -100,12 +98,11 @@ export default {
   data: function() {
     return {
       loading: false,
-      CurrentUser: Object.assign({}, defaultUser), // 当前选中的用户
+      CurrentModel: Object.assign({}, defaultModel), // 当前选中的用户
       dialogVisible: false, // 对话框是否可见
       dialogType: 'new', // 对话框属性
-      userList: [], // 所有用户列表
-      total: 0, // 数据总数量
-      dataModel: {
+      dataList: [], // 所有用户列表
+      searchModle: {
         /** 以下为筛选条件 */
         dep: '', // 科室
         type: '', // 人员类型
@@ -115,48 +112,41 @@ export default {
     }
   },
   created() {
-    this.getUserList()
+    this.getDataList()
     // this.getDepList()
     // this.getTypeList()
   },
   beforeMount() {
     window.addEventListener('resize', this.adjustFooterWidth)
   },
-  mounted: function() {
-    const vue = this
-    setTimeout(() => {
-      this.$nextTick(function() {
-        vue.adjustFooterWidth()
-      })
-    }, 150)
-  },
   beforeDestroy() {
-    // window.removeEventListener('resize', this.adjustFooterWidth)
+    window.removeEventListener('resize', this.adjustFooterWidth)
   },
   methods: {
-    async getUserList() {
+    async getDataList() {
       var temp = {
-        ...this.dataModel,
+        ...this.searchModle,
         currentPage: this.page_currentPage,
         size: this.page_size
       }
       this.loading = true
       const res = await getUserList(temp)
       this.userList = res.data.data
-      this.total = res.data.total
+      this.page_total = res.data.total
       this.loading = false
     },
     handleAddUser() {
       this.dialogType = 'new'
+      this.CurrentModel = defaultModel
       this.dialogVisible = true
     },
     handleEdit(scope) {
       this.dialogType = 'edit'
+      this.CurrentModel = scope.row
       this.dialogVisible = true
-      console.log(this.dialogVisible)
     },
     searchHandler(searchModel) {
-      this.dataModel = { ...searchModel }
+      // this.searchModel = { ...searchModel }
       // console.log(this.dataModel)
     },
     importExcel(e) {

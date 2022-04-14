@@ -68,7 +68,7 @@
         :page-sizes="page_sizes"
         :page-size="page_size"
         :layout="page_layout"
-        :total="total"
+        :total="page_total"
         @size-change="handleSizeChange(getDataList)"
         @current-change="handleCurrentChange(getDataList)"
       />
@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { getGridList, getTreeList, localUpdate, localDelete, localAdd } from '@/api/codeDict'
+import { getGridList } from '@/api/codeDict'
 import { search, localDialog } from './components'
 import * as defaultModel from '@/dataModel/CodeDictModel'
 import resize from '@/mixins/resize'
@@ -97,7 +97,6 @@ export default {
       dialogVisible: false, // 对话框是否可见
       dialogType: 'new', // 对话框属性
       dataList: [], // 所有数据列表
-      total: 0, // 数据总数量
       searchModel: {
         dcode: '',
         dname: '',

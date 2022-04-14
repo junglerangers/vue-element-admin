@@ -48,5 +48,13 @@ export default {
         myfun()
       }
     }
+  },
+  mounted: function() {
+    const vue = this
+    setTimeout(() => {
+      this.$nextTick(function() {
+        vue.adjustFooterWidth()
+      })
+    }, 150)
   }
 }

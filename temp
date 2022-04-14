@@ -1300,3 +1300,15 @@ css
     如果float:right
     并且container的右边已经没有足够的空间放下这个float:right的控件
     那么float:right就会另起一行,然后float:right
+
+relational database.
+    table --> single specific subject
+    a table is an object or an event.
+    rows and columns
+    a row is a unique instance of the table.
+    foreign key ensure relational-level 
+    foreign key can improve query performance.
+    relationship:
+        one to one
+        one to many
+        many to many

@@ -138,7 +138,7 @@
           <i class="el-icon-location-outline" />
           人员分类
         </template>
-        信息
+        {{ currentUser.type }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
@@ -183,7 +183,7 @@
       </el-descriptions-item>
     </el-descriptions>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="userRequest">保 存</el-button>
+      <el-button type="primary" @click="save">保 存</el-button>
       <el-button @click="toggleDialogVisible">关 闭</el-button>
     </span>
   </el-dialog>
@@ -210,7 +210,8 @@ export default {
   },
   data: function() {
     return {
-      test: ''
+      test: '',
+      rawUser: Object.assign({}, this.currentUser)
     }
   },
   computed: {
@@ -224,10 +225,10 @@ export default {
     }
   },
   methods: {
-    userRequest: function() {
+    save: function() {
       console.log('request')
+      // 如果请求失败,就将model复原
       this.toggleDialogVisible()
-      this.$emit('change')
     },
     toggleDialogVisible() {
       this.$emit('toggleVisible')
