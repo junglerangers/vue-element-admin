@@ -15,37 +15,38 @@
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
       <el-table-column align="center" label="代码ID" width="200">
         <template slot-scope="scope">
-          {{ scope.row.dcode }}
+          {{ scope.row.DCODE }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="代码名称" width="100">
         <template slot-scope="scope">
-          {{ scope.row.dname }}
+          {{ scope.row.DNAME }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="代码类别" width="100">
         <template slot-scope="scope">
-          {{ scope.row.supercode }}
+          {{ scope.row.SUPERCODE }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="系统ID" width="100">
         <template slot-scope="scope">
-          {{ scope.row.syscode }}
+          {{ scope.row.SYSCODE }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建用户" width="100">
         <template slot-scope="scope">
-          {{ scope.row.createuser }}
+          {{ scope.row.CREATEUSER }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建日期" width="100">
         <template slot-scope="scope">
-          {{ scope.row.createdate| timeFormatter }}
+          {{ scope.row.CREATEDATE| timeFormatter }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="作废判别" width="100">
         <template slot-scope="scope">
-          {{ scope.row.isdel }}
+          <el-tag v-if="scope.row.ISDEL == '1'" type="danger">停用</el-tag>
+          <el-tag v-else type="success">启用</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center">
@@ -56,12 +57,11 @@
         </template>
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
-          <el-button type="text" size="small" icon="el-icon-close" title="停用" circle @click="handleAbandon(scope)">停用</el-button>
           <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <localDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
+    <localDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @unchange="unchange" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -78,9 +78,9 @@
 </template>
 
 <script>
-import { getGridList } from '@/api/codeDict'
+import { pageQuery } from '@/api/codeDict'
 import { search, localDialog } from './components'
-import * as defaultModel from '@/dataModel/CodeDictModel'
+import { codeDictModel as defaultModel } from '@/dataModel/CodeDictModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 
@@ -94,6 +94,7 @@ export default {
     return {
       loading: false,
       currentModel: Object.assign({}, defaultModel), // 当前选中的模型
+      rawModel: null,
       dialogVisible: false, // 对话框是否可见
       dialogType: 'new', // 对话框属性
       dataList: [], // 所有数据列表
@@ -127,13 +128,15 @@ export default {
   },
   methods: {
     async getDataList() {
-      //   var temp = {
-      //     ...this.searchModel,
-      //     currentPage: this.page_currentPage,
-      //     size: this.page_size
-      //   }
+      var params = {
+        queryModel: {},
+        pageHandler: {
+          currentPage: this.page_currentPage,
+          size: this.page_size
+        }
+      }
       this.loading = true
-      const res = await getGridList({})
+      const res = await pageQuery(params)
       this.dataList = res.data
       this.total = res.pageHandler.records
       this.loading = false
@@ -141,12 +144,14 @@ export default {
     handleAddUser() {
       this.dialogType = 'new'
       this.currentModel = Object.assign({}, defaultModel)
+      this.rawModel = Object.assign({}, this.currentModel)
       this.dialogVisible = true
     },
     handleEdit(scope) {
       this.dialogType = 'edit'
-      this.dialogVisible = true
       this.currentModel = scope.row
+      this.rawModel = Object.assign({}, this.currentModel)
+      this.dialogVisible = true
     },
     searchHandler(searchModel) {
       this.dataModel = { ...searchModel }
@@ -158,6 +163,9 @@ export default {
       //   console.log(file)
       // }
       // return
+    },
+    unchange() {
+      this.currentModel = Object.assign(this.currentModel, this.rawModel)
     }
   }
 }
