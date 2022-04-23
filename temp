@@ -1312,3 +1312,13 @@ relational database.
         one to one
         one to many
         many to many
+
+Ensuring your database structure is sound.
+
+refuse duplicate column.
+
+many to many --> create a linking table.
+
+relationship characteristic
+
+how to delete in one-one relationship or one-many relationship -- restric and cascade.
