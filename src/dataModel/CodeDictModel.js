@@ -1,10 +1,10 @@
 export const codeDictModel = {
-  dcode: '',
-  dname: '',
-  supercode: '',
-  isdel: '',
-  syscode: '',
-  remark: '',
-  createuser: '',
-  createdate: ''
+  DCODE: null,
+  DNAME: null,
+  SUPERCODE: null,
+  ISDEL: '0',
+  SYSCODE: null,
+  REMARK: null,
+  CREATEUSER: null,
+  CREATEDATE: null
 }

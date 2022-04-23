@@ -78,3 +78,11 @@ export function timeFormatter(timeString) {
   var date = new Date(timeString)
   return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate()
 }
+
+export function stateFormate(state) {
+  if (state) {
+    return true
+  } else {
+    return false
+  }
+}

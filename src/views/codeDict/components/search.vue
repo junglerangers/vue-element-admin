@@ -7,11 +7,11 @@
             {{ searchtype }}<i class="el-icon-arrow-down el-icon--right" />
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="代码ID">代码ID</el-dropdown-item>
-            <el-dropdown-item command="代码名称">代码名称</el-dropdown-item>
-            <el-dropdown-item command="代码名称">代码名称</el-dropdown-item>
-            <el-dropdown-item command="代码名称">代码名称</el-dropdown-item>
-            <el-dropdown-item command="备注信息">备注信息</el-dropdown-item>
+            <el-dropdown-item command="dcode">代码ID</el-dropdown-item>
+            <el-dropdown-item command="dname">代码名称</el-dropdown-item>
+            <el-dropdown-item command="supercode">父级代码</el-dropdown-item>
+            <el-dropdown-item command="syscode">系统代码</el-dropdown-item>
+            <el-dropdown-item command="remark">备注信息</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <template slot="append">
@@ -31,11 +31,12 @@ export default {
       searchtype: '代码类别',
       searchContent: '',
       /** 搜索模型 */
-      search: {
-        dep: '', // 科室
-        type: '', // 人员类型
-        workNumber: '', // 人员工号
-        name: '' // 人员姓名
+      searchModel: {
+        'dcode': '',
+        'dname': '',
+        'supercode': '',
+        'syscode': '',
+        'remark': ''
       },
       test: '',
       visible: false
@@ -55,6 +56,7 @@ export default {
       this.$emit('search', this.search)
     },
     handleCommand(command) {
+      // 通过一个字典进行映射吧
       this.searchtype = command
     },
     showAdvanceSearch() {

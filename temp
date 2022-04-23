@@ -1322,3 +1322,21 @@ many to many --> create a linking table.
 relationship characteristic
 
 how to delete in one-one relationship or one-many relationship -- restric and cascade.
+Study for SQL
+    operational database and analytical database.
+    operational database: day to day dynamic
+    analytical database: tracking trends static
+    层级结构和网状结构
+    relational database.
+    集合论和数理逻辑
+
+    RDBMS -- Relational Database Management System.
+
+    client/server RDBMS programs.
+
+null 比 ''  更加的安全
+
+在JavaScript中并不适合将一个Model单独放置到一个文件中去?
+
+import * as something 中 有一个坑,它会将所有东西都放置到一个对象中进行封装,而不是直接暴露出来
+所以暴露出来的方法应该是使用.运算符来进行取值,而不能直接使用something
