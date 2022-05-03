@@ -58,19 +58,10 @@ export function localDelete(params) {
 export function localAdd(params) {
   return request({
     url: 'http://10.88.88.193:5000/api/BasicManage/CodeDict/Add',
-    method: 'post',
-    data: {
+    method: 'get',
+    params: {
       ...params
     }
   })
 }
 
-export function pageQuery(params) {
-  return request({
-    url: 'http://10.88.88.193:5000/api/BasicManage/CodeDict/PageQuery',
-    method: 'post',
-    data: {
-      ...params
-    }
-  })
-}
