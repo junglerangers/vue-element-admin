@@ -2,9 +2,10 @@
   <div ref="main" class="app-container">
     <div class="block">
       <el-date-picker
-        v-model="searchModel.monthNo"
+        v-model="queryModel.monthNo"
         type="month"
         placeholder="请选择相应月份"
+        @change="monthChange"
       />
     </div>
     <search @search="searchHandler" />
@@ -105,19 +106,22 @@ export default {
     return {
       loading: false,
       currentModel: Object.assign({}, defaultModel), // 当前选中的模型
+      date: new Date(),
       dialogVisible: false, // 对话框是否可见
       dialogType: 'new', // 对话框属性
       dataList: [], // 所有数据列表
-      searchModel: {
-        'depT_CODE': 'string',
-        'depT_NAME': 'string',
-        'iS_STOP': 'string',
-        'spelL_CODE': 'string',
-        'wbX_CODE': 'string',
-        'supeR_CODE': 'string',
-        'monthNo': new Date()
+      queryModel: {
+        'depT_CODE': '',
+        'depT_NAME': '',
+        'iS_STOP': '',
+        'spelL_CODE': '',
+        'wbX_CODE': '',
+        'supeR_CODE': '',
+        'monthNo': new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0')
       }
     }
+  },
+  watch: {
   },
   created() {
     this.getDataList()
@@ -139,25 +143,22 @@ export default {
     // window.removeEventListener('resize', this.adjustFooterWidth)
   },
   methods: {
+    monthChange(value) {
+      var date = new Date(value)
+      this.queryModel.monthNo = date.getFullYear() + '-' + (1 + date.getMonth()).toString().padStart(2, '0')
+      this.getDataList()
+    },
     async getDataList() {
-      //   var temp = {
-      //     ...this.searchModel,
-      //     currentPage: this.page_currentPage,
-      //     size: this.page_size
-      //   }
       this.loading = true
       var temp = {
-        'queryModel': {
-          'monthNo': '2022-04'
-        },
-        'pageHandler': {
+        queryModel: this.queryModel,
+        pageHandler: {
           'size': this.page_size,
           'currentPage': this.page_currentPage
         }
       }
-      console.log(temp)
       const res = await pageQuery(temp)
-      console.log(res.data)
+      // console.log(res.data)
       this.dataList = res.data
       this.total = res.pageHandler.records
       this.loading = false
@@ -172,8 +173,8 @@ export default {
       this.dialogVisible = true
       this.currentModel = scope.row
     },
-    searchHandler(searchModel) {
-      this.dataModel = { ...searchModel }
+    searchHandler(queryModel) {
+      this.dataModel = { ...queryModel }
       // console.log(this.dataModel)
     },
     importExcel(e) {

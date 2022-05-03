@@ -3,6 +3,8 @@
     <el-row>
       <panel-group @handleSetLineChartData="handleSetLineChartData" />
     </el-row>
+    {{ count }}
+    <button @click="count++">++</button>
   </div>
 </template>
 
@@ -39,7 +41,8 @@ export default {
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      lineChartData: lineChartData.newVisitis,
+      count: 0
     }
   },
   methods: {

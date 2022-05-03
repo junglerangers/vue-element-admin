@@ -1330,3 +1330,20 @@ null 比 ''  更加的安全
 
 import * as something 中 有一个坑,它会将所有东西都放置到一个对象中进行封装,而不是直接暴露出来
 所以暴露出来的方法应该是使用.运算符来进行取值,而不能直接使用something
+
+a well-designed database structure.
+
+make sure the column belongs to the current table.
+
+make sure the column contains only a single value.
+
+a column appear only once in the entire database structure.
+
+multiplepart and multiplevalue column.
+
+a multiplevalue means many to many relationship -- a linking table -- a composite primary key.
+
+column name is single
+table name is plural
+
+保证数据库中存储的值的唯一性

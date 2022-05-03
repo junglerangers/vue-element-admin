@@ -7,7 +7,7 @@ export default {
       page_total: 0,
       page_currentPage: 1,
       page_sizes: [20, 100, 200, 400],
-      page_layout: 'sizes, prev, pager, next',
+      page_layout: 'total, prev, pager, next',
       footerWidth: 0
     }
   },
@@ -31,9 +31,10 @@ export default {
      * @param {*} myfun
      */
     handleSizeChange(myfun) {
-      return (val) => {
-        this.page_currentPage = 1
-        this.page_size = val
+      var vm = this
+      return function(val) {
+        vm.page_currentPage = 1
+        vm.page_size = val
         myfun()
       }
     },
@@ -43,8 +44,9 @@ export default {
      * @param {*} myfun
      */
     handleCurrentChange(myfun) {
-      return (val) => {
-        this.page_currentPage = val
+      var vm = this
+      return function(val) {
+        vm.page_currentPage = val
         myfun()
       }
     }

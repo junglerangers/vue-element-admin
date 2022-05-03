@@ -10,7 +10,7 @@
           <search id="header-search" class="right-menu-item" />
         </el-tooltip>
 
-        <error-log class="errLog-container right-menu-item hover-effect" />
+        <error-log class="-container right-menu-item hover-effect" />
         <el-tooltip content="网页全局设置" effect="dark" placement="bottom">
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
         </el-tooltip>

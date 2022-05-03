@@ -79,7 +79,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '仪表盘', icon: 'dashboard3', affix: true }// affix如果设置为true,则标签将附加在视图上进行展示
+        meta: { title: '仪表盘', icon: 'dashboard3' }// affix如果设置为true,则标签将附加在视图上进行展示
       }
     ]
   },
@@ -201,7 +201,6 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/formular/index',
     alwaysShow: true,
-    name: 'formular',
     meta: {
       title: '公式管理',
       icon: 'formular',

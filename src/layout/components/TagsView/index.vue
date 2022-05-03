@@ -66,12 +66,21 @@ export default {
     this.addTags()
   },
   methods: {
+    /**
+     * 选中路由是否为当前正在活动的路由
+     */
     isActive(route) {
       return route.path === this.$route.path
     },
+    /**
+     * 当前标签是否强制固定在栏中
+     */
     isAffix(tag) {
       return tag.meta && tag.meta.affix
     },
+    /**
+     * 将所有需要固定的标签栏固定在栏中
+     */
     filterAffixTags(routes, basePath = '/') {
       let tags = []
       routes.forEach(route => {

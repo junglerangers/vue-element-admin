@@ -13,7 +13,7 @@
           </el-dropdown-menu>
         </el-dropdown>
         <template slot="append">
-          <el-button type="primary" icon="el-icon-search">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="searchHandler">搜索</el-button>
         </template>
       </el-input>
     </div>
@@ -29,11 +29,14 @@ export default {
       searchtype: '科室名称',
       searchContent: '',
       /** 搜索模型 */
-      search: {
-        dep: '', // 科室
-        type: '', // 人员类型
-        workNumber: '', // 人员工号
-        name: '' // 人员姓名
+      queryModel: {
+        'depT_CODE': '',
+        'depT_NAME': '',
+        'iS_STOP': '',
+        'spelL_CODE': '',
+        'wbX_CODE': '',
+        'supeR_CODE': '',
+        'monthNo': ''
       },
       test: '',
       visible: false
@@ -50,7 +53,7 @@ export default {
   },
   methods: {
     searchHandler() {
-      this.$emit('search', this.search)
+      this.$emit('search', this.queryModel)
     },
     handleCommand(command) {
       this.searchtype = command

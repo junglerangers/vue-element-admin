@@ -6,7 +6,7 @@
           <i class="el-icon-user" />
           父级组件
         </template>
-        <el-cascader v-model="currentModel.SUPERCODE" :options="depOptions" filterable :props="props" @change="getSupercode">
+        <el-cascader v-model="currentModel.SUPERCODE" :options="depOptions" filterable :props="props">
           <template slot-scope="{ node, data }">
             <span>{{ data.label }}</span>
             <span v-if="!node.isLeaf"> ({{ data.options.length }}) </span>
@@ -17,7 +17,7 @@
           <i class="el-icon-user" />
           代码类别
         </template>
-        <el-input v-model="currentModel.SUPERCODE" />
+        <el-input :value="localSuperCode" :disabled="true" />
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
@@ -54,19 +54,7 @@
         </template>
         {{ currentModel.CREATEDATE|timeFormatter }}
       </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          作废判别
-        </template>
-        <el-switch
-          v-model="currentModel.ISDEL"
-          active-text="正常"
-          inactive-text="作废"
-          active-value="0"
-          inactive-value="1"
-        />
-      </el-descriptions-item>
+      <el-descriptions-item />
       <el-descriptions-item />
       <el-descriptions-item span="3">
         <template slot="label">
@@ -85,15 +73,11 @@
 
 <script>
 
-import { localUpdate, getTreeList } from '@/api/codeDict'
+import { localUpdate, getTreeList, localAdd } from '@/api/codeDict'
 
 export default {
-  model: {
-    prop: 'currentModel',
-    event: 'change'
-  },
   props: {
-    currentModel: {
+    rawModel: {
       type: Object,
       default: function() {
         return {}
@@ -112,7 +96,7 @@ export default {
   data: function() {
     return {
       test: '',
-      rawModel: this.currentModel,
+      // currentModel: this.rawModel,
       depOptions: [],
       props: {
         checkStrictly: true,
@@ -129,6 +113,19 @@ export default {
       set: function(v) {
         this.toggleDialogVisible()
       }
+    },
+    currentModel: function() {
+      return this.rawModel
+    },
+    localSuperCode: function() {
+      var temp = this.currentModel.SUPERCODE
+      if (temp instanceof String) {
+        return temp
+      }
+      if (temp instanceof Array) {
+        return temp[temp.length - 1]
+      }
+      return null
     }
   },
   created() {
@@ -136,20 +133,35 @@ export default {
   },
   methods: {
     async save() {
-      var params = {
-        'DCODE': '15',
-        'DNAME': 'test',
-        'SUPERCODE': null,
-        'ISDEL': '0',
-        'SYSCODE': '0101',
-        'REMARK': null,
-        'CREATEUSER': '2016210'
+      var params = Object.assign({}, this.currentModel)
+      var localfun = null
+      //  是调用新增方法还是调用修改方法
+      if (this.type === 'edit') {
+        localfun = localUpdate
+      } else if (this.type === 'new') {
+        params.CREATEUSER = 'admin'
+        localfun = localAdd
       }
-      console.log('saveRequest')
-      await localUpdate(params).then(res => {
+
+      params.SUPERCODE = this.localSuperCode
+      await localfun(params).then(res => {
         console.log(res)
-        this.toggleDialogVisible('update')
-      }).catch(() => {
+        if (this.type === 'new') {
+          this.$message({
+            message: '数据新增成功!',
+            type: 'success'
+          })
+        } else if (this.type === 'edit') {
+          this.$message({
+            message: '数据修改成功!',
+            type: 'success'
+          })
+        }
+        // 返回讯息重新加载一下当前页面
+        this.$emit('update')
+      }).catch((ex) => {
+        console.log(ex)
+      }).finally(() => {
         this.toggleDialogVisible()
       })
     },
@@ -164,10 +176,10 @@ export default {
         this.depOptions = res.data
       })
     },
-    toggleDialogVisible(val) {
-      if (val !== 'update') {
-        this.$emit('unchange')
-      }
+    /**
+     * 关闭当前model窗口
+     */
+    toggleDialogVisible() {
       this.$emit('toggleVisible')
     },
     handleClose(done) {
@@ -178,7 +190,8 @@ export default {
         .catch(_ => {})
     },
     getSupercode(val) {
-      this.currentModel.SUPERCODE = val[val.length - 1]
+      return
+      // this.currentModel.SUPERCODE = val[val.length - 1]
     }
   }
 }
