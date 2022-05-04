@@ -197,24 +197,22 @@ export const asyncRoutes = [
   },
 
   {
-    path: '/formular',
+    path: '/formula',
     component: Layout,
-    redirect: '/formular/index',
+    redirect: '/formula/index',
     alwaysShow: true,
     meta: {
       title: '公式管理',
-      icon: 'formular',
-      roles: ['admin']
+      icon: 'formular'
     },
     children: [
       {
         path: 'index',
         component: () => import('@/views/formula/index'),
-        name: 'formularIndex',
+        name: 'FormularIndex',
         meta: {
           title: '公式一览',
-          icon: 'num1',
-          roles: ['admin']
+          icon: 'num1'
         }
       },
       {
@@ -301,7 +299,7 @@ export const asyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/codeDict/index'),
-        name: 'codeDictIndex',
+        name: 'CodedictIndex',
         meta: {
           title: '字典管理',
           icon: 'codeDict',

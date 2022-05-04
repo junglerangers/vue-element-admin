@@ -8,8 +8,6 @@
         @change="monthChange"
       />
     </div>
-    {{ test }}
-    <button @click="test++">++</button>
     <search @search="searchHandler" />
     <el-table
       id="mytable"
@@ -93,6 +91,7 @@ import tablePage from '@/mixins/tablePage'
 import { MessageBox } from 'element-ui'
 
 export default {
+  name: 'FormularIndex',
   components: {
     search
   },
@@ -113,12 +112,12 @@ export default {
         'formula': '',
         'monthNo': new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
         'islock': ''
-      },
-      test: 0
+      }
     }
   },
   created() {
     this.getDataList()
+    console.log('Hello World.')
     // this.getDepList()
     // this.getTypeList()
   },
@@ -170,7 +169,8 @@ export default {
       this.dialogType = 'edit'
       this.currentModel = Object.assign({}, scope.row)
       this.dialogVisible = true
-      this.$router.push('/dashboard')
+      this.$store.dispatch('formula/getFormula', this.currentModel)
+      this.$router.push('/formula/detail')
     },
     /**
      * 搜索新项目

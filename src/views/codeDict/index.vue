@@ -79,6 +79,7 @@ import tablePage from '@/mixins/tablePage'
 import { MessageBox } from 'element-ui'
 
 export default {
+  name: 'CodedictIndex',
   components: {
     search,
     localDialog

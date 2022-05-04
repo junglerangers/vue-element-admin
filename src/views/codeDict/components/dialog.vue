@@ -10,7 +10,8 @@
           <template slot-scope="{ node, data }">
             <span>{{ data.label }}</span>
             <span v-if="!node.isLeaf"> ({{ data.options.length }}) </span>
-          </template></el-cascader>
+          </template>
+        </el-cascader>
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">

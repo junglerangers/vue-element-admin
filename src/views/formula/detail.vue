@@ -1,16 +1,19 @@
 <template>
   <div class="app-container">
     <el-descriptions title="公式详细信息" :column="2">
-      <el-descriptions-item label="公式名称">慈善一日捐</el-descriptions-item>
-      <el-descriptions-item label="公式所属">
-        <el-cascader :options="options">
+      <el-descriptions-item label="类别名称">{{ localFormula.TNAME }}</el-descriptions-item>
+      <el-descriptions-item label="类别编码">{{ localFormula.TCODE }}</el-descriptions-item>
+      <el-descriptions-item label="薪资名称">{{ localFormula.DNAME }}</el-descriptions-item>
+      <el-descriptions-item label="薪资编码">{{ localFormula.DCODE }}</el-descriptions-item>
+      <el-descriptions-item label="父级节点">
+        <el-cascader v-model="localFormula.SUPERCODE" :options="typeOptions" :props="props" filterable>
           <template slot-scope="{ node, data }">
             <span>{{ data.label }}</span>
-            <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
+            <span v-if="!node.isLeaf"> ({{ data.options.length }}) </span>
           </template>
         </el-cascader>
       </el-descriptions-item>
-      <el-descriptions-item label="备注" span="2">该公式仅适用于行政中层人员.</el-descriptions-item>
+      <el-descriptions-item label="备注" span="2">{{ localFormula.REMARK }}</el-descriptions-item>
     </el-descriptions>
     <!-- 其它信息模块 -->
     <el-divider />
@@ -22,19 +25,20 @@
       <el-autocomplete
         ref="input"
         v-model="rawFormular"
-        :fetch-suggestions="searchDebounce"
+        :fetch-suggestions="queryAsync"
         :trigger-on-focus="false"
         placeholder="请输入公式内容"
+        value-key="TCODE"
         class="block"
         @select="autoFixInput"
       >
         <template v-slot="{item}">
-          <span style="float: left">{{ item.value }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
+          <span style="float: left">{{ item.TNAME }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.TCODE }}</span>
         </template>
       </el-autocomplete>
     </div>
-    <el-button type="primary">保存修改</el-button>
+    <el-button type="primary" @click="save">保存修改</el-button>
   </div>
 </template>
 
@@ -42,7 +46,8 @@
 import { tagshow } from './components'
 import { splictStringByOperator, getLastStrByOperator } from '@/utils/stringAdvanced'
 import { debounce } from '@/utils/index'
-
+// import { salaryTypeModel as defaultModel } from '@/dataModel/SalaryTypeModel'
+import { getTreeList, getGridList } from '@/api/salaryType'
 export default {
   components: {
     tagshow
@@ -50,214 +55,85 @@ export default {
   data: function() {
     return {
       rawFormular: '',
+      dict: [],
       testdata: 0,
+      localTime: null,
       searchDebounce: debounce(this.querySearchRemote, 500),
       rawTemp: '',
-      options: [{
-        value: 'zhinan',
-        label: '指南',
-        children: [{
-          value: 'shejiyuanze',
-          label: '设计原则',
-          children: [{
-            value: 'yizhi',
-            label: '一致'
-          }, {
-            value: 'fankui',
-            label: '反馈'
-          }, {
-            value: 'xiaolv',
-            label: '效率'
-          }, {
-            value: 'kekong',
-            label: '可控'
-          }]
-        }, {
-          value: 'daohang',
-          label: '导航',
-          children: [{
-            value: 'cexiangdaohang',
-            label: '侧向导航'
-          }, {
-            value: 'dingbudaohang',
-            label: '顶部导航'
-          }]
-        }]
-      }, {
-        value: 'zujian',
-        label: '组件',
-        children: [{
-          value: 'basic',
-          label: 'Basic',
-          children: [{
-            value: 'layout',
-            label: 'Layout 布局'
-          }, {
-            value: 'color',
-            label: 'Color 色彩'
-          }, {
-            value: 'typography',
-            label: 'Typography 字体'
-          }, {
-            value: 'icon',
-            label: 'Icon 图标'
-          }, {
-            value: 'button',
-            label: 'Button 按钮'
-          }]
-        }, {
-          value: 'form',
-          label: 'Form',
-          children: [{
-            value: 'radio',
-            label: 'Radio 单选框'
-          }, {
-            value: 'checkbox',
-            label: 'Checkbox 多选框'
-          }, {
-            value: 'input',
-            label: 'Input 输入框'
-          }, {
-            value: 'input-number',
-            label: 'InputNumber 计数器'
-          }, {
-            value: 'select',
-            label: 'Select 选择器'
-          }, {
-            value: 'cascader',
-            label: 'Cascader 级联选择器'
-          }, {
-            value: 'switch',
-            label: 'Switch 开关'
-          }, {
-            value: 'slider',
-            label: 'Slider 滑块'
-          }, {
-            value: 'time-picker',
-            label: 'TimePicker 时间选择器'
-          }, {
-            value: 'date-picker',
-            label: 'DatePicker 日期选择器'
-          }, {
-            value: 'datetime-picker',
-            label: 'DateTimePicker 日期时间选择器'
-          }, {
-            value: 'upload',
-            label: 'Upload 上传'
-          }, {
-            value: 'rate',
-            label: 'Rate 评分'
-          }, {
-            value: 'form',
-            label: 'Form 表单'
-          }]
-        }, {
-          value: 'data',
-          label: 'Data',
-          children: [{
-            value: 'table',
-            label: 'Table 表格'
-          }, {
-            value: 'tag',
-            label: 'Tag 标签'
-          }, {
-            value: 'progress',
-            label: 'Progress 进度条'
-          }, {
-            value: 'tree',
-            label: 'Tree 树形控件'
-          }, {
-            value: 'pagination',
-            label: 'Pagination 分页'
-          }, {
-            value: 'badge',
-            label: 'Badge 标记'
-          }]
-        }, {
-          value: 'notice',
-          label: 'Notice',
-          children: [{
-            value: 'alert',
-            label: 'Alert 警告'
-          }, {
-            value: 'loading',
-            label: 'Loading 加载'
-          }, {
-            value: 'message',
-            label: 'Message 消息提示'
-          }, {
-            value: 'message-box',
-            label: 'MessageBox 弹框'
-          }, {
-            value: 'notification',
-            label: 'Notification 通知'
-          }]
-        }, {
-          value: 'navigation',
-          label: 'Navigation',
-          children: [{
-            value: 'menu',
-            label: 'NavMenu 导航菜单'
-          }, {
-            value: 'tabs',
-            label: 'Tabs 标签页'
-          }, {
-            value: 'breadcrumb',
-            label: 'Breadcrumb 面包屑'
-          }, {
-            value: 'dropdown',
-            label: 'Dropdown 下拉菜单'
-          }, {
-            value: 'steps',
-            label: 'Steps 步骤条'
-          }]
-        }, {
-          value: 'others',
-          label: 'Others',
-          children: [{
-            value: 'dialog',
-            label: 'Dialog 对话框'
-          }, {
-            value: 'tooltip',
-            label: 'Tooltip 文字提示'
-          }, {
-            value: 'popover',
-            label: 'Popover 弹出框'
-          }, {
-            value: 'card',
-            label: 'Card 卡片'
-          }, {
-            value: 'carousel',
-            label: 'Carousel 走马灯'
-          }, {
-            value: 'collapse',
-            label: 'Collapse 折叠面板'
-          }]
-        }]
-      }, {
-        value: 'ziyuan',
-        label: '资源',
-        children: [{
-          value: 'axure',
-          label: 'Axure Components'
-        }, {
-          value: 'sketch',
-          label: 'Sketch Templates'
-        }, {
-          value: 'jiaohu',
-          label: '组件交互文档'
-        }]
-      }]
+      typeOptions: [],
+      props: {
+        checkStrictly: true,
+        children: 'options',
+        leaf: 'id'
+      },
+      localFormula: {
+        AUTOID: '',
+        DCODE: '',
+        DNAME: '',
+        TCODE: '',
+        TNAME: '',
+        REMARK: '',
+        SUPERCODE: '',
+        FORMULA: '',
+        SEQINDEX: '',
+        BEGINDATE: '',
+        ENDDATE: '',
+        ISLOCK: '',
+        RNUM: ''
+      }
     }
   },
   computed: {
     showFormular: function() {
-      return splictStringByOperator(this.rawFormular)
+      return splictStringByOperator(this.rawFormular, this.dict)
+    },
+    formula: function() {
+      // 先computed,然后再created
+      return this.$store.state.formula.cachedFormula
     }
   },
   mounted: function() {
   },
+  created: function() {
+    if (this.formula != null) {
+      this.localFormula = Object.assign({}, this.formula)
+      this.getSalaryType()
+      console.log('get dict!')
+      this.getSalaryDict()
+    } else {
+      this.$message({
+        message: '请选择一条公式或者选择新增公式!',
+        type: 'warning'
+      })
+      this.$router.replace({ path: '/formula/index' })
+    }
+  },
   methods: {
+    save() {
+      let str = ''
+      for (let i = 0; i < this.showFormular.length; i++) {
+        str += this.showFormular[i].code
+      }
+      console.log(str)
+    },
+    async getSalaryType() {
+      const time = new Date(this.formula.ENDDATE)
+      this.localTime = time.getFullYear() + '-' + (time.getMonth() + 1).toString()
+      var param = {
+        monthNo: this.localTime
+      }
+      await getTreeList(param).then(res => {
+        this.typeOptions = res.data
+      })
+    },
+    async getSalaryDict() {
+      var param = {
+        monthNo: this.localTime
+      }
+      await getGridList(param).then(res => {
+        this.dict = res.data
+      })
+    },
     /**
      * 根据所在列控制颜色显示
      */
@@ -266,22 +142,29 @@ export default {
         return 'backgroundcolor:blue'
       }
     },
+    queryAsync(rawString, cb) {
+      var queryString = getLastStrByOperator(rawString)
+      if (!queryString) {
+        cb([])
+      } else {
+        return this.searchDebounce(rawString, cb)
+      }
+    },
     async querySearchRemote(rawString, cb) { // 该函数会在用户每次input时调用
       this.rawTemp = rawString
-      var queryString = getLastStrByOperator(rawString.toLowerCase())
-      // console.log(queryString)
-      // 在这里请求服务器获数据
-      var remoteMock = [{ 'value': queryString + 'Tick' }]
-      var result = queryString ? remoteMock : []
+      // this.rawTemp2 = rawString
+      var queryString = getLastStrByOperator(rawString)
+      var result = queryString ? this.dict.filter(state => state.TCODE.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.dict
       cb(result)
     },
     autoFixInput(item) { // el-input中的下拉框发生点击事件之时,已经将input中的内容更新成了item中的内容
       // console.log('this is test')
       let index = 0
       // console.log(this.rawTemp)
-      index = this.rawTemp.search(/[\+\-\*%()\\=][\u4e00-\u9fa5\w]*$/)
+      index = this.rawTemp.search(/[\/\+\-\*%()\\=][\u4e00-\u9fa5\w]*$/)
       // console.log(index)
-      this.rawFormular = this.rawTemp.slice(0, index + 1) + item.value
+      this.rawFormular = this.rawTemp.slice(0, index + 1) + item.TNAME
+      console.log(this.rawFormular)
       this.$refs.input.focus()
     }
   }
