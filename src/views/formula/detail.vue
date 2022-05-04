@@ -47,7 +47,7 @@ import { tagshow } from './components'
 import { splictStringByOperator, getLastStrByOperator } from '@/utils/stringAdvanced'
 import { debounce } from '@/utils/index'
 // import { salaryTypeModel as defaultModel } from '@/dataModel/SalaryTypeModel'
-import { getTreeList, getGridList } from '@/api/salaryType'
+import { getTreeList, getGridList, localAdd, localUpdate } from '@/api/salaryType'
 export default {
   components: {
     tagshow
@@ -95,10 +95,10 @@ export default {
   mounted: function() {
   },
   created: function() {
+    console.log(this.$route.params.type)// 传递的参数
     if (this.formula != null) {
       this.localFormula = Object.assign({}, this.formula)
       this.getSalaryType()
-      console.log('get dict!')
       this.getSalaryDict()
     } else {
       this.$message({
@@ -110,9 +110,16 @@ export default {
   },
   methods: {
     save() {
+      let i = 0
       let str = ''
-      for (let i = 0; i < this.showFormular.length; i++) {
-        str += this.showFormular[i].code
+      let temp = ''
+      for (i = 0; i < this.showFormular.length; i++) {
+        if (this.showFormular[i].type === 'primary') {
+          temp = '[' + this.showFormular[i].code.replace('T', '') + ']'
+        } else {
+          temp = this.showFormular[i].code
+        }
+        str += temp
       }
       console.log(str)
     },
@@ -164,7 +171,6 @@ export default {
       index = this.rawTemp.search(/[\/\+\-\*%()\\=][\u4e00-\u9fa5\w]*$/)
       // console.log(index)
       this.rawFormular = this.rawTemp.slice(0, index + 1) + item.TNAME
-      console.log(this.rawFormular)
       this.$refs.input.focus()
     }
   }

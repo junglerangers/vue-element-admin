@@ -161,6 +161,8 @@ export default {
       this.currentModel = Object.assign({}, defaultModel)
       this.currentModel.SYSCODE = '0101'
       this.dialogVisible = true
+      this.$store.dispatch('formula/getFormula', this.currentModel)
+      this.$router.push('/formula/detail/new')
     },
     /**
      * 修改现有项
@@ -170,7 +172,7 @@ export default {
       this.currentModel = Object.assign({}, scope.row)
       this.dialogVisible = true
       this.$store.dispatch('formula/getFormula', this.currentModel)
-      this.$router.push('/formula/detail')
+      this.$router.push('/formula/detail/edit')
     },
     /**
      * 搜索新项目

@@ -20,16 +20,18 @@ export function splictStringByOperator(rawString, dict) {
   const strArray = rawString.split('')
   const strTemp = []; const strResult = []
   let temp = ''
+  let type = ''
   for (let i = 0; i < strArray.length; i++) {
     if (/[\/\+\-\*%()\\=]/.test(strArray[i])) {
       if (strTemp.length > 0) {
         temp = strTemp.join('')
         const index = dict.findIndex(element => element.TNAME === temp)
+        type = getColorByCode(temp, index)
         strResult.push({
           element: temp,
-          type: getColorByCode(temp, index),
+          type: type,
           index: index,
-          code: index < 0 ? 0 : dict[index].TCODE
+          code: type === 'success' ? temp : (index < 0 ? 0 : dict[index].TCODE)
         })
         strTemp.length = 0 // 清空temp数组
       }
@@ -39,10 +41,15 @@ export function splictStringByOperator(rawString, dict) {
     }
   }
   if (strTemp.length > 0) {
-    const index = dict.findIndex((element) => element.TNAME === temp)
     temp = strTemp.join('')
-    strResult.push({ element: temp, type: getColorByCode(temp), index: index,
-      code: index < 0 ? 0 : dict[index].TCODE })
+    const index = dict.findIndex((element) => element.TNAME === temp)
+    type = getColorByCode(temp, index)
+    strResult.push({
+      element: temp,
+      type: type,
+      index: index,
+      code: type === 'success' ? temp : index < 0 ? 0 : dict[index].TCODE
+    })
   }
   return strResult
 }
