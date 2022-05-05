@@ -49,6 +49,10 @@ export default {
         vm.page_currentPage = val
         myfun()
       }
+    },
+    initialPage() {
+      this.page_currentPage = 1
+      this.page_size = 20
     }
   },
   mounted: function() {

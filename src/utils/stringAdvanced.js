@@ -54,6 +54,51 @@ export function splictStringByOperator(rawString, dict) {
   return strResult
 }
 
+export function splictStringByOperatorSign(rawString, dict) {
+  const strArray = rawString.split('')
+  const strTemp = []
+  const strResult = []
+  let temp = ''
+  let type = ''
+  for (let i = 0; i < strArray.length; i++) {
+    if (/[\/\+\-\*%()\\=]/.test(strArray[i])) {
+      if (strTemp.length > 0) {
+        temp = strTemp.join('')
+        if (temp[0] === '[' && temp[temp.length - 1] === ']') {
+          temp = 'T' + temp.substring(1, temp.length - 1)
+        }
+        const index = dict.findIndex(element => (element.TCODE === (temp)))
+        type = getColorByCode(temp, index)
+        strResult.push({
+          element: type === 'success' ? temp : index < 0 ? 'undefined' : dict[index].TNAME,
+          type: type,
+          index: index,
+          code: temp
+        })
+        strTemp.length = 0 // 清空temp数组
+      }
+      strResult.push({ element: strArray[i], type: 'op', code: strArray[i] })
+    } else {
+      strTemp.push(strArray[i])
+    }
+  }
+  if (strTemp.length > 0) {
+    temp = strTemp.join('')
+    if (temp[0] === '[' && temp[temp.length - 1] === ']') {
+      temp = 'T' + temp.substring(1, temp.length - 1)
+    }
+    const index = dict.findIndex(element => (element.TCODE === (temp)))
+    type = getColorByCode(temp, index)
+    strResult.push({
+      element: type === 'success' ? temp : index < 0 ? 'undefined' : dict[index].TNAME,
+      type: type,
+      index: index,
+      code: temp
+    })
+  }
+  return strResult
+}
+
 /**
  * @param {String} str
  * @returns String

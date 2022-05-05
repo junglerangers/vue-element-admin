@@ -1,19 +1,50 @@
 <template>
   <div class="app-container">
     <el-descriptions title="公式详细信息" :column="2">
-      <el-descriptions-item label="类别名称">{{ localFormula.TNAME }}</el-descriptions-item>
-      <el-descriptions-item label="类别编码">{{ localFormula.TCODE }}</el-descriptions-item>
-      <el-descriptions-item label="薪资名称">{{ localFormula.DNAME }}</el-descriptions-item>
-      <el-descriptions-item label="薪资编码">{{ localFormula.DCODE }}</el-descriptions-item>
+      <el-descriptions-item label="类别编码">
+        <el-input v-model="localFormula.TCODE" class="width220" />
+      </el-descriptions-item>
+      <el-descriptions-item label="类别名称">
+        <el-input v-model="localFormula.TNAME" class="width220" :disabled="true" />
+      </el-descriptions-item>
+      <el-descriptions-item label="薪资编码">
+        <el-input v-model="localFormula.DCODE" class="width220" :disabled="true" />
+      </el-descriptions-item>
+      <el-descriptions-item label="薪资名称">
+        <el-input v-model="localFormula.DNAME" class="width220" />
+      </el-descriptions-item>
+      <el-descriptions-item label="生效时间">
+        <el-date-picker
+          v-model="localFormula.BEGINDATE"
+          align="right"
+          type="date"
+          placeholder="选择日期"
+          :picker-options="datePickerOptions"
+        />
+      </el-descriptions-item>
+      <el-descriptions-item label="失效时间">
+        <el-date-picker
+          v-model="localFormula.ENDDATE"
+          align="right"
+          type="date"
+          placeholder="选择日期"
+          :picker-options="datePickerOptions"
+        />
+      </el-descriptions-item>
       <el-descriptions-item label="父级节点">
-        <el-cascader v-model="localFormula.SUPERCODE" :options="typeOptions" :props="props" filterable>
+        <el-cascader v-model="localFormula.SUPERCODE" :options="typeOptions" :props="props" filterable clearable>
           <template slot-scope="{ node, data }">
             <span>{{ data.label }}</span>
             <span v-if="!node.isLeaf"> ({{ data.options.length }}) </span>
           </template>
         </el-cascader>
       </el-descriptions-item>
-      <el-descriptions-item label="备注" span="2">{{ localFormula.REMARK }}</el-descriptions-item>
+      <el-descriptions-item label="是否锁定">
+        {{ localFormula.ISLOCK }}
+      </el-descriptions-item>
+      <el-descriptions-item label="备注" span="2">
+        <el-input v-model="localFormula.REMARK" type="textarea" :readonly="false" :style="{'width':'800px'}" />
+      </el-descriptions-item>
     </el-descriptions>
     <!-- 其它信息模块 -->
     <el-divider />
@@ -44,7 +75,7 @@
 
 <script>
 import { tagshow } from './components'
-import { splictStringByOperator, getLastStrByOperator } from '@/utils/stringAdvanced'
+import { splictStringByOperator, getLastStrByOperator, splictStringByOperatorSign } from '@/utils/stringAdvanced'
 import { debounce } from '@/utils/index'
 // import { salaryTypeModel as defaultModel } from '@/dataModel/SalaryTypeModel'
 import { getTreeList, getGridList, localAdd, localUpdate } from '@/api/salaryType'
@@ -54,7 +85,7 @@ export default {
   },
   data: function() {
     return {
-      rawFormular: '',
+      rawFormular: '', // 存储的是字符串的形式
       dict: [],
       testdata: 0,
       localTime: null,
@@ -80,6 +111,28 @@ export default {
         ENDDATE: '',
         ISLOCK: '',
         RNUM: ''
+      },
+      datePickerOptions: {
+        shortcuts: [{
+          text: '今天',
+          onClick(picker) {
+            picker.$emit('pick', new Date())
+          }
+        }, {
+          text: '本月第一天',
+          onClick(picker) {
+            const date = new Date()
+            var firstday = new Date(date.getFullYear(), date.getMonth(), 1)
+            picker.$emit('pick', firstday)
+          }
+        }, {
+          text: '本月最后一天',
+          onClick(picker) {
+            const date = new Date()
+            var lastday = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+            picker.$emit('pick', lastday)
+          }
+        }]
       }
     }
   },
@@ -90,12 +143,18 @@ export default {
     formula: function() {
       // 先computed,然后再created
       return this.$store.state.formula.cachedFormula
+    },
+    monthDate: function() {
+      if (this.localFormula.BEGINDATE) {
+        var temp = new Date(this.localFormula.BEGINDATE)
+        return temp.getFullYear() + '-' + (1 + temp.getMonth())
+      }
+      return null
     }
   },
   mounted: function() {
   },
   created: function() {
-    console.log(this.$route.params.type)// 传递的参数
     if (this.formula != null) {
       this.localFormula = Object.assign({}, this.formula)
       this.getSalaryType()
@@ -105,11 +164,14 @@ export default {
         message: '请选择一条公式或者选择新增公式!',
         type: 'warning'
       })
-      this.$router.replace({ path: '/formula/index' })
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.replace('/formula/index')
+      // 关闭当前页面
     }
   },
   methods: {
     save() {
+      const type = this.$route.query.type
       let i = 0
       let str = ''
       let temp = ''
@@ -121,7 +183,28 @@ export default {
         }
         str += temp
       }
-      console.log(str)
+      this.localFormula.FORMULA = str
+      console.log(this.localFormula)
+      if (type === 'edit') {
+        console.log('edit')
+        localUpdate(this.localFormula).then(res => {
+          this.$message({
+            message: '薪资更新成功!',
+            type: 'success'
+          })
+        })
+      } else if (type === 'new') {
+        console.log('new')
+        localAdd(this.localFormula).then(res => {
+          this.$message({
+            message: '薪资新增成功',
+            type: 'success'
+          })
+        })
+      }
+      console.log(this.localFormula)
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.replace('/formula/index?monthNo=' + this.monthDate)
     },
     async getSalaryType() {
       const time = new Date(this.formula.ENDDATE)
@@ -137,9 +220,21 @@ export default {
       var param = {
         monthNo: this.localTime
       }
-      await getGridList(param).then(res => {
+      getGridList(param).then(res => {
         this.dict = res.data
+        this.initialFormular()
       })
+    },
+    initialFormular() {
+      if (this.localFormula.FORMULA) {
+        var temp = this.localFormula.FORMULA
+        const splitarr = splictStringByOperatorSign(temp, this.dict)
+        let str = ''
+        for (let i = 0; i < splitarr.length; i++) {
+          str += splitarr[i].element
+        }
+        this.rawFormular = str
+      }
     },
     /**
      * 根据所在列控制颜色显示
@@ -190,5 +285,8 @@ export default {
   }
   .block{
     display: block;
+  }
+  .width220{
+    width: 220px;
   }
 </style>

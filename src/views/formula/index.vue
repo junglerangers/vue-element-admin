@@ -116,10 +116,26 @@ export default {
     }
   },
   created() {
+    // if (temp) {
+    //   this.searchModel.monthNo = temp
+    // }
+    var temp = this.$route.query.monthNo
+    if (!temp == null) {
+      this.searchModel.monthNo = temp
+    }
     this.getDataList()
-    console.log('Hello World.')
+    console.log('here is created.')
     // this.getDepList()
     // this.getTypeList()
+  },
+  activated() {
+    console.log('activated')
+    var temp = this.$route.query.monthNo
+    console.log(`temp:${temp}`)
+    if (temp) {
+      this.searchModel.monthNo = temp
+      this.getDataList()
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.adjustFooterWidth)
@@ -131,6 +147,7 @@ export default {
         vue.adjustFooterWidth()
       })
     }, 150)
+    console.log('mounted')
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.adjustFooterWidth)
@@ -140,6 +157,9 @@ export default {
      * 获取字典列表
      */
     async getDataList() {
+      if (this.searchModel.monthNo == null) {
+        this.searchModel.monthNo = new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0')
+      }
       var params = {
         queryModel: this.searchModel,
         pageHandler: {
@@ -157,12 +177,15 @@ export default {
      * 添加新项
      */
     handleAddUser() {
+      var date = new Date(this.searchModel.monthNo)
       this.dialogType = 'new'
       this.currentModel = Object.assign({}, defaultModel)
+      this.currentModel.BEGINDATE = new Date(date.getFullYear(), date.getMonth(), 1)
+      this.currentModel.ENDDATE = new Date(date.getFullYear(), date.getMonth() + 1, 0)
       this.currentModel.SYSCODE = '0101'
       this.dialogVisible = true
       this.$store.dispatch('formula/getFormula', this.currentModel)
-      this.$router.push('/formula/detail/new')
+      this.$router.push('/formula/detail?type=new')
     },
     /**
      * 修改现有项
@@ -172,19 +195,19 @@ export default {
       this.currentModel = Object.assign({}, scope.row)
       this.dialogVisible = true
       this.$store.dispatch('formula/getFormula', this.currentModel)
-      this.$router.push('/formula/detail/edit')
+      this.$router.push('/formula/detail?type=edit')
     },
     /**
      * 搜索新项目
      */
     searchHandler(searchModel) {
       this.searchModel = { ...searchModel }
-      this.page_currentPage = 1
-      this.page_size = 20
+      this.initialPage()
       this.getDataList()
     },
     monthChange(value) {
       var date = new Date(value)
+      this.initialPage()
       this.searchModel.monthNo = date.getFullYear() + '-' + (1 + date.getMonth()).toString().padStart(2, '0')
       this.getDataList()
     },
