@@ -2,16 +2,16 @@
   <div class="app-container">
     <el-descriptions title="公式详细信息" :column="2">
       <el-descriptions-item label="类别编码">
-        <el-input v-model="localFormula.TCODE" class="width220" />
+        <el-input v-model="localFormula.TCODE" class="width220" :disabled="true" />
       </el-descriptions-item>
       <el-descriptions-item label="类别名称">
-        <el-input v-model="localFormula.TNAME" class="width220" :disabled="true" />
+        <el-input v-model="localFormula.TNAME" class="width220" />
       </el-descriptions-item>
       <el-descriptions-item label="薪资编码">
-        <el-input v-model="localFormula.DCODE" class="width220" :disabled="true" />
+        <el-input v-model="localFormula.DCODE" class="width220" />
       </el-descriptions-item>
       <el-descriptions-item label="薪资名称">
-        <el-input v-model="localFormula.DNAME" class="width220" />
+        <el-input v-model="localFormula.DNAME" class="width220" :disabled="true" />
       </el-descriptions-item>
       <el-descriptions-item label="生效时间">
         <el-date-picker
@@ -152,10 +152,8 @@ export default {
       return null
     }
   },
-  mounted: function() {
-  },
-  created: function() {
-    if (this.formula != null) {
+  beforeMount: function() {
+    if (this.formula) {
       this.localFormula = Object.assign({}, this.formula)
       this.getSalaryType()
       this.getSalaryDict()

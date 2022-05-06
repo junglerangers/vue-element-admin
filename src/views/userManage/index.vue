@@ -1,5 +1,13 @@
 <template>
   <div ref="main" class="app-container">
+    <div class="block">
+      <el-date-picker
+        v-model="monthTime"
+        type="month"
+        placeholder="请选择相应月份"
+        @change="monthChange"
+      />
+    </div>
     <search @search="searchHandler" />
     <el-table
       id="mytable"
@@ -7,39 +15,39 @@
       element-loading-text="数据拼命加载中"
       element-loading-spinner="el-icon-loading"
       element-loading-background="rgba(0, 0, 0, 0.8)"
-      :data="userList"
+      :data="dataList"
       class="table"
       border
     >
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="center" label="工号" width="200">
+      <el-table-column align="center" label="工号" width="100">
         <template slot-scope="scope">
-          {{ scope.row.workNumber }}
+          {{ scope.row.EMP_CODE }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="姓名" width="100">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.EMP_NAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="科室" width="100">
+      <el-table-column align="center" label="科室" width="200">
         <template slot-scope="scope">
-          {{ scope.row.dep }}
+          {{ scope.row.DEPT_NAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="生效时间" width="100">
+      <el-table-column align="center" label="手机号" width="100">
         <template slot-scope="scope">
-          {{ scope.row.type }}
+          {{ scope.row.PHONE }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="人员类型" width="100">
+      <el-table-column align="center" label="人员性质" width="100">
         <template slot-scope="scope">
-          {{ scope.row.type }}
+          {{ scope.row.KIND_NAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="人员状态" width="100">
+      <el-table-column align="center" label="人员分类" width="100">
         <template slot-scope="scope">
-          {{ scope.row.type }}
+          {{ scope.row.EMP_CLASSNAME }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="失效时间" width="100">
@@ -82,11 +90,11 @@
 </template>
 
 <script>
-import { getUserList } from '@/api/user'
 import { search, userDialog } from './components'
 import * as defaultModel from '@/dataModel/EmployeeModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
+import { pageQuery } from '@/api/employee'
 // import xlsx from 'xlsx'
 
 export default {
@@ -98,16 +106,31 @@ export default {
   data: function() {
     return {
       loading: false,
+      searchString: '',
       CurrentModel: Object.assign({}, defaultModel), // 当前选中的用户
       dialogVisible: false, // 对话框是否可见
       dialogType: 'new', // 对话框属性
       dataList: [], // 所有用户列表
-      searchModle: {
-        /** 以下为筛选条件 */
-        dep: '', // 科室
-        type: '', // 人员类型
-        workNumber: '', // 人员工号
-        name: '' // 人员姓名
+      monthTime: new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
+      searchModel: {
+        'depT_CODE': '',
+        'depT_NAME': '',
+        'emP_CODE': '',
+        'emP_NAME': '',
+        'seX_NAME': '',
+        'iD_CARD': '',
+        'age': '',
+        'phone': '',
+        'c01RJ': '',
+        'c01RH': '',
+        'c01RE_NAME': '',
+        'banK_NO': '',
+        'kinD_CODE': '',
+        'kinD_CODE2': '',
+        'emP_CLASS': '',
+        'hosarea': '',
+        'monthNo': new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
+        'islock': ''
       }
     }
   },
@@ -125,14 +148,18 @@ export default {
   methods: {
     async getDataList() {
       var temp = {
-        ...this.searchModle,
-        currentPage: this.page_currentPage,
-        size: this.page_size
+        queryModel: this.searchModel,
+        pageHandler: {
+          currentPage: this.page_currentPage,
+          size: this.page_size
+        }
       }
+      console.log(temp)
       this.loading = true
-      const res = await getUserList(temp)
-      this.userList = res.data.data
-      this.page_total = res.data.total
+      const res = await pageQuery(temp)
+      console.log(res)
+      this.dataList = res.data
+      this.page_total = res.pageHandler.records
       this.loading = false
     },
     handleAddUser() {
@@ -155,6 +182,14 @@ export default {
       //   console.log(file)
       // }
       // return
+    },
+    monthChange(value) {
+      var date = new Date(value)
+      this.searchString = ''
+      this.searchModel = {}
+      this.searchModel.monthNo = date.getFullYear() + '-' + (1 + date.getMonth()).toString().padStart(2, '0')
+      this.initialPage()
+      this.getDataList()
     }
   }
 }

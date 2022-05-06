@@ -1340,3 +1340,11 @@ null 比 ''  更加的安全
 
 import * as something 中 有一个坑,它会将所有东西都放置到一个对象中进行封装,而不是直接暴露出来
 所以暴露出来的方法应该是使用.运算符来进行取值,而不能直接使用something
+
+JavaScript
+    typeof: 返回一个操作数的数据类型
+    instanceof: 检测构造函数 object instanceof constructor
+
+vue
+    在data中初始化之后,才会调用created中的方法
+    data 和 computed 的优先级比created要更高

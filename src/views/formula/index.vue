@@ -2,13 +2,13 @@
   <div ref="main" class="app-container">
     <div class="block">
       <el-date-picker
-        v-model="searchModel.monthNo"
+        v-model="monthTime"
         type="month"
         placeholder="请选择相应月份"
         @change="monthChange"
       />
     </div>
-    <search @search="searchHandler" />
+    <search v-model="searchString" @search="searchHandler" />
     <el-table
       id="mytable"
       v-loading="loading"
@@ -58,7 +58,8 @@
       <el-table-column align="center">
         <template slot="header">
           <el-button-group>
-            <el-button type="primary" size="small" icon="el-icon-document-add" title="添加字典新项" @click="handleAddUser" />
+            <el-button type="primary" size="small" icon="el-icon-document-add" title="薪资类别新增" @click="handleAddUser" />
+            <el-button type="primary" size="small" icon="el-icon-copy-document" title="薪资类别复制" @click="dialogVisible = true" />
           </el-button-group>
         </template>
         <template slot-scope="scope">
@@ -78,14 +79,37 @@
         @current-change="decoreateCurrentChange"
       />
     </div>
-    <!-- 用户界面创建/编辑框 -->
+    <el-dialog
+      title="薪资复制选择框"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <div class="block">
+        <span>薪资复制(月份)</span>
+        <el-date-picker
+          v-model="copyMonth"
+          type="monthrange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始月份"
+          end-placeholder="结束月份"
+          :picker-options="pickerOptions"
+          class="dialogContent"
+        />
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="salaryTypeCopy">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { pageQuery, localDelete } from '@/api/salaryType'
+import { pageQuery, localDelete, localCopy } from '@/api/salaryType'
 import { search } from './components'
-import { codeDictModel as defaultModel } from '@/dataModel/CodeDictModel'
+import { salaryTypeModel as defaultModel } from '@/dataModel/SalaryTypeModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 import { MessageBox } from 'element-ui'
@@ -100,9 +124,9 @@ export default {
     return {
       loading: false,
       currentModel: Object.assign({}, defaultModel), // 当前选中的模型
-      dialogVisible: false, // 对话框是否可见
-      dialogType: 'new', // 对话框属性
+      monthTime: new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
       dataList: [], // 所有数据列表
+      copyMonth: [],
       searchModel: { // 搜索模型
         'dcode': '',
         'tcode': '',
@@ -112,6 +136,19 @@ export default {
         'formula': '',
         'monthNo': new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
         'islock': ''
+      },
+      searchString: '',
+      dialogVisible: false,
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            end.setMonth(end.getMonth() + 1)
+            picker.$emit('pick', [start, end])
+          }
+        }]
       }
     }
   },
@@ -119,20 +156,20 @@ export default {
     // if (temp) {
     //   this.searchModel.monthNo = temp
     // }
+    console.log('this is created.')
     var temp = this.$route.query.monthNo
     if (!temp == null) {
       this.searchModel.monthNo = temp
     }
     this.getDataList()
-    console.log('here is created.')
     // this.getDepList()
     // this.getTypeList()
   },
   activated() {
-    console.log('activated')
     var temp = this.$route.query.monthNo
-    console.log(`temp:${temp}`)
+    console.log('activated')
     if (temp) {
+      console.log(temp)
       this.searchModel.monthNo = temp
       this.getDataList()
     }
@@ -178,12 +215,11 @@ export default {
      */
     handleAddUser() {
       var date = new Date(this.searchModel.monthNo)
-      this.dialogType = 'new'
       this.currentModel = Object.assign({}, defaultModel)
+      // bug?
       this.currentModel.BEGINDATE = new Date(date.getFullYear(), date.getMonth(), 1)
       this.currentModel.ENDDATE = new Date(date.getFullYear(), date.getMonth() + 1, 0)
       this.currentModel.SYSCODE = '0101'
-      this.dialogVisible = true
       this.$store.dispatch('formula/getFormula', this.currentModel)
       this.$router.push('/formula/detail?type=new')
     },
@@ -191,9 +227,7 @@ export default {
      * 修改现有项
      */
     handleEdit(scope) {
-      this.dialogType = 'edit'
       this.currentModel = Object.assign({}, scope.row)
-      this.dialogVisible = true
       this.$store.dispatch('formula/getFormula', this.currentModel)
       this.$router.push('/formula/detail?type=edit')
     },
@@ -201,14 +235,16 @@ export default {
      * 搜索新项目
      */
     searchHandler(searchModel) {
-      this.searchModel = { ...searchModel }
+      this.searchModel = Object.assign(this.searchModel, { ...searchModel })
       this.initialPage()
       this.getDataList()
     },
     monthChange(value) {
       var date = new Date(value)
-      this.initialPage()
+      this.searchString = ''
+      this.searchModel = {}
       this.searchModel.monthNo = date.getFullYear() + '-' + (1 + date.getMonth()).toString().padStart(2, '0')
+      this.initialPage()
       this.getDataList()
     },
     /**
@@ -220,6 +256,24 @@ export default {
       //   console.log(file)
       // }
       // return
+    },
+    salaryTypeCopy() {
+      this.dialogVisible = false
+      var start = this.copyMonth[0]
+      start = start.getFullYear() + '-' + (start.getMonth() + 1)
+      var end = this.copyMonth[1]
+      end = end.getFullYear() + '-' + (end.getMonth() + 1)
+      var params = {
+        'monthNo': start,
+        'copyFromMonthNo': end
+      }
+      localCopy(params).then(res => {
+        this.$message({
+          message: '薪资复制成功!',
+          type: 'success'
+        })
+      })
+      // 发送复制的请求
     },
     /**
      * 删除特定项目
@@ -286,5 +340,8 @@ export default {
 .el-dialog .el-dialog__body{
   flex:1;
   overflow:auto;
+}
+.dialogContent{
+  margin-top: 10px;
 }
 </style>
