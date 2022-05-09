@@ -58,11 +58,12 @@
       <el-table-column align="center">
         <template slot="header">
           <el-button-group>
-            <el-button type="primary" size="small" icon="el-icon-user" title="添加新用户" @click="handleAddUser" />
-            <el-button type="primary" size="small" icon="el-icon-download" title="数据导出" />
             <!-- input type="file" 点击然后取消时,有概率出现浏览器卡死的情况 -->
             <el-button type="primary" size="small" icon="el-icon-upload2">
-              <input ref="upload" class="myinput" type="file" accept=".xlsx" title="数据上传" @focus="importExcel">
+              <input ref="upload" class="myinput" type="file" accept=".xlsx" title="Excel导入员工信息更新" @focus="importExcel">
+            </el-button>
+            <el-button type="primary" size="small" icon="el-icon-upload2">
+              <input ref="upload" class="myinput" type="file" accept=".xlsx" title="Excel儿科员工更新" @focus="importExcel">
             </el-button>
           </el-button-group>
         </template>
@@ -170,6 +171,7 @@ export default {
     handleEdit(scope) {
       this.dialogType = 'edit'
       this.CurrentModel = scope.row
+      console.log(this.CurrentModel)
       this.dialogVisible = true
     },
     searchHandler(searchModel) {

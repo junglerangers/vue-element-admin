@@ -12,6 +12,7 @@ const getters = {
   permission_routes: state => state.permission.routes,
   errorLogs: state => state.errorLog.logs,
   events: state => state.app.events,
-  formula: state => state.formula.cachedFormula
+  formula: state => state.formula.cachedFormula,
+  salary: state => state.salary.cachedSalary
 }
 export default getters

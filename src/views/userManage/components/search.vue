@@ -9,6 +9,8 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="工号">工号</el-dropdown-item>
             <el-dropdown-item command="姓名">姓名</el-dropdown-item>
+            <el-dropdown-item command="科室">科室</el-dropdown-item>
+            <el-dropdown-item command="性质">性质</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <template slot="append">

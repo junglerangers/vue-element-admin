@@ -1,13 +1,34 @@
 
 <template>
   <div ref="main" class="app-container">
-    <div class="block">
+    <div class="year-class">
       <el-date-picker
-        v-model="searchModel.monthNo"
-        type="month"
-        placeholder="请选择相应月份"
+        v-model="MstModel.YEARNO"
+        type="year"
+        value-format="yyyy"
+        placeholder="请选择相应年份"
+        :disabled="type === 'edit'"
       />
     </div>
+    年-
+    <div class="year-class">
+      <el-date-picker
+        v-model="MstModel.MONTHNO"
+        format="MM"
+        type="month"
+        value-format="MM"
+        placeholder="请选择相应月份"
+        :disabled="type === 'edit'"
+      />
+    </div>
+    月-
+    <div class="month-class">
+      <el-input
+        v-model="MstModel.NUM"
+        placeholder="请选择相应期数"
+        :disabled="type === 'edit'"
+      />
+    </div>期
     <search @search="searchHandler" />
     <el-table
       id="mytable"
@@ -63,13 +84,11 @@
       <el-table-column align="center">
         <template slot="header">
           <el-button-group>
-            <el-button type="primary" size="small" icon="el-icon-user" title="添加字典新项" @click="handleAddUser" />
+            <UploadExcelButton />
           </el-button-group>
         </template>
         <template slot-scope="scope">
-          <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
-          <el-button type="text" size="small" icon="el-icon-close" title="停用" circle @click="handleAbandon(scope)">停用</el-button>
-          <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
+          <el-button type="text" size="small" icon="el-icon-edit" title="详情" @click="handleEdit(scope)">详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -85,21 +104,24 @@
         @current-change="handleCurrentChange(getDataList)"
       />
     </div>
-    <!-- 用户界面创建/编辑框 -->
+    <el-button type="primary" @click="save">保存</el-button>
   </div>
 </template>
 
 <script>
 import { getSlvPageQuery } from '@/api/salary'
+import { getGridList } from '@/api/salaryType'
 import { search, salaryTypeDialog } from './components'
-import * as defaultModel from '@/dataModel/SalaryTypeModel'
+import * as defaultModel from '@/dataModel/SalaryMstModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
+import UploadExcelButton from '@/components/UploadExcel/index.vue'
 
 export default {
   components: {
     search,
-    salaryTypeDialog
+    salaryTypeDialog,
+    UploadExcelButton
   },
   mixins: [resize, tablePage],
   data: function() {
@@ -118,13 +140,50 @@ export default {
         'formula': '',
         'monthNo': new Date(),
         'islock': ''
+      },
+      salaryTypeDict: [], // 薪酬类型字典
+      type: '',
+      MstModel: {
+        AUTOID: '',
+        DCODE: '',
+        DNAME: '',
+        YEARNO: '',
+        MONTHNO: '',
+        NUM: '',
+        CREATEUSER: '',
+        CREATEDATE: '',
+        ISDEL: '',
+        ISLOCK: '',
+        REMARK: '',
+        RNUM: ''
       }
     }
   },
+  computed: {
+    salary: function() {
+      return this.$store.state.salary.cachedSalary
+    }
+  },
   created() {
-    this.getDataList()
+    if (this.salary) {
+      this.type = this.$route.query.type
+      if (this.type === 'edit') {
+        this.getDataList()
+        this.getSalaryType()
+        this.MstModel.YEARNO = this.salary.YEARNO
+        this.MstModel.MONTHNO = this.salary.MONTHNO
+        this.MstModel.NUM = this.salary.NUM
+      }
     // this.getDepList()
     // this.getTypeList()
+    } else {
+      this.$message({
+        message: '请优先选择一张工资单主表!',
+        type: 'warning'
+      })
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.replace('/salary/index')
+    }
   },
   beforeMount() {
     window.addEventListener('resize', this.adjustFooterWidth)
@@ -141,6 +200,24 @@ export default {
     // window.removeEventListener('resize', this.adjustFooterWidth)
   },
   methods: {
+    async getSalaryType() {
+      var monthNo = this.salary.YEARNO + '-' + this.salary.MONTHNO
+      var param = {
+        monthNo: monthNo
+      }
+      const res = await getGridList(param)
+      this.salaryTypeDict = res.data
+    },
+    uploadClick(e) {
+      const files = e.target.files
+      const rawFile = files[0] // only use files[0] 获得第一个文件
+      if (!rawFile) return
+      this.upload(rawFile)
+      console.log('upload')
+    },
+    save() {
+      console.log('save')
+    },
     async getDataList() {
       //   var temp = {
       //     ...this.searchModel,
@@ -150,7 +227,7 @@ export default {
       this.loading = true
       var temp = {
         'queryModel': {
-          'mstid': '5'
+          'mstid': this.salary.AUTOID
 
         },
         'pageHandler': {
@@ -158,7 +235,6 @@ export default {
           'currentPage': this.page_currentPage
         }
       }
-      console.log(temp)
       const res = await getSlvPageQuery(temp)
       this.dataList = res.data
       this.total = res.pageHandler.records
@@ -220,5 +296,13 @@ export default {
 .el-dialog .el-dialog__body{
   flex:1;
   overflow:auto;
+}
+.year-class{
+  width:220px;
+  display: inline-block;
+}
+.month-class{
+  width:240px;
+  display: inline-block;
 }
 </style>

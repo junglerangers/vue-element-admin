@@ -5,11 +5,28 @@
     </el-row>
     {{ count }}
     <button @click="count++">++</button>
+    <el-upload
+      class="upload-demo"
+      action="http://10.88.88.193:5000/api/BusiManage/Salary/PostFile"
+      :on-preview="handlePreview"
+      :on-remove="handleRemove"
+      :before-remove="beforeRemove"
+      multiple
+      :http-request="uploadFunction"
+      :data="upload"
+      :limit="3"
+      :on-exceed="handleExceed"
+      :file-list="fileList"
+    >
+      <el-button size="small" type="primary">点击上传</el-button>
+      <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+    </el-upload>
   </div>
 </template>
 
 <script>
 import PanelGroup from './components/PanelGroup'
+import { getBase64 } from '@/utils/file'
 // import LineChart from './components/LineChart'
 // import RaddarChart from './components/RaddarChart'
 // import PieChart from './components/PieChart'
@@ -42,12 +59,34 @@ export default {
   data() {
     return {
       lineChartData: lineChartData.newVisitis,
-      count: 0
+      count: 0,
+      upload: {
+        mstid: '5'
+      },
+      fileList: []
     }
   },
   methods: {
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    uploadFunction(file) {
+      console.log(file.file)
+      getBase64(file.file).then(data => {
+        console.log(data)
+      })
     }
   }
 }

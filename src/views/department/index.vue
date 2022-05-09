@@ -66,11 +66,11 @@
             <el-button type="primary" size="small" icon="el-icon-user" title="添加字典新项" @click="handleAddUser" />
           </el-button-group>
         </template>
-        <template slot-scope="scope">
+        <!-- <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
           <el-button type="text" size="small" icon="el-icon-close" title="停用" circle @click="handleAbandon(scope)">停用</el-button>
           <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
-        </template>
+        </template> -->
       </el-table-column>
     </el-table>
     <localDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />

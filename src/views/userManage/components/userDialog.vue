@@ -6,28 +6,28 @@
           <i class="el-icon-user" />
           人员工号
         </template>
-        kooriookami
+        {{ rawUser.EMP_CODE }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
           人员姓名
         </template>
-        kooriookami
+        {{ rawUser.EMP_NAME }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
           人员性别
         </template>
-        kooriookami
+        {{ rawUser.SEX_NAME }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
           人员性质
         </template>
-        kooriookami
+        {{ rawUser.KIND_CODE_NAME }}
       </el-descriptions-item>
 
       <el-descriptions-item>
@@ -35,21 +35,21 @@
           <i class="el-icon-user" />
           参加工作时间
         </template>
-        2022-01-01
+        {{ rawUser.WORKTIME|timeFormatter }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
           进单位时间
         </template>
-        2022-01-01
+        {{ rawUser.HOSTIME|timeFormatter }}
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template slot="label">
           <i class="el-icon-user" />
           证件编号
         </template>
-        330327000000000000
+        {{ rawUser.ID_CARD }}
       </el-descriptions-item>
 
       <el-descriptions-item>
@@ -57,28 +57,28 @@
           <i class="el-icon-user" />
           出生日期
         </template>
-        2022-01-01
+        {{ rawUser.BIRTH|timeFormatter }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
           年龄
         </template>
-        1
+        {{ rawUser.AGE }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-mobile-phone" />
           手机号
         </template>
-        18100000000
+        {{ rawUser.C01RH }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-mobile-phone" />
           虚拟网
         </template>
-        18100000000
+        {{ rawUser.C01RJ }}
       </el-descriptions-item>
 
       <el-descriptions-item>
@@ -86,21 +86,21 @@
           <i class="el-icon-location-outline" />
           工资等级
         </template>
-        1
+        {{ rawUser.C01RE_NAME }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-location-outline" />
           岗位等级
         </template>
-        1
+        {{ rawUser.C01RV_NAME }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-location-outline" />
           岗位工资级别
         </template>
-        1
+        {{ rawUser.C01RS_NAME }}
       </el-descriptions-item>
       <el-descriptions-item />
 
@@ -109,21 +109,21 @@
           <i class="el-icon-location-outline" />
           银行卡号
         </template>
-        1
+        {{ rawUser.BANK_NO }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-location-outline" />
           从事岗位
         </template>
-        信息
+        {{ rawUser.C01RX_NAME }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-location-outline" />
           实际岗位
         </template>
-        信息
+        {{ rawUser.C01RY_NAME }}
       </el-descriptions-item>
 
       <el-descriptions-item>
@@ -131,21 +131,21 @@
           <i class="el-icon-location-outline" />
           人员性质
         </template>
-        信息
+        {{ rawUser.KIND_NAME }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-location-outline" />
           人员分类
         </template>
-        {{ currentUser.type }}
+        {{ rawUser.EMP_CLASSNAME }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-location-outline" />
           院区名称
         </template>
-        信息
+        {{ rawUser.HOSAREANAME }}
       </el-descriptions-item>
       <el-descriptions-item />
 
@@ -154,14 +154,14 @@
           <i class="el-icon-location-outline" />
           生效日期
         </template>
-        信息
+        {{ rawUser.BEGINDATE|timeFormatter }}
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template slot="label">
           <i class="el-icon-location-outline" />
           失效日期
         </template>
-        信息
+        {{ rawUser.ENDDATE|timeFormatter }}
       </el-descriptions-item>
 
       <el-descriptions-item>
@@ -169,9 +169,9 @@
           <i class="el-icon-location-outline" />
           人员性质
         </template>
-        <el-select v-model="test" placeholder="请选择" size="mini" style="width:90px">
-          <el-option key="1" value="1" label="不区分" />
-          <el-option key="2" value="2" label="儿童" />
+        <el-select v-model="rawUser.KIND_CODE2" placeholder="请选择" size="mini" style="width:90px">
+          <el-option key="0" value="0" label="不区分" />
+          <el-option key="1" value="1" label="儿童" />
         </el-select>
       </el-descriptions-item>
       <el-descriptions-item span="3">
@@ -210,8 +210,7 @@ export default {
   },
   data: function() {
     return {
-      test: '',
-      rawUser: Object.assign({}, this.currentUser)
+      test: ''
     }
   },
   computed: {
@@ -222,12 +221,18 @@ export default {
       set: function(v) {
         this.toggleDialogVisible()
       }
+    },
+    rawUser: function() {
+      return this.currentUser
     }
   },
   methods: {
     save: function() {
+      console.log(this.currentUser)
+      console.log(this.rawUser)
       console.log('request')
       // 如果请求失败,就将model复原
+      this.$emit('update')
       this.toggleDialogVisible()
     },
     toggleDialogVisible() {

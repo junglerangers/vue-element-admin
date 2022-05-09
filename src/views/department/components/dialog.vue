@@ -4,70 +4,37 @@
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
-          代码ID
+          科室编号
         </template>
-        <el-input v-model="currentModel.dcode" />
+        <el-input v-model="rawModel.DCODE" />
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
-          代码名称
+          科室名称
         </template>
-        <el-input v-model="currentModel.dname" />
+        <el-input v-model="rawModel.DEPT_NAME" />
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
-          代码类别
+          生效日期
         </template>
-        <el-input v-model="currentModel.supercode" />
+        {{ rawModel.BEGINDATE|timeFormatter }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
-          系统ID
+          失效日期
         </template>
-        <el-input v-model="currentModel.syscode" />
+        {{ rawModel.ENDDATE|timeFormatter }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-user" />
-          创建用户
+          锁定标志
         </template>
-        {{ currentModel.createuser }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          创建日期
-        </template>
-        {{ currentModel.createdate|timeFormatter }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          作废判别
-        </template>
-        {{ currentModel.isdel }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          修改用户
-        </template>
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          修改日期
-        </template>
-      </el-descriptions-item>
-      <el-descriptions-item span="3">
-        <template slot="label">
-          <i class="el-icon-tickets" />
-          备注
-        </template>
-        <el-input v-model="test" type="textarea" :readonly="false" />
+        {{ rawModel.ISLOCK }}
       </el-descriptions-item>
     </el-descriptions>
     <span slot="footer" class="dialog-footer">
@@ -109,6 +76,9 @@ export default {
       set: function(v) {
         this.toggleDialogVisible()
       }
+    },
+    rawModel: function() {
+      return this.currentModel
     }
   },
   methods: {
