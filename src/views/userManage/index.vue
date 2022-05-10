@@ -8,7 +8,7 @@
         @change="monthChange"
       />
     </div>
-    <search @search="searchHandler" />
+    <search :month-no="monthNo" @search="searchHandler" />
     <el-table
       id="mytable"
       v-loading="loading"
@@ -112,26 +112,10 @@ export default {
       dialogVisible: false, // 对话框是否可见
       dialogType: 'new', // 对话框属性
       dataList: [], // 所有用户列表
+      monthNo: new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
       monthTime: new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
       searchModel: {
-        'depT_CODE': '',
-        'depT_NAME': '',
-        'emP_CODE': '',
-        'emP_NAME': '',
-        'seX_NAME': '',
-        'iD_CARD': '',
-        'age': '',
-        'phone': '',
-        'c01RJ': '',
-        'c01RH': '',
-        'c01RE_NAME': '',
-        'banK_NO': '',
-        'kinD_CODE': '',
-        'kinD_CODE2': '',
-        'emP_CLASS': '',
-        'hosarea': '',
-        'monthNo': new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
-        'islock': ''
+        'monthNo': new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0')
       }
     }
   },
@@ -155,10 +139,8 @@ export default {
           size: this.page_size
         }
       }
-      console.log(temp)
       this.loading = true
       const res = await pageQuery(temp)
-      console.log(res)
       this.dataList = res.data
       this.page_total = res.pageHandler.records
       this.loading = false
@@ -175,8 +157,10 @@ export default {
       this.dialogVisible = true
     },
     searchHandler(searchModel) {
-      // this.searchModel = { ...searchModel }
-      // console.log(this.dataModel)
+      this.searchModel = Object.assign(this.searchModel, searchModel)
+      console.log(this.searchModel)
+      this.initialPage()
+      this.getDataList()
     },
     importExcel(e) {
       // if (e.target.files.length > 0) {
@@ -189,7 +173,8 @@ export default {
       var date = new Date(value)
       this.searchString = ''
       this.searchModel = {}
-      this.searchModel.monthNo = date.getFullYear() + '-' + (1 + date.getMonth()).toString().padStart(2, '0')
+      this.monthNo = date.getFullYear() + '-' + (1 + date.getMonth()).toString().padStart(2, '0')
+      this.searchModel.monthNo = this.monthNo
       this.initialPage()
       this.getDataList()
     }

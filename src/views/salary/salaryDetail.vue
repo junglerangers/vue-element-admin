@@ -41,58 +41,58 @@
       border
     >
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="center" label="科室" width="100">
+      <el-table-column align="center" label="科室名称" width="100">
         <template slot-scope="scope">
-          {{ scope.row.DEPT_NAME }}
+          {{ scope.row.部门名称 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="姓名" width="100">
+      <el-table-column align="center" label="员工姓名" width="100">
         <template slot-scope="scope">
-          {{ scope.row.ENAME }}
+          {{ scope.row.员工姓名 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="工号" width="100">
+      <el-table-column align="center" label="员工工号" width="100">
         <template slot-scope="scope">
-          {{ scope.row.ENUM }}
+          {{ scope.row.员工工号 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="人员类型" width="100">
+      <el-table-column align="center" label="人员性质" width="100">
         <template slot-scope="scope">
-          {{ scope.row.KIND_NAME }}
+          {{ scope.row.人员性质 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="工作类型" width="100">
+      <el-table-column align="center" label="人员分类" width="100">
         <template slot-scope="scope">
-          {{ scope.row.EMP_CLASSNAME }}
+          {{ scope.row.人员分类 }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="应发合计" width="100">
         <template slot-scope="scope">
-          {{ scope.row.T01 }}
+          {{ scope.row.应发合计 }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="扣款合计" width="100">
         <template slot-scope="scope">
-          {{ scope.row.T02 }}
+          {{ scope.row.扣款合计 }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="实发合计" width="100">
         <template slot-scope="scope">
-          {{ scope.row.T03 }}
+          {{ scope.row.实发合计 }}
         </template>
       </el-table-column>
       <el-table-column align="center">
         <template slot="header">
           <el-button-group>
-            <UploadExcelButton />
+            <UploadExcelButton :month-no="monthNo" />
           </el-button-group>
         </template>
         <template slot-scope="scope">
-          <el-button type="text" size="small" icon="el-icon-edit" title="详情" @click="handleEdit(scope)">详情</el-button>
+          <el-button type="text" size="small" icon="el-icon-edit" title="详情" @click="handleView(scope)">详情</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <salaryTypeDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
+    <detailDialog :current-user="detailModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -111,17 +111,17 @@
 <script>
 import { getSlvPageQuery } from '@/api/salary'
 import { getGridList } from '@/api/salaryType'
-import { search, salaryTypeDialog } from './components'
+import { search, detailDialog } from './components'
 import * as defaultModel from '@/dataModel/SalaryMstModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
-import UploadExcelButton from '@/components/UploadExcel/index.vue'
+import UploadExcelButton from '@/components/UploadExcelButton/index.vue'
 
 export default {
   components: {
     search,
-    salaryTypeDialog,
-    UploadExcelButton
+    UploadExcelButton,
+    detailDialog
   },
   mixins: [resize, tablePage],
   data: function() {
@@ -141,8 +141,10 @@ export default {
         'monthNo': new Date(),
         'islock': ''
       },
+      detailModel: [],
       salaryTypeDict: [], // 薪酬类型字典
       type: '',
+      monthNo: '',
       MstModel: {
         AUTOID: '',
         DCODE: '',
@@ -173,6 +175,7 @@ export default {
         this.MstModel.YEARNO = this.salary.YEARNO
         this.MstModel.MONTHNO = this.salary.MONTHNO
         this.MstModel.NUM = this.salary.NUM
+        this.monthNo = this.salary.YEARNO + '-' + this.salary.MONTHNO
       }
     // this.getDepList()
     // this.getTypeList()
@@ -240,26 +243,19 @@ export default {
       this.total = res.pageHandler.records
       this.loading = false
     },
-    handleAddUser() {
-      this.dialogType = 'new'
-      this.currentModel = Object.assign({}, defaultModel)
-      this.dialogVisible = true
-    },
-    handleEdit(scope) {
-      this.dialogType = 'edit'
+    handleView(scope) {
       this.dialogVisible = true
       this.currentModel = scope.row
+      Object.entries(this.currentModel).forEach(([key, value]) => {
+        this.detailModel.push({
+          key: key,
+          value: value
+        })
+      })
     },
     searchHandler(searchModel) {
       this.dataModel = { ...searchModel }
       // console.log(this.dataModel)
-    },
-    importExcel(e) {
-      // if (e.target.files.length > 0) {
-      //   const file = e.target.files
-      //   console.log(file)
-      // }
-      // return
     }
   }
 }

@@ -1,27 +1,42 @@
 <template>
   <div>
     <el-button type="primary" size="small" icon="el-icon-upload2">
-      <input ref="excel-upload-input" class="myinput" type="file" accept=".xlsx" title="薪资明细导入" @focus="handleClick">
+      <input ref="excel-upload-input" class="myinput" type="file" accept=".xlsx, .xls" title="薪资明细导入" @change="handleClick">
     </el-button>
   </div>
 </template>
 
 <script>
+import { getGridList } from '@/api/salaryType'
+import { getBase64 } from '@/utils/file'
 import XLSX from 'xlsx'
 
 export default {
   name: 'UploadExcelButton',
   props: {
     beforeUpload: Function, // eslint-disable-line
-    onSuccess: Function// eslint-disable-line
+    onSuccess: Function,// eslint-disable-line
+    monthNo: {
+      required: true,
+      type: String,
+      default: '2022-03'
+    }
   },
   data() {
     return {
       loading: false,
       excelData: {
-        header: null,
-        results: null
-      }
+        mstId: 0,
+        headValueList: [
+          {
+            readName: '',
+            realValue: ''
+          }
+        ],
+        fileBase64: '',
+        fileName: ''
+      },
+      salaryType: []
     }
   },
   methods: {
@@ -31,22 +46,49 @@ export default {
       this.onSuccess && this.onSuccess(this.excelData)
     },
     handleClick(e) {
+      console.log('start loading')
       const files = e.target.files
       const rawFile = files[0] // only use files[0] 获得第一个文件
       if (!rawFile) return
       this.upload(rawFile)
     },
+    async getSalaryType() {
+      var params = {
+        monthNo: this.monthNo
+      }
+      var res = await getGridList(params)
+      this.salaryType = res.data
+    },
+    findTCODE(tname, dict) {
+      if (tname === '人员编码') {
+        return 'ENUM'
+      }
+      if (tname === '姓名') {
+        return 'ENAME'
+      }
+      const result = dict.find(item => item.TNAME === tname)
+      if (result !== undefined) {
+        return result.TCODE
+      } else {
+        return null
+      }
+    },
     async upload(rawFile) {
       this.$refs['excel-upload-input'].value = null // fix can't select the same excel
-
+      this.excelData.fileName = rawFile.name
       if (!this.beforeUpload) {
-        this.readerData(rawFile)
-        return
-      }
-      const before = this.beforeUpload(rawFile)
-      if (before) {
+        await this.getSalaryType()
         await this.readerData(rawFile)
+        var fileStr = await getBase64(rawFile)
+        this.excelData.fileBase64 = fileStr
+        console.log(this.excelData)
+      } else {
+        const before = this.beforeUpload(rawFile)
+        if (before) {
+          await this.readerData(rawFile)
+        }
       }
+      this.onSuccess && this.onSuccess(this.excelData)
     },
     readerData(rawFile) {
       this.loading = true
@@ -62,9 +104,27 @@ export default {
           const firstSheetName = workbook.SheetNames[0]
           const worksheet = workbook.Sheets[firstSheetName]
           const header = this.getHeaderRow(worksheet)
-          const results = XLSX.utils.sheet_to_json(worksheet)
-          console.log(header)
-          console.log(results)
+          // const results = XLSX.utils.sheet_to_json(worksheet)
+          var i = 0
+          for (i = 0; i < header.length; i++) {
+            var tcode = this.findTCODE(header[i], this.salaryType)
+            if (tcode !== null) {
+              this.excelData.headValueList.push({
+                readName: header[i],
+                realValue: tcode
+              })
+            } else {
+              this.$message({
+                message: `发生错误,${header[i]}未能找到对应代码,请检查薪资类别字典后重新上传`,
+                type: 'warning',
+                duration: '5000'
+              })
+              break
+            }
+          }
+          console.log(this.excelData)
+          // 如果表头检查没有问题,就发送文件到远程客户端
+          // console.log(results)
           // this.generateData({ header, results })
           this.loading = false
           console.log(new Date() - time)

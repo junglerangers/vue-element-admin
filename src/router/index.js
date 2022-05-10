@@ -227,40 +227,6 @@ export const asyncRoutes = [
       }
     ]
   },
-  {
-    path: '/report',
-    component: Layout,
-    redirect: '/report/reportList',
-    alwaysShow: true,
-    name: 'report',
-    meta: {
-      title: '报表模块',
-      icon: 'Report',
-      roles: ['admin']
-    },
-    children: [
-      {
-        path: 'reportList',
-        component: () => import('@/views/report/reportList'),
-        name: 'reportList',
-        meta: {
-          title: '报表一览',
-          icon: 'num1',
-          roles: ['admin']
-        }
-      },
-      {
-        path: 'reporDetail',
-        component: () => import('@/views/report/report'),
-        name: 'reportDetail',
-        meta: {
-          title: '报表详情',
-          icon: 'num2',
-          roles: ['admin']
-        }
-      }
-    ]
-  },
   // {
   //   path: '/permission',
   //   component: Layout,
