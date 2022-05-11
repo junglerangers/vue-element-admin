@@ -5,10 +5,11 @@
         v-model="monthTime"
         type="month"
         placeholder="请选择相应月份"
-        @change="monthChange"
+        :clearable="false"
+        @change="decorateMonthChange"
       />
     </div>
-    <search :month-no="monthNo" @search="searchHandler" />
+    <search @search="searchHandler" />
     <el-table
       id="mytable"
       v-loading="loading"
@@ -50,27 +51,18 @@
           {{ scope.row.EMP_CLASSNAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="失效时间" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.state === true?'启用':'停用' }}
-        </template>
-      </el-table-column>
       <el-table-column align="center">
         <template slot="header">
           <el-button-group>
             <!-- input type="file" 点击然后取消时,有概率出现浏览器卡死的情况 -->
-            <el-button type="primary" size="small" icon="el-icon-upload2">
-              <input ref="upload" class="myinput" type="file" accept=".xlsx" title="Excel导入员工信息更新" @focus="importExcel">
-            </el-button>
-            <el-button type="primary" size="small" icon="el-icon-upload2">
+            <el-button type="primary" size="small" icon="el-icon-upload" @click="importEmployee">员工信息导入</el-button>
+            <!-- <el-button type="primary" size="small" icon="el-icon-upload2">
               <input ref="upload" class="myinput" type="file" accept=".xlsx" title="Excel儿科员工更新" @focus="importExcel">
-            </el-button>
+            </el-button> -->
           </el-button-group>
         </template>
         <template slot-scope="scope">
-          <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
-          <el-button type="text" size="small" icon="el-icon-close" title="停用" circle @click="handleAbandon(scope)">禁用</el-button>
-          <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
+          <el-button type="text" size="small" icon="el-icon-view" title="编辑" @click="handleViewUser(scope)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -82,11 +74,29 @@
         :page-size="page_size"
         :layout="page_layout"
         :total="page_total"
-        @size-change="handleSizeChange(getDataList)"
-        @current-change="handleCurrentChange(getDataList)"
+        @size-change="decorateSizeChange"
+        @current-change="decoreateCurrentChange"
       />
     </div>
     <!-- 用户界面创建/编辑框 -->
+    <el-dialog
+      title="人员导入月份选择框"
+      :visible.sync="dialogVisible2"
+      width="30%"
+    >
+      <div class="block">
+        <span>月份选择</span>
+        <el-date-picker
+          v-model="test"
+          type="month"
+          placeholder="选择月"
+        />
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="monthImport">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -95,43 +105,48 @@ import { search, userDialog } from './components'
 import * as defaultModel from '@/dataModel/EmployeeModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
+import searchMethod from '@/mixins/search'
 import { pageQuery } from '@/api/employee'
 // import xlsx from 'xlsx'
 
 export default {
+  name: 'UserManageIndex',
   components: {
     search,
     userDialog
   },
-  mixins: [resize, tablePage],
+  mixins: [resize, tablePage, searchMethod],
   data: function() {
     return {
       loading: false,
       searchString: '',
       CurrentModel: Object.assign({}, defaultModel), // 当前选中的用户
       dialogVisible: false, // 对话框是否可见
+      dialogVisible2: false,
       dialogType: 'new', // 对话框属性
-      dataList: [], // 所有用户列表
-      monthNo: new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
       monthTime: new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
+      dataList: [], // 所有用户列表
       searchModel: {
-        'monthNo': new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0')
-      }
+        monthNo: ''
+      },
+      test: ''
+    }
+  },
+  computed: {
+    monthNo: function() {
+      return this.$store.getters.monthNo
     }
   },
   created() {
+    this.monthTime = this.monthNo
     this.getDataList()
-    // this.getDepList()
-    // this.getTypeList()
   },
-  beforeMount() {
-    window.addEventListener('resize', this.adjustFooterWidth)
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.adjustFooterWidth)
+  activated: function() {
+    this.monthTime = this.monthNo
   },
   methods: {
     async getDataList() {
+      this.searchModel.monthNo = this.monthNo
       var temp = {
         queryModel: this.searchModel,
         pageHandler: {
@@ -145,38 +160,23 @@ export default {
       this.page_total = res.pageHandler.records
       this.loading = false
     },
-    handleAddUser() {
-      this.dialogType = 'new'
-      this.CurrentModel = defaultModel
-      this.dialogVisible = true
-    },
-    handleEdit(scope) {
-      this.dialogType = 'edit'
+    handleViewUser(scope) {
+      this.dialogType = 'view'
       this.CurrentModel = scope.row
-      console.log(this.CurrentModel)
       this.dialogVisible = true
     },
-    searchHandler(searchModel) {
-      this.searchModel = Object.assign(this.searchModel, searchModel)
-      console.log(this.searchModel)
-      this.initialPage()
-      this.getDataList()
+    monthImport() {
+      console.log('员工信息按月份导入')
     },
-    importExcel(e) {
-      // if (e.target.files.length > 0) {
-      //   const file = e.target.files
-      //   console.log(file)
-      // }
-      // return
-    },
-    monthChange(value) {
-      var date = new Date(value)
+    emptySearch() {
       this.searchString = ''
       this.searchModel = {}
-      this.monthNo = date.getFullYear() + '-' + (1 + date.getMonth()).toString().padStart(2, '0')
-      this.searchModel.monthNo = this.monthNo
-      this.initialPage()
-      this.getDataList()
+    },
+    importEmployee() {
+      console.log('数据导入')
+    },
+    decorateMonthChange(value) {
+      return this.monthChange(value, this.emptySearch)
     }
   }
 }

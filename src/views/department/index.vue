@@ -2,7 +2,7 @@
   <div ref="main" class="app-container">
     <div class="block">
       <el-date-picker
-        v-model="queryModel.monthNo"
+        v-model="monthTime"
         type="month"
         placeholder="请选择相应月份"
         @change="monthChange"
@@ -25,7 +25,7 @@
           {{ scope.row.DEPT_CODE }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="科室名称" width="200">
+      <el-table-column align="center" label="科室名称" width="">
         <template slot-scope="scope">
           {{ scope.row.DEPT_NAME }}
         </template>
@@ -40,12 +40,12 @@
           {{ scope.row.DEPT_LEVEL }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="生效日期" width="100">
+      <el-table-column align="center" label="生效日期" width="150">
         <template slot-scope="scope">
           {{ scope.row.BEGINDATE| timeFormatter }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="失效日期" width="100">
+      <el-table-column align="center" label="失效日期" width="150">
         <template slot-scope="scope">
           {{ scope.row.ENDDATE| timeFormatter }}
         </template>
@@ -60,18 +60,18 @@
           {{ scope.row.ISLOCK }}
         </template>
       </el-table-column>
-      <el-table-column align="center">
+      <!-- <el-table-column align="center">
         <template slot="header">
           <el-button-group>
             <el-button type="primary" size="small" icon="el-icon-user" title="添加字典新项" @click="handleAddUser" />
           </el-button-group>
         </template>
-        <!-- <template slot-scope="scope">
+        <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
           <el-button type="text" size="small" icon="el-icon-close" title="停用" circle @click="handleAbandon(scope)">停用</el-button>
           <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
-        </template> -->
-      </el-table-column>
+        </template>
+      </el-table-column> -->
     </el-table>
     <localDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
@@ -81,8 +81,8 @@
         :page-size="page_size"
         :layout="page_layout"
         :total="page_total"
-        @size-change="handleSizeChange(getDataList)"
-        @current-change="handleCurrentChange(getDataList)"
+        @size-change="decorateSizeChange"
+        @current-change="decoreateCurrentChange"
       />
     </div>
     <!-- 用户界面创建/编辑框 -->
@@ -95,63 +95,60 @@ import { search, localDialog } from './components'
 import * as defaultModel from '@/dataModel/CodeDictModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
+import searchMethod from '@/mixins/search'
 
 export default {
   components: {
     search,
     localDialog
   },
-  mixins: [resize, tablePage],
+  mixins: [resize, tablePage, searchMethod],
   data: function() {
     return {
       loading: false,
       currentModel: Object.assign({}, defaultModel), // 当前选中的模型
+      monthTime: '',
       date: new Date(),
       dialogVisible: false, // 对话框是否可见
       dialogType: 'new', // 对话框属性
       dataList: [], // 所有数据列表
-      queryModel: {
-        'depT_CODE': '',
-        'depT_NAME': '',
-        'iS_STOP': '',
-        'spelL_CODE': '',
-        'wbX_CODE': '',
-        'supeR_CODE': '',
-        'monthNo': new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0')
+      searchModel: {
+        'DEPT_CODE': '',
+        'DEPT_NAME': '',
+        'IS_STOP': '',
+        'SPELL_CODE': '',
+        'WBX_CODE': '',
+        'SUPER_CODE': '',
+        'monthNo': ''
       }
     }
   },
-  watch: {
+  computed: {
+    monthNo: function() {
+      return this.$store.getters.monthNo
+    }
   },
   created() {
+    this.monthTime = this.monthNo
     this.getDataList()
     // this.getDepList()
     // this.getTypeList()
   },
+  activated: function() {
+    this.monthTime = this.monthNo
+  },
   beforeMount() {
     window.addEventListener('resize', this.adjustFooterWidth)
-  },
-  mounted: function() {
-    const vue = this
-    setTimeout(() => {
-      this.$nextTick(function() {
-        vue.adjustFooterWidth()
-      })
-    }, 150)
   },
   beforeDestroy() {
     // window.removeEventListener('resize', this.adjustFooterWidth)
   },
   methods: {
-    monthChange(value) {
-      var date = new Date(value)
-      this.queryModel.monthNo = date.getFullYear() + '-' + (1 + date.getMonth()).toString().padStart(2, '0')
-      this.getDataList()
-    },
     async getDataList() {
       this.loading = true
+      this.searchModel.monthNo = this.monthNo
       var temp = {
-        queryModel: this.queryModel,
+        queryModel: this.searchModel,
         pageHandler: {
           'size': this.page_size,
           'currentPage': this.page_currentPage
@@ -160,22 +157,8 @@ export default {
       const res = await pageQuery(temp)
       // console.log(res.data)
       this.dataList = res.data
-      this.total = res.pageHandler.records
+      this.page_total = res.pageHandler.records
       this.loading = false
-    },
-    handleAddUser() {
-      this.dialogType = 'new'
-      this.currentModel = Object.assign({}, defaultModel)
-      this.dialogVisible = true
-    },
-    handleEdit(scope) {
-      this.dialogType = 'edit'
-      this.dialogVisible = true
-      this.currentModel = scope.row
-    },
-    searchHandler(queryModel) {
-      this.dataModel = { ...queryModel }
-      // console.log(this.dataModel)
     },
     importExcel(e) {
       // if (e.target.files.length > 0) {

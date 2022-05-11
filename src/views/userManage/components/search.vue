@@ -61,6 +61,7 @@
             <el-option v-for="item in hosAreaList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
+        <el-button class="primary" @click="searchEmpty">清空搜索</el-button>
       </el-form>
     </transition>
   </div>
@@ -87,12 +88,6 @@ const defaultSearchModel = {
 }
 
 export default {
-  props: {
-    monthNo: {
-      type: String,
-      required: true
-    }
-  },
   data: function() {
     return {
       depList: [], // 科室列表
@@ -123,6 +118,9 @@ export default {
       } else {
         return 'el-icon-arrow-down'
       }
+    },
+    monthNo: function() {
+      return this.$store.getters.monthNo
     }
   },
   watch: {
@@ -145,6 +143,12 @@ export default {
     getHosAreaList().then(res => {
       this.hosAreaList = res.data
     })
+    var params = {
+      monthNo: this.monthNo
+    }
+    getGridList(params).then(res => {
+      this.depList = res.data
+    })
   },
   methods: {
     searchHandler() {
@@ -160,6 +164,9 @@ export default {
     },
     showAdvanceSearch() {
       this.advanceSearchSign = !this.advanceSearchSign
+    },
+    searchEmpty() {
+      this.searchModel = Object.assign({}, defaultSearchModel)
     }
   }
 }

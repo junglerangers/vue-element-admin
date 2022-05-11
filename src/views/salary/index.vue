@@ -91,8 +91,8 @@
         :page-size="page_size"
         :layout="page_layout"
         :total="page_total"
-        @size-change="handleSizeChange(getDataList)"
-        @current-change="handleCurrentChange(getDataList)"
+        @size-change="decorateSizeChange"
+        @current-change="decoreateCurrentChange"
       />
     </div>
     <!-- 用户界面创建/编辑框 -->

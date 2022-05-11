@@ -9,7 +9,6 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="科室编号">科室编号</el-dropdown-item>
             <el-dropdown-item command="科室名称">科室名称</el-dropdown-item>
-            <el-dropdown-item command="上级科室编号">上级科室编号</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <template slot="append">
@@ -21,6 +20,12 @@
 </template>
 
 <script>
+
+const mapDict = {
+  '科室编号': 'DEPT_CODE',
+  '科室名称': 'DEPT_NAME'
+}
+
 export default {
   data: function() {
     return {
@@ -29,37 +34,25 @@ export default {
       searchtype: '科室名称',
       searchContent: '',
       /** 搜索模型 */
-      queryModel: {
-        'depT_CODE': '',
-        'depT_NAME': '',
-        'iS_STOP': '',
-        'spelL_CODE': '',
-        'wbX_CODE': '',
-        'supeR_CODE': '',
-        'monthNo': ''
+      searchModel: {
+        'DEPT_CODE': '',
+        'DEPT_NAME': '',
+        'IS_STOP': '',
+        'SPELL_CODE': '',
+        'WBX_CODE': '',
+        'SUPER_CODE': '',
+        'MONTHNO': ''
       },
-      test: '',
       visible: false
-    }
-  },
-  computed: {
-    advanceSearchIcon: function() {
-      if (this.visible === false) {
-        return 'el-icon-more'
-      } else {
-        return 'el-icon-arrow-down'
-      }
     }
   },
   methods: {
     searchHandler() {
-      this.$emit('search', this.queryModel)
+      this.searchModel[mapDict[this.searchtype]] = this.searchContent
+      this.$emit('search', this.searchModel)
     },
     handleCommand(command) {
       this.searchtype = command
-    },
-    showAdvanceSearch() {
-      this.visible = !this.visible
     }
   }
 }

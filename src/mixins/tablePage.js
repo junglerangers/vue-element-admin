@@ -7,7 +7,7 @@ export default {
       page_total: 0,
       page_currentPage: 1,
       page_sizes: [20, 100, 200, 400],
-      page_layout: 'total, prev, pager, next',
+      page_layout: 'total,sizes,prev,pager,next',
       footerWidth: 0
     }
   },
@@ -53,6 +53,15 @@ export default {
     initialPage() {
       this.page_currentPage = 1
       this.page_size = 20
+    },
+    /**
+     * 因为ui-element 不支持在html中return function.
+     */
+    decoreateCurrentChange(val) {
+      return this.handleCurrentChange(this.getDataList)(val)
+    },
+    decorateSizeChange(val) {
+      return this.handleSizeChange(this.getDataList)(val)
     }
   },
   mounted: function() {
@@ -62,5 +71,11 @@ export default {
         vue.adjustFooterWidth()
       })
     }, 150)
+  },
+  beforeMount() {
+    window.addEventListener('resize', this.adjustFooterWidth)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.adjustFooterWidth)
   }
 }

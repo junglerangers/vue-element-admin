@@ -194,15 +194,6 @@ export default {
       }).catch((val) => {
         console.log(val)
       })
-    },
-    /**
-     * 因为ui-element 不支持在html中return function.
-     */
-    decoreateCurrentChange(val) {
-      return this.handleCurrentChange(this.getDataList)(val)
-    },
-    decorateSizeChange(val) {
-      return this.handleSizeChange(this.getDataList)(val)
     }
   }
 }

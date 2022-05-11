@@ -167,9 +167,9 @@
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-location-outline" />
-          人员性质
+          人员性质2
         </template>
-        <el-select v-model="rawUser.KIND_CODE2" placeholder="请选择" size="mini" style="width:90px">
+        <el-select v-model="rawUser.KIND_CODE2" placeholder="请选择" size="mini" style="width:90px" disabled>
           <el-option key="0" value="0" label="不区分" />
           <el-option key="1" value="1" label="儿童" />
         </el-select>
@@ -179,7 +179,7 @@
           <i class="el-icon-tickets" />
           备注
         </template>
-        <el-input v-model="test" :readonly="false" />
+        <el-input v-model="test" :readonly="false" disabled />
       </el-descriptions-item>
     </el-descriptions>
     <span slot="footer" class="dialog-footer">
@@ -227,13 +227,8 @@ export default {
     }
   },
   methods: {
-    save: function() {
-      console.log(this.currentUser)
-      console.log(this.rawUser)
-      console.log('request')
-      // 如果请求失败,就将model复原
-      this.$emit('update')
-      this.toggleDialogVisible()
+    async save() {
+      console.log('this is save!')
     },
     toggleDialogVisible() {
       this.$emit('toggleVisible')

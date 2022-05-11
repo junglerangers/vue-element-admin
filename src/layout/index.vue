@@ -38,7 +38,11 @@ export default {
       device: state => state.app.device,
       showSettings: state => state.settings.showSettings,
       needTagsView: state => state.settings.tagsView,
-      fixedHeader: state => state.settings.fixedHeader
+      fixedHeader: state => state.settings.fixedHeader,
+      kind_code_list: (state) => state.universal.kindCodeList,
+      kind_code2_list: (state) => state.universal.kindCode2List,
+      hos_area_list: (state) => state.universal.hosAreaList,
+      emp_cls_list: (state) => state.universal.empClsList
     }),
     classObj() {
       return {
