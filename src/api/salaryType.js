@@ -69,3 +69,17 @@ export function localUpdate(params) {
     }
   })
 }
+
+/**
+ * 工资类别
+ */
+export function getSalaryTypeList() {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/CodeDict/GetGridList',
+    method: 'post',
+    data: {
+      supercode: '11',
+      syscode: '0101'
+    }
+  })
+}

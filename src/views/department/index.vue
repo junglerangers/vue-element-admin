@@ -60,20 +60,7 @@
           {{ scope.row.ISLOCK }}
         </template>
       </el-table-column>
-      <!-- <el-table-column align="center">
-        <template slot="header">
-          <el-button-group>
-            <el-button type="primary" size="small" icon="el-icon-user" title="添加字典新项" @click="handleAddUser" />
-          </el-button-group>
-        </template>
-        <template slot-scope="scope">
-          <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
-          <el-button type="text" size="small" icon="el-icon-close" title="停用" circle @click="handleAbandon(scope)">停用</el-button>
-          <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
-        </template>
-      </el-table-column> -->
     </el-table>
-    <localDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -91,22 +78,20 @@
 
 <script>
 import { pageQuery } from '@/api/department'
-import { search, localDialog } from './components'
-import * as defaultModel from '@/dataModel/CodeDictModel'
+import { search } from './components'
+// import * as defaultModel from '@/dataModel/CodeDictModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 import searchMethod from '@/mixins/search'
 
 export default {
   components: {
-    search,
-    localDialog
+    search
   },
   mixins: [resize, tablePage, searchMethod],
   data: function() {
     return {
       loading: false,
-      currentModel: Object.assign({}, defaultModel), // 当前选中的模型
       monthTime: '',
       date: new Date(),
       dialogVisible: false, // 对话框是否可见
@@ -137,12 +122,6 @@ export default {
   activated: function() {
     this.monthTime = this.monthNo
   },
-  beforeMount() {
-    window.addEventListener('resize', this.adjustFooterWidth)
-  },
-  beforeDestroy() {
-    // window.removeEventListener('resize', this.adjustFooterWidth)
-  },
   methods: {
     async getDataList() {
       this.loading = true
@@ -159,13 +138,6 @@ export default {
       this.dataList = res.data
       this.page_total = res.pageHandler.records
       this.loading = false
-    },
-    importExcel(e) {
-      // if (e.target.files.length > 0) {
-      //   const file = e.target.files
-      //   console.log(file)
-      // }
-      // return
     }
   }
 }

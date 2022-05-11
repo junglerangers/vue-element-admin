@@ -41,13 +41,19 @@ export default {
         'SPELL_CODE': '',
         'WBX_CODE': '',
         'SUPER_CODE': '',
-        'MONTHNO': ''
+        'monthNo': ''
       },
       visible: false
     }
   },
+  computed: {
+    monthNo: function() {
+      return this.$store.getters.monthNo
+    }
+  },
   methods: {
     searchHandler() {
+      this.searchModel.monthNo = this.monthNo
       this.searchModel[mapDict[this.searchtype]] = this.searchContent
       this.$emit('search', this.searchModel)
     },

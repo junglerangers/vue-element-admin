@@ -2,16 +2,23 @@
   <div class="app-container">
     <el-descriptions title="公式详细信息" :column="2">
       <el-descriptions-item label="类别编码">
-        <el-input v-model="localFormula.TCODE" class="width220" :disabled="true" />
+        <el-input v-model="localFormula.TCODE" class="width220" disabled />
       </el-descriptions-item>
       <el-descriptions-item label="类别名称">
         <el-input v-model="localFormula.TNAME" class="width220" />
       </el-descriptions-item>
       <el-descriptions-item label="薪资编码">
-        <el-input v-model="localFormula.DCODE" class="width220" />
+        <el-input v-model="localFormula.DCODE" class="width220" disabled />
       </el-descriptions-item>
       <el-descriptions-item label="薪资名称">
-        <el-input v-model="localFormula.DNAME" class="width220" :disabled="true" />
+        <el-select v-model="localFormula.DNAME" placeholder="请选择" class="width220" @change="updateDCODE">
+          <el-option
+            v-for="item in salaryTypeDict"
+            :key="item.DCODE"
+            :label="item.DNAME"
+            :value="item.DNAME"
+          />
+        </el-select>
       </el-descriptions-item>
       <el-descriptions-item label="生效时间">
         <el-date-picker
@@ -20,6 +27,7 @@
           type="date"
           placeholder="选择日期"
           :picker-options="datePickerOptions"
+          disabled
         />
       </el-descriptions-item>
       <el-descriptions-item label="失效时间">
@@ -29,6 +37,7 @@
           type="date"
           placeholder="选择日期"
           :picker-options="datePickerOptions"
+          disabled
         />
       </el-descriptions-item>
       <el-descriptions-item label="父级节点">
@@ -77,6 +86,7 @@
 import { tagshow } from './components'
 import { splictStringByOperator, getLastStrByOperator, splictStringByOperatorSign } from '@/utils/stringAdvanced'
 import { debounce } from '@/utils/index'
+import { getSalaryTypeList } from '@/api/salaryType'
 // import { salaryTypeModel as defaultModel } from '@/dataModel/SalaryTypeModel'
 import { getTreeList, getGridList, localAdd, localUpdate } from '@/api/salaryType'
 export default {
@@ -87,8 +97,8 @@ export default {
     return {
       rawFormular: '', // 存储的是字符串的形式
       dict: [],
+      salaryTypeDict: [], // 存储工资类别,包括工资,奖金,福利,社保缴费等
       testdata: 0,
-      localTime: null,
       searchDebounce: debounce(this.querySearchRemote, 500),
       rawTemp: '',
       typeOptions: [],
@@ -144,19 +154,16 @@ export default {
       // 先computed,然后再created
       return this.$store.state.formula.cachedFormula
     },
-    monthDate: function() {
-      if (this.localFormula.BEGINDATE) {
-        var temp = new Date(this.localFormula.BEGINDATE)
-        return temp.getFullYear() + '-' + (1 + temp.getMonth())
-      }
-      return null
+    monthNo: function() {
+      return this.$store.getters.monthNo
     }
   },
-  beforeMount: function() {
+  created: function() {
     if (this.formula) {
       this.localFormula = Object.assign({}, this.formula)
       this.getSalaryType()
       this.getSalaryDict()
+      this.getSalaryType2()
     } else {
       this.$message({
         message: '请选择一条公式或者选择新增公式!',
@@ -200,28 +207,34 @@ export default {
           })
         })
       }
-      console.log(this.localFormula)
       this.$store.dispatch('tagsView/delView', this.$route)
-      this.$router.replace('/formula/index?monthNo=' + this.monthDate)
+      this.$router.replace('/formula/index')
     },
-    async getSalaryType() {
-      const time = new Date(this.formula.ENDDATE)
-      this.localTime = time.getFullYear() + '-' + (time.getMonth() + 1).toString()
+    async getSalaryType() { // 获取父级节点
       var param = {
-        monthNo: this.localTime
+        monthNo: this.monthNo
       }
       await getTreeList(param).then(res => {
         this.typeOptions = res.data
       })
     },
+    async getSalaryType2() { // 获取dcode
+      getSalaryTypeList().then(res => {
+        this.salaryTypeDict = res.data
+      })
+    },
     async getSalaryDict() {
       var param = {
-        monthNo: this.localTime
+        monthNo: this.monthNo
       }
       getGridList(param).then(res => {
         this.dict = res.data
         this.initialFormular()
       })
+    },
+    updateDCODE(value) {
+      var temp = this.salaryTypeDict.find(element => element.DNAME === value)
+      this.localFormula.DCODE = temp.DCODE
     },
     initialFormular() {
       if (this.localFormula.FORMULA) {

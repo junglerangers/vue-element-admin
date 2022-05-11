@@ -72,7 +72,7 @@
       <el-table-column align="center">
         <template slot="header">
           <el-button-group>
-            <el-button type="primary" size="small" icon="el-icon-document-add" title="工资单新增" @click="handleAddUser" />
+            <el-button type="primary" size="small" icon="el-icon-document-add" title="工资单新增" @click="handleAddSalary" />
           </el-button-group>
         </template>
         <template slot-scope="scope">
@@ -83,7 +83,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <salaryTypeDialog v-model="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -101,7 +100,6 @@
 
 <script>
 import { getMstPageQuery, lockData, localDelete } from '@/api/salary'
-import { salaryTypeDialog } from './components'
 import * as defaultModel from '@/dataModel/SalaryTypeModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
@@ -109,16 +107,12 @@ import tablePage from '@/mixins/tablePage'
 export default {
   name: 'SalaryIndex',
   components: {
-    // search,
-    salaryTypeDialog
   },
   mixins: [resize, tablePage],
   data: function() {
     return {
       loading: false,
       currentModel: Object.assign({}, defaultModel), // 当前选中的模型
-      dialogVisible: false, // 对话框是否可见
-      dialogType: 'new', // 对话框属性
       dataList: [], // 所有数据列表
       timeYear: null,
       timeMonth: null,
@@ -137,20 +131,6 @@ export default {
     this.getDataList()
     // this.getDepList()
     // this.getTypeList()
-  },
-  beforeMount() {
-    window.addEventListener('resize', this.adjustFooterWidth)
-  },
-  mounted: function() {
-    const vue = this
-    setTimeout(() => {
-      this.$nextTick(function() {
-        vue.adjustFooterWidth()
-      })
-    }, 150)
-  },
-  beforeDestroy() {
-    // window.removeEventListener('resize', this.adjustFooterWidth)
   },
   methods: {
     async getDataList() {
@@ -172,16 +152,12 @@ export default {
       this.page_total = res.pageHandler.records
       this.loading = false
     },
-    handleAddUser() {
-      this.dialogType = 'new'
+    handleAddSalary() {
       this.currentModel = Object.assign({}, defaultModel)
-      this.dialogVisible = true
       this.$store.dispatch('salary/getSalary', this.currentModel)
       this.$router.push('/salary/salaryDetail?type=new')
     },
     handleEdit(scope) {
-      this.dialogType = 'edit'
-      this.dialogVisible = true
       this.currentModel = scope.row
       this.$store.dispatch('salary/getSalary', this.currentModel)
       this.$router.push('/salary/salaryDetail?type=edit')

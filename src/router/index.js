@@ -79,7 +79,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '仪表盘', icon: 'dashboard3' }// affix如果设置为true,则标签将附加在视图上进行展示
+        meta: { title: '仪表盘', icon: 'dashboard3' } // affix如果设置为true,则标签将附加在视图上进行展示
       }
     ]
   },
@@ -106,6 +106,81 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
+    path: '/salary',
+    component: Layout,
+    redirect: '/salary/index',
+    name: 'salary',
+    meta: {
+      title: '工资单管理',
+      icon: 'salary-icon',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/salary/index'),
+        name: 'SalaryIndex',
+        meta: {
+          title: '工资单一览',
+          icon: 'num1',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'salaryAdd',
+        component: () => import('@/views/salary/salaryAdd'),
+        name: 'salaryAdd',
+        meta: {
+          title: '工资单新增',
+          icon: 'num2',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'salaryDetail',
+        component: () => import('@/views/salary/salaryDetail'),
+        name: 'salaryDetail',
+        hidden: true,
+        meta: {
+          title: '工资单明细表',
+          icon: 'num2',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/formula',
+    component: Layout,
+    redirect: '/formula/index',
+    meta: {
+      title: '薪酬类别管理',
+      icon: 'formular'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/formula/index'),
+        name: 'FormularIndex',
+        meta: {
+          title: '薪酬类别管理',
+          icon: 'formular'
+        }
+      },
+      {
+        path: 'detail',
+        component: () => import('@/views/formula/detail'),
+        name: 'formularDetail',
+        hidden: true,
+        meta: {
+          title: '类别详情',
+          icon: 'num2',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
     path: '/users',
     component: Layout,
     redirect: '/users/index',
@@ -119,7 +194,7 @@ export const asyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/userManage/index'),
-        name: 'usersManage',
+        name: 'UserManageIndex',
         meta: {
           title: '员工管理',
           icon: 'users',
@@ -146,82 +221,6 @@ export const asyncRoutes = [
         meta: {
           title: '部门管理',
           icon: 'department',
-          roles: ['admin']
-        }
-      }
-    ]
-  },
-  {
-    path: '/salary',
-    component: Layout,
-    redirect: '/salary/index',
-    alwaysShow: true,
-    name: 'salary',
-    meta: {
-      title: '薪酬管理',
-      icon: 'salary-icon',
-      roles: ['admin']
-    },
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/salary/index'),
-        name: 'salaryList',
-        meta: {
-          title: '工资单主表',
-          icon: 'num1',
-          roles: ['admin']
-        }
-      },
-      {
-        path: 'salaryDetail',
-        component: () => import('@/views/salary/salaryDetail'),
-        name: 'salaryDetail',
-        meta: {
-          title: '工资单明细表',
-          icon: 'num2',
-          roles: ['admin']
-        }
-      },
-      {
-        path: 'salaryType',
-        component: () => import('@/views/salary/salaryType'),
-        name: 'salaryType',
-        meta: {
-          title: '薪酬类别表',
-          icon: 'num3',
-          roles: ['admin']
-        }
-      }
-    ]
-  },
-
-  {
-    path: '/formula',
-    component: Layout,
-    redirect: '/formula/index',
-    alwaysShow: true,
-    meta: {
-      title: '公式管理',
-      icon: 'formular'
-    },
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/formula/index'),
-        name: 'FormularIndex',
-        meta: {
-          title: '公式一览',
-          icon: 'num1'
-        }
-      },
-      {
-        path: 'detail',
-        component: () => import('@/views/formula/detail'),
-        name: 'formularDetail',
-        meta: {
-          title: '公式详情',
-          icon: 'num2',
           roles: ['admin']
         }
       }
@@ -346,11 +345,12 @@ export const asyncRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }), // 控制页面切换之间的滚动行为
-  routes: constantRoutes
-})
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }), // 控制页面切换之间的滚动行为
+    routes: constantRoutes
+  })
 
 const router = createRouter()
 

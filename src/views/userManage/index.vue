@@ -142,7 +142,10 @@ export default {
     this.getDataList()
   },
   activated: function() {
-    this.monthTime = this.monthNo
+    if (this.monthTime !== this.monthNo) {
+      this.monthTime = this.monthNo
+      this.getDataList()
+    }
   },
   methods: {
     async getDataList() {

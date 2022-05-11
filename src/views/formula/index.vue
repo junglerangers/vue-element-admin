@@ -5,7 +5,7 @@
         v-model="monthTime"
         type="month"
         placeholder="请选择相应月份"
-        @change="monthChange"
+        @change="decorateMonthChange"
       />
     </div>
     <search v-model="searchString" @search="searchHandler" />
@@ -58,7 +58,7 @@
       <el-table-column align="center">
         <template slot="header">
           <el-button-group>
-            <el-button type="primary" size="small" icon="el-icon-document-add" title="薪资类别新增" @click="handleAddUser" />
+            <el-button type="primary" size="small" icon="el-icon-document-add" title="薪资类别新增" @click="handleAddSalaryType" />
             <el-button type="primary" size="small" icon="el-icon-copy-document" title="薪资类别复制" @click="dialogVisible = true" />
           </el-button-group>
         </template>
@@ -112,6 +112,7 @@ import { search } from './components'
 import { salaryTypeModel as defaultModel } from '@/dataModel/SalaryTypeModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
+import searchMethod from '@/mixins/search'
 import { MessageBox } from 'element-ui'
 
 export default {
@@ -119,12 +120,12 @@ export default {
   components: {
     search
   },
-  mixins: [resize, tablePage],
+  mixins: [resize, tablePage, searchMethod],
   data: function() {
     return {
       loading: false,
       currentModel: Object.assign({}, defaultModel), // 当前选中的模型
-      monthTime: new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
+      monthTime: '',
       dataList: [], // 所有数据列表
       copyMonth: [],
       searchModel: { // 搜索模型
@@ -134,7 +135,7 @@ export default {
         'remark': '',
         'supercode': '',
         'formula': '',
-        'monthNo': new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
+        'monthNo': '',
         'islock': ''
       },
       searchString: '',
@@ -152,51 +153,29 @@ export default {
       }
     }
   },
-  created() {
-    // if (temp) {
-    //   this.searchModel.monthNo = temp
-    // }
-    console.log('this is created.')
-    var temp = this.$route.query.monthNo
-    if (!temp == null) {
-      this.searchModel.monthNo = temp
+  computed: {
+    monthNo: function() {
+      return this.$store.getters.monthNo
     }
+  },
+  created() {
+    this.monthTime = this.monthNo
     this.getDataList()
     // this.getDepList()
     // this.getTypeList()
   },
   activated() {
-    var temp = this.$route.query.monthNo
-    console.log('activated')
-    if (temp) {
-      console.log(temp)
-      this.searchModel.monthNo = temp
+    if (this.monthTime !== this.monthNo) {
+      this.monthTime = this.monthNo
       this.getDataList()
     }
-  },
-  beforeMount() {
-    window.addEventListener('resize', this.adjustFooterWidth)
-  },
-  mounted: function() {
-    const vue = this
-    setTimeout(() => {
-      this.$nextTick(function() {
-        vue.adjustFooterWidth()
-      })
-    }, 150)
-    console.log('mounted')
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.adjustFooterWidth)
   },
   methods: {
     /**
      * 获取字典列表
      */
     async getDataList() {
-      if (this.searchModel.monthNo == null) {
-        this.searchModel.monthNo = new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0')
-      }
+      this.searchModel.monthNo = this.monthNo
       var params = {
         queryModel: this.searchModel,
         pageHandler: {
@@ -205,6 +184,7 @@ export default {
         }
       }
       this.loading = true
+      console.log(this.monthNo)
       const res = await pageQuery(params)
       this.dataList = res.data
       this.page_total = res.pageHandler.records
@@ -213,8 +193,8 @@ export default {
     /**
      * 添加新项
      */
-    handleAddUser() {
-      var date = new Date(this.searchModel.monthNo)
+    handleAddSalaryType() {
+      var date = new Date(this.monthno)
       this.currentModel = Object.assign({}, defaultModel)
       // bug?
       this.currentModel.BEGINDATE = new Date(date.getFullYear(), date.getMonth(), 1)
@@ -231,21 +211,12 @@ export default {
       this.$store.dispatch('formula/getFormula', this.currentModel)
       this.$router.push('/formula/detail?type=edit')
     },
-    /**
-     * 搜索新项目
-     */
-    searchHandler(searchModel) {
-      this.searchModel = Object.assign(this.searchModel, { ...searchModel })
-      this.initialPage()
-      this.getDataList()
-    },
-    monthChange(value) {
-      var date = new Date(value)
+    searchEmpty() {
       this.searchString = ''
       this.searchModel = {}
-      this.searchModel.monthNo = date.getFullYear() + '-' + (1 + date.getMonth()).toString().padStart(2, '0')
-      this.initialPage()
-      this.getDataList()
+    },
+    decorateMonthChange(value) {
+      return this.monthChange(value, this.searchEmpty)
     },
     /**
      * 导入excel表格
@@ -295,15 +266,6 @@ export default {
       }).catch((val) => {
         console.log(val)
       })
-    },
-    /**
-     * 因为ui-element 不支持在html中return function.
-     */
-    decoreateCurrentChange(val) {
-      return this.handleCurrentChange(this.getDataList)(val)
-    },
-    decorateSizeChange(val) {
-      return this.handleSizeChange(this.getDataList)(val)
     }
   }
 }
