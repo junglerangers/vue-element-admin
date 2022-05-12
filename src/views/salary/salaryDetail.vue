@@ -240,7 +240,7 @@ export default {
       }
       const res = await getSlvPageQuery(temp)
       this.dataList = res.data
-      this.total = res.pageHandler.records
+      this.page_total = res.pageHandler.records
       this.loading = false
     },
     handleView(scope) {

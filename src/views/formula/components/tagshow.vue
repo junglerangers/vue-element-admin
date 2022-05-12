@@ -1,6 +1,7 @@
 <template>
   <div class="tagshow">
     <div>公式结果展示:</div>
+    {{ result }} =
     <template v-for="item in content">
       <!-- eslint-disable-next-line vue/valid-v-for -->
       <el-tag v-if="isTag(item.type)" :type="item.type">{{ item.element }}</el-tag>
@@ -17,6 +18,11 @@ export default {
       default: function() {
         return []
       }
+    },
+    result: {
+      type: String,
+      default: '',
+      required: true
     }
   },
   data: function() {

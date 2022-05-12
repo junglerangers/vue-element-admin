@@ -69,12 +69,7 @@
           {{ scope.row.ISLOCK }}
         </template>
       </el-table-column>
-      <el-table-column align="center">
-        <template slot="header">
-          <el-button-group>
-            <el-button type="primary" size="small" icon="el-icon-document-add" title="工资单新增" @click="handleAddSalary" />
-          </el-button-group>
-        </template>
+      <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
           <el-button v-if="scope.row.ISLOCK === '0'" type="text" size="small" icon="el-icon-lock" title="锁定" circle @click="handleClock(scope)">锁定</el-button>

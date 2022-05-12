@@ -34,6 +34,7 @@ export function localImport(params) {
   return request({
     url: 'http://10.88.88.193:5000/api/BasicManage/Employee/Import',
     method: 'post',
+    timeout: 50 * 1000,
     data: {
       ...params
     }
@@ -53,4 +54,28 @@ export function updateChildren(params) {
       params
     }
   })
+}
+
+/**
+ * 判断是否已经存在已有的数据
+ * @param {*} monthNo
+ * @returns
+ */
+export async function isExist(monthNo) {
+  var params = {
+    queryModel: {
+      monthNo: monthNo
+    },
+    pageHandler: {
+      size: 20,
+      currentPage: 1
+    }
+  }
+  console.log(params)
+  var res = await pageQuery(params)
+  if (res.data.length > 0) {
+    return true
+  } else {
+    return false
+  }
 }

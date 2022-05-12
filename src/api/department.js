@@ -59,3 +59,21 @@ export function pageQuery(params) {
     }
   })
 }
+
+export async function isExist(monthNo) {
+  var params = {
+    queryModel: {
+      monthNo: monthNo
+    },
+    pageHandler: {
+      size: 20,
+      currentPage: 1
+    }
+  }
+  var res = await pageQuery(params)
+  if (res.data.length > 0) {
+    return true
+  } else {
+    return false
+  }
+}

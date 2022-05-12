@@ -58,7 +58,7 @@
     <!-- 其它信息模块 -->
     <el-divider />
     <!-- 显示模块 -->
-    <tagshow :content="showFormular" />
+    <tagshow :content="showFormular" :result="localFormula.TNAME" />
     <div class="inputFormular">
       公式输入:
       <!-- 输入模块(输入这里要增加智能搜索模块,智能提示需要的输入) -->
@@ -72,6 +72,7 @@
         class="block"
         @select="autoFixInput"
       >
+        <template slot="prepend">{{ localFormula.TNAME }} =</template>
         <template v-slot="{item}">
           <span style="float: left">{{ item.TNAME }}</span>
           <span style="float: right; color: #8492a6; font-size: 13px">{{ item.TCODE }}</span>
