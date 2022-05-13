@@ -58,6 +58,7 @@ service.interceptors.response.use(
   // 20000范围内的状态码就会触发这个
   response => {
     const res = response.data
+    console.log(response)
     // console.log('Here is response interceptor')
     if (res.status !== '0') {
       Message({

@@ -7,18 +7,14 @@
     element-loading-background="rgba(0, 0, 0, 0.8)"
   >
     <el-steps :active="active" finish-status="success">
-      <el-step title="选择相应期数" />
-      <el-step title="获取部门数据" />
-      <el-step title="获取员工数据" />
-      <el-step title="薪酬类别导入" />
-      <el-step title="新增工资单主表" />
-      <el-step title="工资单明细导入" />
+      <el-step v-for="op in opOrder" :key="op.index" :title="op.info" />
     </el-steps>
     <el-collapse v-model="activeName" accordion :style="{'margin-top':'50px'}">
-      <el-collapse-item title="1.新增工资单期数选择" name="1">
+      <el-collapse-item :title="opOrder[0].index+'.'+opOrder[0].info" name="1">
         <div class="year-class">
           <el-date-picker
             v-model="time.yearNo"
+            format="yyyy"
             type="year"
             value-format="yyyy"
             placeholder="请选择相应年份"
@@ -44,25 +40,48 @@
             :disabled="active !== 0"
           />
         </div>期
+        <el-descriptions title="" class="marginTB50" :column="2" :style="{'width':'875px'}">
+          <el-descriptions-item label="薪资名称">
+            <el-select v-model="MST.DNAME" placeholder="请选择" class="width220" @change="updateDCODE">
+              <el-option
+                v-for="item in salaryTypeDict"
+                :key="item.DCODE"
+                :label="item.DNAME"
+                :value="item.DNAME"
+              />
+            </el-select>
+          </el-descriptions-item>
+          <el-descriptions-item label="薪资编码">
+            <el-input v-model="MST.DCODE" class="width220" disabled />
+          </el-descriptions-item>
+          <el-descriptions-item label="备注" span="2">
+            <el-input v-model="MST.REMARK" type="textarea" :readonly="false" :style="{'width':'685px'}" />
+          </el-descriptions-item>
+        </el-descriptions>
         <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="setTime">下一步</el-button>
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="setTime">数据一键导入</el-button>
         <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="initial">重新开始</el-button>
       </el-collapse-item>
-      <el-collapse-item title="2.获取部门数据" name="2">
+      <el-collapse-item :title="opOrder[1].index+'.'+opOrder[1].info" name="2">
         <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="getDepartmentList">导入部门数据</el-button>
       </el-collapse-item>
-      <el-collapse-item title="3.获取员工数据" name="3">
+      <el-collapse-item :title="opOrder[2].index+'.'+opOrder[2].info" name="3">
         <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="getUserList">导入员工数据</el-button>
       </el-collapse-item>
-      <el-collapse-item title="4.薪酬类别导入" name="4">
+      <el-collapse-item :title="opOrder[3].index+'.'+opOrder[3].info" name="4">
         <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="dialogVisible = true">薪酬类别复制</el-button>
-        <el-button type="primary" plain :style="{'margin-left':'50px'}">薪酬类别新增</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="showSalaryType">薪酬类别管理</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="getSalaryDetailType">下一步</el-button>
       </el-collapse-item>
-      <el-collapse-item title="5.工资单主表新增" name="5">
-        <el-button type="primary" plain :style="{'margin-left':'50px'}">工资单主表新增</el-button>
-      </el-collapse-item>
-      <el-collapse-item title="6.工资单明细表导入" name="6">
-        <el-button type="primary" plain :style="{'margin-left':'50px'}">工资单明细表导入</el-button>
+      <el-collapse-item :title="opOrder[4].index+'.'+opOrder[4].info" name="5">
+        <el-upload
+          action="blank"
+          :show-file-list="false"
+          accept="xlsx,xls"
+          :http-request="salaryUpload"
+          :style="{'margin-left':'50px'}"
+        >
+          <el-button size="small" type="primary" plain>点击上传</el-button>
+        </el-upload>
       </el-collapse-item>
     </el-collapse>
     <el-dialog
@@ -96,9 +115,15 @@
 
 import { localImport as departmentImport, isExist as isDepartmentExist } from '@/api/department'
 import { localImport as userImport, isExist as isEmployeeExist } from '@/api/employee'
+import { getSalaryTypeList, getGridList } from '@/api/salaryType'
 import { localCopy } from '@/api/salaryType'
+import { localAdd, localImport as salaryImport } from '@/api/salary'
+import { upload as Excelupload } from '@/utils/excel'
 
 export default {
+  name: 'SalaryAdd',
+  components: {
+  },
   data() {
     return {
       loading: false,
@@ -106,28 +131,70 @@ export default {
       activeName: '1',
       active: 0,
       time: {
-        monthNo: new Date(),
-        yearNo: new Date(),
+        monthNo: (1 + new Date().getMonth()).toString().padStart(2, '0'),
+        yearNo: new Date().getFullYear().toString(),
         num: 1
+      },
+      MST: {
+        'DCODE': '',
+        'DNAME': '',
+        'YEARNO': '',
+        'MONTHNO': '',
+        'NUM': '',
+        'CREATEUSER': '',
+        'CREATEDATE': '',
+        'REMARK': ''
+      },
+      mstID: '',
+      opOrder: [
+        {
+          index: 1,
+          info: '工资单新增'
+        }, {
+          index: 2,
+          info: '获取部门数据'
+        },
+        {
+          index: 3,
+          info: '获取员工数据'
+        },
+        {
+          index: 4,
+          info: '获取薪酬类别'
+        },
+        {
+          index: 5,
+          info: '导入工资明细'
+        }
+      ],
+      copyMonth: [],
+      salaryTypeDict: [],
+      salaryDetailTypeDict: [],
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            end.setMonth(end.getMonth() + 1)
+            picker.$emit('pick', [start, end])
+          }
+        }]
       }
     }
   },
   computed: {
     params: function() {
-      return this.time.yearNo.getFullYear() + '-' + (1 + this.time.monthNo.getMonth()).toString().padStart(2, '0')
+      return this.time.yearNo + '-' + this.time.monthNo
     }
   },
   created() {
+    console.log(this.time)
+    this.getSalaryTypeList()
   },
   methods: {
-    async test() {
-      await new Promise(resolve => {
-        setTimeout(() => {
-          resolve('Done!')
-        }, 2000)
-      }).then(value => {
-        this.active = '2'
-      })
+    async test(e) {
+      console.log(e)
     },
     async getDepartmentList() {
       if (!this.timeTest()) {
@@ -174,6 +241,12 @@ export default {
         })
       }
     },
+    async getSalaryDetailType() {
+      getGridList({ monthNo: this.params }).then(res => {
+        this.salaryDetailTypeDict = res.data
+        console.log('数据导入成功')
+      })
+    },
     async confirm() {
       var result = false
       await this.$confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', '提示', {
@@ -186,6 +259,26 @@ export default {
         result = false
       })
       return result
+    },
+    async getSalaryTypeList() {
+      getSalaryTypeList().then(res => {
+        this.salaryTypeDict = res.data
+      })
+    },
+    updateDCODE(value) {
+      var temp = this.salaryTypeDict.find(element => element.DNAME === value)
+      this.MST.DCODE = temp.DCODE
+    },
+    async salaryUpload(e) {
+      await Excelupload(22, e.file, this.salaryDetailTypeDict).then(params => {
+        console.log(params)
+        return salaryImport(params)
+      }).then(res => {
+        console.log('上传成功')
+        console.log(res)
+      }).catch(err => {
+        console.log(err)
+      })
     },
     timeTest() {
       if (!this.time.yearNo) {
@@ -212,9 +305,24 @@ export default {
       return true
     },
     setTime() {
+      this.MST.CREATEUSER = 'admin'
+      this.MST.CREATEDATE = new Date().format('yyyy-MM-dd hh:mm:ss')
+      this.MST.YEARNO = this.time.yearNo
+      this.MST.MONTHNO = this.time.monthNo
+      this.MST.NUM = this.time.num
+      var params = {
+        mst: this.MST,
+        slvList: []
+      }
       if (this.timeTest()) {
-        this.activeName = '2'
-        this.active = 1
+        localAdd(params).then((res) => {
+          console.log(res)
+          this.activeName = '2'
+          this.active = 1
+          console.log('添加完成')
+        }).catch(err => {
+          console.log(err)
+        })
       }
     },
     salaryTypeCopy() {
@@ -233,13 +341,16 @@ export default {
           type: 'success'
         })
       })
-      // 发送复制的请求
+    },
+    showSalaryType() {
+      this.$store.commit('universal/SET_MONTHNO', this.params)
+      this.$router.push('/formula/index')
     },
     initial() {
       this.activeName = '1'
       this.active = 0
-      this.time.yearNo = new Date()
-      this.time.monthNo = new Date()
+      this.time.yearNo = new Date().getFullYear().toString()
+      this.time.monthNo = (1 + new Date().getMonth()).toString().padStart(2, '0')
     }
   }
 }
@@ -270,5 +381,12 @@ export default {
     background-color: green;
   cursor: pointer;
   transition: background-color 5s ease-out;
+}
+.width220{
+  width: 220px;
+}
+.marginTB50{
+  margin-top:10px;
+  margin-bottom :20px
 }
 </style>

@@ -1,8 +1,8 @@
-export function getBase64(file) {
+export async function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
+    reader.onload = () => resolve(reader.result.replace('data:', '').replace(/^.+,/, ''))
     reader.onerror = (error) => reject(error)
+    reader.readAsDataURL(file)
   })
 }

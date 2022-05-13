@@ -89,3 +89,14 @@ export function localUpdate(params) {
     }
   })
 }
+
+export function localImport(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BusiManage/Salary/Import',
+    method: 'post',
+    timeout: 1000 * 500,
+    data: {
+      ...params
+    }
+  })
+}

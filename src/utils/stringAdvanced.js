@@ -119,3 +119,82 @@ export function getLastStrByOperator(str) {
     return result.split('').reverse().join('')
   }
 }
+
+export function validateArithmeti(str, objList) {
+  console.log(str)
+  console.log(objList)
+  // 存在不合理的变量
+  if (objList.some(element => element.index === -1)) {
+    return false
+  }
+  // 剔除空白符
+  str = str.replace(/\s/g, '')
+
+  // 错误情况，空字符串
+  if (str === '') {
+    return true
+  }
+
+  // 运算符开头
+  if (/^[\x\÷\+\-\*\/]/.test(str)) {
+    return false
+  }
+
+  // 错误情况，运算符结尾
+  if (/[\x\÷\+\-\*\/]$/.test(str)) {
+    return false
+  }
+
+  // 错误情况，(后面是运算符或者)
+  if (/\([\x\÷\+\-\*\/]/.test(str)) {
+    return false
+  }
+  // 错误情况，运算符连续
+  if (/[\x\÷\+\-\*\/\(\)]{2,}/.test(str)) {
+    return false
+  }
+
+  // 空括号
+  if (/\(\)/.test(str)) {
+    return false
+  }
+
+  // 错误情况，括号不配对
+  var stack = []
+  for (var i = 0, item; i < str.length; i++) {
+    item = str.charAt(i)
+    if (item === '(') {
+      stack.push('(')
+    } else if (item === ')') {
+      if (stack.length > 0) {
+        stack.pop()
+      } else {
+        return false
+      }
+    }
+  }
+
+  if (stack.length !== 0) {
+    return false
+  }
+
+  // 错误情况，(后面是运算符
+  if (/\([\x\÷\+\-\*\/]/.test(str)) {
+    return false
+  }
+
+  // 错误情况，)前面是运算符
+  if (/[\x\÷\+\-\*\/]\)/.test(str)) {
+    return false
+  }
+
+  // 错误情况，(前面不是运算符
+  if (/[\x\÷\+\-\*\/]\(/.test(str)) {
+    return false
+  }
+
+  // 错误情况，)后面不是运算符
+  if (/\)[\x\÷\+\-\*\/]/.test(str)) {
+    return false
+  }
+}
