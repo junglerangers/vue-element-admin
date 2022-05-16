@@ -100,3 +100,42 @@ export function localImport(params) {
     }
   })
 }
+
+export function GetSlvFormModel(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BusiManage/Salary/GetSlvFormModel',
+    method: 'post',
+    data: {
+      ...params
+    }
+  })
+}
+
+export async function isExist(mstid) {
+  var params = {
+    queryModel: {
+      mstid: mstid
+    },
+    pageHandler: {
+      size: 20,
+      currentPage: 1
+    }
+  }
+  console.log(params)
+  var res = await getSlvPageQuery(params)
+  if (res.data.length > 0) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export function UpdateSlv(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BusiManage/Salary/UpdateSlv',
+    method: 'post',
+    data: {
+      ...params
+    }
+  })
+}

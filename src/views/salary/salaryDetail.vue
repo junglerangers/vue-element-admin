@@ -41,7 +41,7 @@
       border
     >
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="center" label="科室名称" width="100">
+      <el-table-column align="center" label="科室名称" width="200">
         <template slot-scope="scope">
           {{ scope.row.部门名称 }}
         </template>
@@ -76,23 +76,36 @@
           {{ scope.row.扣款合计 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="实发合计" width="100">
+      <el-table-column align="center" label="工资实发合计" width="100">
         <template slot-scope="scope">
-          {{ scope.row.实发合计 }}
+          {{ scope.row.工资实发合计===null?0:scope.row.工资实发合计 }}
         </template>
       </el-table-column>
       <el-table-column align="center">
         <template slot="header">
           <el-button-group>
-            <UploadExcelButton :month-no="monthNo" />
+            <el-upload
+              action="blank"
+              :show-file-list="false"
+              accept="xlsx,xls"
+              :http-request="salaryUpload"
+              :style="{'margin-left':'50px'}"
+            >
+              <el-button
+                size="small"
+                type="primary"
+                title="上传"
+                icon="el-icon-upload2"
+              />
+            </el-upload>
           </el-button-group>
         </template>
         <template slot-scope="scope">
-          <el-button type="text" size="small" icon="el-icon-edit" title="详情" @click="handleView(scope)">详情</el-button>
+          <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <detailDialog :current-user="detailModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
+    <detailDialog :current-user="currentModel" :dict="salaryTypeDict" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -104,44 +117,53 @@
         @current-change="handleCurrentChange(getDataList)"
       />
     </div>
-    <el-button type="primary" @click="save">保存</el-button>
   </div>
 </template>
 
 <script>
-import { getSlvPageQuery } from '@/api/salary'
+import { getSlvPageQuery, localImport as salaryImport, isExist as isSalaryExist, GetSlvFormModel } from '@/api/salary'
 import { getGridList } from '@/api/salaryType'
 import { search, detailDialog } from './components'
-import * as defaultModel from '@/dataModel/SalaryMstModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
-import UploadExcelButton from '@/components/UploadExcelButton/index.vue'
+import { upload as Excelupload } from '@/utils/excel'
+import { mapActions } from 'vuex'
 
 export default {
   components: {
     search,
-    UploadExcelButton,
     detailDialog
   },
   mixins: [resize, tablePage],
   data: function() {
     return {
       loading: false,
-      currentModel: Object.assign({}, defaultModel), // 当前选中的模型
+      currentModel: {
+        mst: [{
+          'MSTID': '',
+          'ENUM': '',
+          'ENAME': '',
+          'DEPT_CODE': '',
+          'DEPT_NAME': '',
+          'SEX_NAME': '',
+          'ID_CARD': '',
+          'KIND_CODE': '',
+          'KIND_NAME': '',
+          'EMP_CLASS': '',
+          'EMP_CLASSNAME': '',
+          'HOSAREA': '',
+          'HOSAREANAME': ''
+        }],
+        slvList: []
+      }, // 当前选中的模型
       dialogVisible: false, // 对话框是否可见
       dialogType: 'new', // 对话框属性
       dataList: [], // 所有数据列表
       searchModel: {
-        'dcode': '',
-        'tcode': '',
-        'tname': '',
-        'remark': '',
-        'supercode': '',
-        'formula': '',
-        'monthNo': new Date(),
-        'islock': ''
+        mstid: '',
+        enum: '',
+        ename: ''
       },
-      detailModel: [],
       salaryTypeDict: [], // 薪酬类型字典
       type: '',
       monthNo: '',
@@ -164,6 +186,9 @@ export default {
   computed: {
     salary: function() {
       return this.$store.state.salary.cachedSalary
+    },
+    mstid: function() {
+      return this.salary.AUTOID
     }
   },
   created() {
@@ -188,38 +213,67 @@ export default {
       this.$router.replace('/salary/index')
     }
   },
-  beforeMount() {
-    window.addEventListener('resize', this.adjustFooterWidth)
-  },
-  mounted: function() {
-    const vue = this
-    setTimeout(() => {
-      this.$nextTick(function() {
-        vue.adjustFooterWidth()
-      })
-    }, 150)
-  },
-  beforeDestroy() {
-    // window.removeEventListener('resize', this.adjustFooterWidth)
-  },
   methods: {
+    ...mapActions({
+      addEvent: 'app/addEvent',
+      changeEventState: 'app/changeEventState'
+    }),
     async getSalaryType() {
       var monthNo = this.salary.YEARNO + '-' + this.salary.MONTHNO
       var param = {
         monthNo: monthNo
       }
-      const res = await getGridList(param)
+      var res = await getGridList(param)
       this.salaryTypeDict = res.data
     },
-    uploadClick(e) {
-      const files = e.target.files
-      const rawFile = files[0] // only use files[0] 获得第一个文件
-      if (!rawFile) return
-      this.upload(rawFile)
-      console.log('upload')
+    async salaryUpload(e) {
+      var sign1 = await isSalaryExist(this.params)
+      var sign2 = await this.confirm()
+      if (sign1 && !sign2) {
+        // 如果已经存在已经有的数据,提示用户是重新导入数据,还是使用现有的数据
+        return
+      }
+      var datetime = new Date()
+      const date = datetime.toISOString().split('T')[0]
+      const time = datetime.getHours() + ':' + datetime.getMinutes() + ':' + datetime.getSeconds()
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: '薪资明细上传',
+        startTime: date + ' ' + time,
+        endTime: '',
+        taskState: '运行中'
+      }
+      this.addEvent(task)
+      Excelupload(22, e.file, this.salaryDetailTypeDict).then(params => {
+        console.log(params)
+        return salaryImport(params)
+      }).then(res => {
+        console.log('上传成功')
+        task.taskState = '已经完成'
+        console.log(res)
+      }).catch(err => {
+        task.taskState = '出错' + err
+        console.log(err)
+      }).finally(() => {
+        const h = this.$createElement
+        this.$notify({
+          title: '通知',
+          message: h('i', { style: 'color: teal' }, task.taskName + task.taskState)
+        })
+      })
     },
-    save() {
-      console.log('save')
+    async confirm() {
+      var result = false
+      await this.$confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        result = true
+      }).catch(() => {
+        result = false
+      })
+      return result
     },
     async getDataList() {
       //   var temp = {
@@ -228,11 +282,10 @@ export default {
       //     size: this.page_size
       //   }
       this.loading = true
+      this.searchModel.mstid = this.mstid
+      console.log(this.searchModel)
       var temp = {
-        'queryModel': {
-          'mstid': this.salary.AUTOID
-
-        },
+        'queryModel': this.searchModel,
         'pageHandler': {
           'size': this.page_size,
           'currentPage': this.page_currentPage
@@ -243,18 +296,24 @@ export default {
       this.page_total = res.pageHandler.records
       this.loading = false
     },
-    handleView(scope) {
-      this.dialogVisible = true
-      this.currentModel = scope.row
-      Object.entries(this.currentModel).forEach(([key, value]) => {
-        this.detailModel.push({
-          key: key,
-          value: value
-        })
+    async handleEdit(scope) {
+      this.loading = true
+      var params = {
+        mstid: this.mstid,
+        enum: scope.row.员工工号,
+        ename: scope.row.员工姓名
+      }
+      console.log(params)
+      GetSlvFormModel(params).then(res => {
+        console.log(res.data)
+        this.loading = false
+        this.currentModel = res.data
+        this.dialogVisible = true
       })
     },
     searchHandler(searchModel) {
-      this.dataModel = { ...searchModel }
+      this.searchModel = { ...searchModel }
+      this.getDataList()
       // console.log(this.dataModel)
     }
   }

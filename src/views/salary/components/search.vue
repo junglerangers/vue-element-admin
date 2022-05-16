@@ -7,11 +7,13 @@
             {{ searchtype }}<i class="el-icon-arrow-down el-icon--right" />
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="薪酬类型">薪酬类型</el-dropdown-item>
+            <el-dropdown-item command="姓名">姓名</el-dropdown-item>
+            <el-dropdown-item command="工号">工号</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <template slot="append">
           <el-button type="primary" icon="el-icon-search" @click="searchHandler">搜索</el-button>
+          <el-button type="primary" icon="el-icon-refresh-left" @click="initialSearchHandler">重置</el-button>
         </template>
       </el-input>
     </div>
@@ -20,26 +22,24 @@
 
 <script>
 
-const mapDict = {
-  '薪酬类型': 'dcode'
-}
-
 export default {
   data: function() {
     return {
       depList: [], // 科室列表
       typeList: [], // 人员类型列表
-      searchtype: '薪酬类型',
+      searchtype: '工号',
       searchContent: '',
       /** 搜索模型 */
-      search: {
-        dep: '', // 科室
-        type: '', // 人员类型
-        workNumber: '', // 人员工号
-        name: '' // 人员姓名
+      searchModel: {
+        enum: '',
+        ename: ''
       },
       test: '',
-      visible: false
+      visible: false,
+      mapDict: {
+        '姓名': 'ename',
+        '工号': 'enum'
+      }
     }
   },
   computed: {
@@ -53,14 +53,26 @@ export default {
   },
   methods: {
     searchHandler() {
-      this.searchModel[mapDict[this.searchtype]] = this.searchContent
+      this.searchModel[this.mapDict[this.searchtype]] = this.searchContent
+      this.$emit('search', this.searchModel)
+    },
+    initialSearchHandler() {
+      this.emptySearch()
       this.$emit('search', this.searchModel)
     },
     handleCommand(command) {
+      this.emptySearch()
       this.searchtype = command
     },
     showAdvanceSearch() {
       this.visible = !this.visible
+    },
+    emptySearch() {
+      this.searchContent = ''
+      this.searchModel = {
+        enum: '',
+        ename: ''
+      }
     }
   }
 }

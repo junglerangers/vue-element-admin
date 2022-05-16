@@ -1348,3 +1348,5 @@ JavaScript
 vue
     在data中初始化之后,才会调用created中的方法
     data 和 computed 的优先级比created要更高
+
+计算属性也可以v-model?!

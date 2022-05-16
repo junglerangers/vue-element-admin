@@ -71,7 +71,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
+          <el-button type="text" size="small" icon="el-icon-edit" title="明细" @click="handleEdit(scope)">明细</el-button>
           <el-button v-if="scope.row.ISLOCK === '0'" type="text" size="small" icon="el-icon-lock" title="锁定" circle @click="handleClock(scope)">锁定</el-button>
           <el-button v-else type="text" size="small" icon="el-icon-unlock" title="解锁" circle @click="handleClock(scope)">解锁</el-button>
           <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
