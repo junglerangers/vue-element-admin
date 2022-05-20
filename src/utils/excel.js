@@ -60,7 +60,7 @@ export function checkData(rawFile, dict) {
         var tcode = findTCODE(header[i], dict)
         if (tcode === null) {
           reject(
-            `发生错误,${header[i]}未能找到对应代码,请检查薪资类别字典后重新上传`
+            `${header[i]}未能找到对应代码,请检查薪资类别字典后重新上传`
           )
         }
       }

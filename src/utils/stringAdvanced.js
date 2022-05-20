@@ -198,3 +198,21 @@ export function validateArithmeti(str, objList) {
     return false
   }
 }
+
+export function formularToAlgorithm(str, dict) {
+  while (str.indexOf('[') >= 0) {
+    var start = str.indexOf('[')
+    var end = str.indexOf(']')
+    var code = 'T' + str.slice(start + 1, end)
+    var index = dict.findIndex(element => element.code === code)
+    if (dict[index].sign === true) {
+      str =
+        str.substring(0, start) + dict[index].value + str.substring(end + 1)
+    } else {
+      dict[index].value = formularToAlgorithm(dict[index].value, dict)
+      dict[index].sign = true
+    }
+  }
+  // eslint-disable-next-line no-eval
+  return eval(str)
+}

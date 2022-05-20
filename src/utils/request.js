@@ -13,7 +13,6 @@ const service = axios.create({
   timeout: 5000, // request timeout
   withCredentials: true
 })
-
 // request interceptor
 // 请求拦截,在请求前拦截它们
 /**
@@ -60,14 +59,21 @@ service.interceptors.response.use(
     const res = response.data
     console.log(response)
     // console.log('Here is response interceptor')
-    if (res.status !== '0') {
+    if (res.status.indexOf('F') >= '0') {
       Message({
         message: res.message || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
       console.log(res.message)
-      return Promise.reject(new Error(res.message || 'Error'))
+      return Promise.reject(new Error(res || 'Error'))
+    } else if (res.status.indexOf('W') >= 0) {
+      Message({
+        message: res.message || 'Error',
+        type: 'warning',
+        duration: 5 * 1000
+      })
+      return res
     } else {
       return res
     }

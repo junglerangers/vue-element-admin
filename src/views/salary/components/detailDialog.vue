@@ -1,29 +1,50 @@
 <template>
-  <el-dialog :visible.sync="localDialogVisible" :before-close="handleClose" width="1200px">
-    <el-descriptions class="margin-top" title="人员详细信息" :column="4" size="mini" border>
-      <el-descriptions-item label="工号">{{ localUser.mst[0].ENUM }}</el-descriptions-item>
-      <el-descriptions-item label="姓名">{{ localUser.mst[0].ENAME }}</el-descriptions-item>
-      <el-descriptions-item label="科室编码">{{ localUser.mst[0].DEPT_CODE }}</el-descriptions-item>
-      <el-descriptions-item label="科室名称">{{ localUser.mst[0].DEPT_NAME }}</el-descriptions-item>
-      <el-descriptions-item label="性别">{{ localUser.mst[0].SEX_NAME }}</el-descriptions-item>
-      <el-descriptions-item label="身份证号" span="2">{{ localUser.mst[0].ID_CARD }}</el-descriptions-item>
-      <el-descriptions-item label="院区">{{ localUser.mst[0].HOSAREANAME }}</el-descriptions-item>
-      <el-descriptions-item label="人员性质">{{ localUser.mst[0].KIND_NAME }}</el-descriptions-item>
-      <el-descriptions-item label="人员类型">{{ localUser.mst[0].EMP_CLASSNAME }}</el-descriptions-item>
+  <el-dialog
+    v-loading="loading"
+    :visible.sync="localDialogVisible"
+    :before-close="handleClose"
+    width="1200px"
+    element-loading-text="数据拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
+    <el-descriptions
+      class="margin-top"
+      title="人员详细信息"
+      :column="4"
+      size="mini"
+      border
+    >
+      <el-descriptions-item label="工号">{{ currentUser.mst.ENUM }}</el-descriptions-item>
+      <el-descriptions-item label="姓名">{{ currentUser.mst.ENAME }}</el-descriptions-item>
+      <el-descriptions-item label="科室编码">{{ currentUser.mst.DEPT_CODE }}</el-descriptions-item>
+      <el-descriptions-item label="科室名称">{{ currentUser.mst.DEPT_NAME }}</el-descriptions-item>
+      <el-descriptions-item label="性别">{{ currentUser.mst.SEX_NAME }}</el-descriptions-item>
+      <el-descriptions-item label="身份证号" span="2">{{ currentUser.mst.ID_CARD }}</el-descriptions-item>
+      <el-descriptions-item label="院区"><el-tag>{{ currentUser.mst.HOSAREANAME }}</el-tag></el-descriptions-item>
+      <el-descriptions-item label="人员性质">{{ currentUser.mst.KIND_NAME }}</el-descriptions-item>
+      <el-descriptions-item label="人员类型">{{ currentUser.mst.EMP_CLASSNAME }}</el-descriptions-item>
       <el-descriptions-item span="2" />
-      <el-descriptions-item v-for="item in localUser.slvList" :key="item.AUTOID" :label="item.TNAME">
-        <el-input v-model="item.AMOUNT" />
-      </el-descriptions-item>
     </el-descriptions>
-    <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="save">保 存</el-button>
-      <el-button @click="toggleDialogVisible">关 闭</el-button>
-    </span>
+    <div class="title">
+      金额详细信息
+      <span slot="footer" class="right">
+        <el-button type="primary" @click="save">保 存</el-button>
+        <el-button @click="toggleDialogVisible">关 闭</el-button>
+      </span>
+    </div>
+    <div class="dynamic-salary">
+      <el-descriptions v-for="(list,i) in currentUser.slvList" :key="list.TCODE" border :column="1" class="salary">
+        <el-descriptions-item :label="list.TNAME"><el-input v-model="summarySalary[i].value" :disabled="summarySalary[i].readonly" /></el-descriptions-item>
+        <el-descriptions-item v-for="item in list.ChilList" :key="item.TCODE" :label="item.TNAME"><input v-model="item.AMOUNT" :name="item.TCODE" @input="updateSalary"></el-descriptions-item>
+      </el-descriptions>
+    </div>
   </el-dialog>
 </template>
 
 <script>
 import { UpdateSlv } from '@/api/salary'
+import { formularToAlgorithm } from '@/utils/stringAdvanced'
 
 export default {
   name: 'DetailDialog',
@@ -31,7 +52,10 @@ export default {
     currentUser: {
       type: Object,
       default: function() {
-        return {}
+        return {
+          slvList: [],
+          mst: {}
+        }
       }
     },
     dialogVisible: {
@@ -48,7 +72,8 @@ export default {
   },
   data: function() {
     return {
-      test: ''
+      test: '',
+      loading: false
     }
   },
   computed: {
@@ -60,29 +85,94 @@ export default {
         this.toggleDialogVisible()
       }
     },
-    localUser: function() {
-      var data = Object.assign(this.currentUser)
-      console.log(this.dict)
-      var slvList = data.slvList
-      var i = 0
-      var temp = ''
+    summarySalary: function() {
+      var slvList = this.currentUser.slvList
+      var result = Array(slvList.length).fill().map(u => ({ code: null, value: 0, sign: false, readonly: true }))
+      var i = 0; var j = 0
       for (i = 0; i < slvList.length; i++) {
-        temp = this.dict.find(element => element.TCODE === slvList[i].TCODE)
-        console.log(temp + slvList[i].TCODE)
-        if (temp === undefined) {
-          this.$message({
-            message: '存在未发生对照的薪资代码,代码值为' + slvList[i].TCODE,
-            type: 'warning'
-          })
+        result[i].code = slvList[i].TCODE
+        if (slvList[i].ChilList === null && slvList[i].FORMULA !== null) { // 如果孩子为空,公式不为空,说明值是通过公式算出来的
+          result[i].value = slvList[i].FORMULA
+          result[i].sign = false
+          // formularToAlgorithm(slvList[i].FORMULA, result)
         } else {
-          slvList[i].TNAME = temp.TNAME
+          result[i].sign = true
+          if (slvList[i].ChilList === null) {
+            result[i].value = slvList[i].AMOUNT
+            result[i].readonly = true
+          } else {
+            for (j = 0; j < slvList[i].ChilList?.length; j++) {
+              result[i].value += +slvList[i].ChilList[j].AMOUNT
+            }
+          }
         }
       }
-      console.log(data)
-      return data
+      for (i = 0; i < result.length; i++) {
+        if (result[i].sign === true) {
+          continue
+        } else {
+          result[i].value = formularToAlgorithm(result[i].value, result)
+          result[i].sign = true
+        }
+      }
+      return result
+    },
+    uploadList: function() {
+      var result = {
+        mst: {
+          mstid: this.currentUser.mst.MSTID,
+          enum: this.currentUser.mst.ENUM,
+          ename: this.currentUser.mst.ENAME
+        },
+        slvList: []
+      }
+      var slvList = this.currentUser.slvList
+      var i = 0; var j = 0
+      for (i = 0; i < slvList.length; i++) {
+        result.slvList.push({
+          'autoid': slvList[i].AUTOID,
+          'mstid': this.currentUser.mst.MSTID,
+          'enum': this.currentUser.mst.ENUM,
+          'ename': this.currentUser.mst.ENAME,
+          'tcode': slvList[i].TCODE,
+          'amount': this.summarySalary[i].value
+        })
+        for (j = 0; j < slvList[i].ChilList?.length; j++) {
+          var temp = slvList[i].ChilList[j]
+          result.slvList.push({
+            'autoid': temp.AUTOID,
+            'mstid': this.currentUser.mst.MSTID,
+            'enum': this.currentUser.mst.ENUM,
+            'ename': this.currentUser.mst.ENAME,
+            'tcode': temp.TCODE,
+            'amount': temp.AMOUNT
+          })
+        }
+      }
+      return result
     }
   },
+  created: function() {
+  },
   methods: {
+    addList(result, list) {
+      if (!list) {
+        return
+      } else {
+        var i = 0
+        for (i = 0; i < list.length; i++) {
+          result.push({
+            'autoid': list[i].AUTOID,
+            'mstid': this.currentUser.mst.MSTID,
+            'enum': this.currentUser.mst.ENUM,
+            'ename': this.currentUser.mst.ENAME,
+            'tcode': list[i].TCODE,
+            'amount': this.summarySalary[i].value
+          })
+        }
+        this.addList(result, list.ChilList)
+      }
+    },
     toggleDialogVisible() {
       this.$emit('toggleVisible')
     },
@@ -93,20 +183,50 @@ export default {
         })
         .catch(_ => {})
     },
-    save() {
-      var params = {
-        mst: {
-          mstid: this.localUser.mst[0].MSTID,
-          enum: this.localUser.mst[0].ENUM,
-          ename: this.localUser.mst[0].ENAME
-        },
-        slvList: this.localUser.slvList
-      }
+    updateSalary(e) {
+      console.log(e)
+      var name = e.target.getAttribute('name')
+      console.log(name)
+    },
+    async save() {
+      var params = this.uploadList
       console.log(params)
-      UpdateSlv(params).then(res => {
-        console.log('更新成功')
+      this.loading = true
+      await UpdateSlv(params).then(res => {
+        this.$message({
+          message: '数据更新成功!',
+          type: 'success'
+        })
+        this.toggleDialogVisible()
+        this.$emit('update')
+      }).finally(() => {
+        this.loading = false
       })
     }
   }
 }
 </script>
+
+<style style="scss" scoped>
+.dynamic-salary{
+  display: flex;
+  flex-direction: row;
+}
+.column{
+  display: flex;
+  flex-direction: column;
+}
+.salary{
+  margin-right: 20px;
+}
+.title{
+  font-size: 16px;
+  font-weight: bold;
+  color: #303133;
+  margin: 20px 0 20px 0;
+}
+.right{
+  position: absolute;
+  right: 20px;
+}
+</style>

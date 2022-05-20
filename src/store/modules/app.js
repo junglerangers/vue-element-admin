@@ -40,6 +40,9 @@ const mutations = {
   DEL_EVENT: (state, taskID) => {
     state.events = state.events.filter(e => e.taskID !== taskID)
   },
+  EMPTY_EVENT: (state) => {
+    state.events = []
+  },
   CHANGE_EVENT_STATE: (state, task) => {
     for (const e of state.events) {
       if (e.taskID === task.taskID) {

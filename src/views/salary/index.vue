@@ -21,7 +21,10 @@
         placeholder="请选择相应月份"
       />
     </div>
-    <el-button class="primary" @click="searchHandler">确认</el-button>
+    <el-button-group>
+      <el-button class="primary" @click="searchHandler">确认</el-button>
+      <el-button class="primary" @click="initialTime">重置</el-button>
+    </el-button-group>
     <!-- <search @search="searchHandler" /> -->
     <el-table
       id="mytable"
@@ -64,9 +67,10 @@
           {{ scope.row.CREATEDATE| timeFormatter }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="锁定标志" width="100">
+      <el-table-column align="center" label="锁定状态" width="100">
         <template slot-scope="scope">
-          {{ scope.row.ISLOCK }}
+          <el-tag v-if="scope.row.ISLOCK === '0'" type="success">未锁定</el-tag>
+          <el-tag v-else type="info">锁定</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">
@@ -147,11 +151,6 @@ export default {
       this.page_total = res.pageHandler.records
       this.loading = false
     },
-    handleAddSalary() {
-      this.currentModel = Object.assign({}, defaultModel)
-      this.$store.dispatch('salary/getSalary', this.currentModel)
-      this.$router.push('/salary/salaryDetail?type=new')
-    },
     handleEdit(scope) {
       this.currentModel = scope.row
       this.$store.dispatch('salary/getSalary', this.currentModel)
@@ -163,6 +162,11 @@ export default {
       this.searchModel.yearno = this.timeYear
       this.getDataList()
       // console.log(this.dataModel)
+    },
+    initialTime() {
+      this.timeMonth = null
+      this.timeYear = null
+      this.searchHandler()
     },
     initialSearchModel() {
       this.searchModel.monthno = ''
@@ -188,13 +192,6 @@ export default {
         })
       }).catch(() => {})
     },
-    importExcel(e) {
-      // if (e.target.files.length > 0) {
-      //   const file = e.target.files
-      //   console.log(file)
-      // }
-      // return
-    },
     handleClock(scope) {
       var monthNo = scope.row.YEARNO + '-' + scope.row.MONTHNO
       var islock = scope.row.ISLOCK === '0'
@@ -202,7 +199,7 @@ export default {
         monthNo: monthNo,
         islock: islock
       }
-      var tipStr = `此操作将锁定${monthNo}时间段的所有数据,是否继续?`
+      var tipStr = islock ? `此操作将锁定${monthNo}时间段的所有数据,是否继续?` : `此操作将解锁${monthNo}时间段的所有数据,是否继续?`
       var finishTipStr = islock ? '锁定成功!' : '解锁成功!'
       this.$confirm(tipStr, '提示', {
         confirmButtonText: '确定',

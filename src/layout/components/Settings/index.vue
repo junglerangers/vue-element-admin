@@ -1,38 +1,51 @@
 <template>
   <div class="drawer-container">
     任务列表
+    <el-button :style="{'float':'right'}" @click="handleEmpty">清空日志</el-button>
     <el-table
       style="width: 100%"
       :data="events"
-      :max-height="800"
+      :max-height="1200"
     >
       <el-table-column
         prop="taskName"
         label="任务名称"
+        width="100px"
       />
       <el-table-column
         prop="startTime"
         label="开始时间"
+        width="130px"
       />
       <el-table-column
         prop="endTime"
         label="结束时间"
+        width="130px"
       />
       <el-table-column
         prop="taskState"
         label="任务状态"
+        width="80px"
       >
         <template v-slot="scope">
           <el-tag>{{ scope.row.taskState }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
+        prop="info"
+        label="说明"
+      >
+        <template v-slot="scope">
+          <p>{{ scope.row.info }}</p>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column
         label="操作"
       >
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)" />
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
   </div>
 </template>
@@ -93,6 +106,9 @@ export default {
     },
     handleDelete(scope) {
       this.$store.commit('app/DEL_EVENT', scope.row.taskID)
+    },
+    handleEmpty() {
+      this.$store.commit('app/EMPTY_EVENT')
     }
   }
 }

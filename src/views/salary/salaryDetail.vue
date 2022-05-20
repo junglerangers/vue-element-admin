@@ -105,7 +105,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <detailDialog :current-user="currentModel" :dict="salaryTypeDict" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
+    <detailDialog :current-user="currentModel" :dict="salaryTypeDict" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @update="getDataList" />
     <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -113,8 +113,8 @@
         :page-size="page_size"
         :layout="page_layout"
         :total="page_total"
-        @size-change="handleSizeChange(getDataList)"
-        @current-change="handleCurrentChange(getDataList)"
+        @size-change="decorateSizeChange"
+        @current-change="decoreateCurrentChange"
       />
     </div>
   </div>
@@ -128,6 +128,7 @@ import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
+import { getCurrentTime } from '@/utils/time'
 
 export default {
   components: {
@@ -139,7 +140,7 @@ export default {
     return {
       loading: false,
       currentModel: {
-        mst: [{
+        mst: {
           'MSTID': '',
           'ENUM': '',
           'ENAME': '',
@@ -153,7 +154,7 @@ export default {
           'EMP_CLASSNAME': '',
           'HOSAREA': '',
           'HOSAREANAME': ''
-        }],
+        },
         slvList: []
       }, // 当前选中的模型
       dialogVisible: false, // 对话框是否可见
@@ -220,40 +221,41 @@ export default {
     }),
     async getSalaryType() {
       var monthNo = this.salary.YEARNO + '-' + this.salary.MONTHNO
-      var param = {
+      var params = {
         monthNo: monthNo
       }
-      var res = await getGridList(param)
+      var res = await getGridList(params)
       this.salaryTypeDict = res.data
     },
     async salaryUpload(e) {
       var sign1 = await isSalaryExist(this.params)
-      var sign2 = await this.confirm()
+      var sign2 = true
+      if (sign1) {
+        sign2 = await this.confirm()
+      }
       if (sign1 && !sign2) {
         // 如果已经存在已经有的数据,提示用户是重新导入数据,还是使用现有的数据
         return
       }
-      var datetime = new Date()
-      const date = datetime.toISOString().split('T')[0]
-      const time = datetime.getHours() + ':' + datetime.getMinutes() + ':' + datetime.getSeconds()
       var task = {
         taskID: Math.floor(Math.random() * 100),
         taskName: '薪资明细上传',
-        startTime: date + ' ' + time,
+        startTime: getCurrentTime(),
         endTime: '',
-        taskState: '运行中'
+        taskState: '运行中',
+        info: ''
       }
       this.addEvent(task)
-      Excelupload(22, e.file, this.salaryDetailTypeDict).then(params => {
-        console.log(params)
-        return salaryImport(params)
+      await Excelupload(this.mstid, e.file, this.salaryDetailTypeDict).then(async params => {
+        await salaryImport(params)
       }).then(res => {
         console.log('上传成功')
-        task.taskState = '已经完成'
-        console.log(res)
+        task.endTime = getCurrentTime()
+        task.taskState = '完成'
       }).catch(err => {
-        task.taskState = '出错' + err
-        console.log(err)
+        task.taskState = '错误'
+        task.endTime = getCurrentTime()
+        task.info = err
       }).finally(() => {
         const h = this.$createElement
         this.$notify({
@@ -283,7 +285,6 @@ export default {
       //   }
       this.loading = true
       this.searchModel.mstid = this.mstid
-      console.log(this.searchModel)
       var temp = {
         'queryModel': this.searchModel,
         'pageHandler': {
@@ -303,9 +304,7 @@ export default {
         enum: scope.row.员工工号,
         ename: scope.row.员工姓名
       }
-      console.log(params)
       GetSlvFormModel(params).then(res => {
-        console.log(res.data)
         this.loading = false
         this.currentModel = res.data
         this.dialogVisible = true
