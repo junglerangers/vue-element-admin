@@ -36,7 +36,7 @@
           {{ scope.row.DEPT_NAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="手机号" width="100">
+      <el-table-column align="center" label="手机号" width="150">
         <template slot-scope="scope">
           {{ scope.row.PHONE }}
         </template>
@@ -51,16 +51,15 @@
           {{ scope.row.EMP_CLASSNAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center">
-        <template slot="header">
+      <el-table-column align="center" label="操作">
+        <!-- <template slot="header">
           <el-button-group>
-            <!-- input type="file" 点击然后取消时,有概率出现浏览器卡死的情况 -->
             <el-button type="primary" size="small" icon="el-icon-upload" @click="importEmployee">员工信息导入</el-button>
-            <!-- <el-button type="primary" size="small" icon="el-icon-upload2">
+            <el-button type="primary" size="small" icon="el-icon-upload2">
               <input ref="upload" class="myinput" type="file" accept=".xlsx" title="Excel儿科员工更新" @focus="importExcel">
-            </el-button> -->
+            </el-button>
           </el-button-group>
-        </template>
+        </template> -->
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-view" title="编辑" @click="handleViewUser(scope)">查看</el-button>
         </template>

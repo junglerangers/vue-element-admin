@@ -154,27 +154,27 @@ export default {
   },
   computed: {
     monthNo: function() {
-      return this.$store.getters.monthNo
+      return this.$store.state.universal.monthNo
     }
   },
   created() {
+    var time = new Date()
+    console.log(time)
     this.monthTime = this.monthNo
     this.getDataList()
     // this.getDepList()
     // this.getTypeList()
   },
   activated() {
-    if (this.monthTime !== this.monthNo) {
-      this.monthTime = this.monthNo
-      this.getDataList()
-    }
+    this.monthTime = this.monthNo
+    this.getDataList()
   },
   methods: {
     /**
      * 获取字典列表
      */
     async getDataList() {
-      this.searchModel.monthNo = this.monthNo
+      this.searchModel.monthNo = this.monthTime
       var params = {
         queryModel: this.searchModel,
         pageHandler: {
@@ -182,8 +182,8 @@ export default {
           size: this.page_size
         }
       }
+      console.log(params)
       this.loading = true
-      console.log(this.monthNo)
       const res = await pageQuery(params)
       this.dataList = res.data
       this.page_total = res.pageHandler.records
@@ -193,12 +193,11 @@ export default {
      * 添加新项
      */
     handleAddSalaryType() {
-      var date = new Date(this.monthno)
+      var date = new Date(this.monthNo)
       this.currentModel = Object.assign({}, defaultModel)
       // bug?
       this.currentModel.BEGINDATE = new Date(date.getFullYear(), date.getMonth(), 1)
       this.currentModel.ENDDATE = new Date(date.getFullYear(), date.getMonth() + 1, 0)
-      this.currentModel.SYSCODE = '0101'
       this.$store.dispatch('formula/getFormula', this.currentModel)
       this.$router.push('/formula/detail?type=new')
     },
@@ -216,16 +215,6 @@ export default {
     },
     decorateMonthChange(value) {
       return this.monthChange(value, this.searchEmpty)
-    },
-    /**
-     * 导入excel表格
-     */
-    importExcel(e) {
-      // if (e.target.files.length > 0) {
-      //   const file = e.target.files
-      //   console.log(file)
-      // }
-      // return
     },
     salaryTypeCopy() {
       this.dialogVisible = false
@@ -255,7 +244,7 @@ export default {
         type: 'warning'
       }).then((val) => {
         console.log('确认删除')
-        localDelete({ DCODE: scope.row.DCODE }).then(() => {
+        localDelete({ autoId: scope.row.AUTOID }).then(() => {
           this.$message({
             message: '删除成功!',
             type: 'success'

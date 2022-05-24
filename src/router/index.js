@@ -72,31 +72,35 @@ export const constantRoutes = [
   },
   {
     path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
-        name: 'Dashboard',
-        meta: { title: '仪表盘', icon: 'dashboard3' } // affix如果设置为true,则标签将附加在视图上进行展示
-      }
-    ]
-  },
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: '个人设置', icon: 'user', noCache: true }
-      }
-    ]
+    redirect: '/salary/salaryAdd'
   }
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/dashboard',
+  //   children: [
+  //     {
+  //       path: 'dashboard',
+  //       component: () => import('@/views/dashboard/index'),
+  //       name: 'Dashboard',
+  //       meta: { title: '仪表盘', icon: 'dashboard3' } // affix如果设置为true,则标签将附加在视图上进行展示
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/profile',
+  //   component: Layout,
+  //   redirect: '/profile/index',
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/profile/index'),
+  //       name: 'Profile',
+  //       meta: { title: '个人设置', icon: 'user', noCache: true }
+  //     }
+  //   ]
+  // }
 ]
 
 /**
@@ -143,6 +147,38 @@ export const asyncRoutes = [
         hidden: true,
         meta: {
           title: '工资单明细表',
+          icon: 'num2',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/report',
+    component: Layout,
+    redirect: '/report/index',
+    meta: {
+      title: '报表管理',
+      icon: 'report',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/report/index'),
+        name: 'ReportIndex',
+        meta: {
+          title: '报表一览',
+          icon: 'num1',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'content',
+        component: () => import('@/views/report/content'),
+        name: 'ReportContent',
+        meta: {
+          title: '报表内容',
           icon: 'num2',
           roles: ['admin']
         }

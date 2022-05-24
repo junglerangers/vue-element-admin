@@ -1,13 +1,18 @@
 import Cookies from 'js-cookie' // 一个轻量级的Javascript Cookie 处理文件
 
-const TokenKey = 'Admin-Token'
+/**
+ * code
+ * dep
+ * name
+ */
+const TokenKey = 'userCode'
 
-export function getToken() {
-  return Cookies.get(TokenKey)
+export function getToken(tokenKey) {
+  return Cookies.get(tokenKey)
 }
 
-export function setToken(token) {
-  return Cookies.set(TokenKey, token)
+export function setToken(tokenKey, token) {
+  return Cookies.set(tokenKey, token)
 }
 
 export function removeToken() {

@@ -200,8 +200,16 @@ export default {
           })
         })
       } else if (type === 'new') {
-        console.log('new')
-        localAdd(this.localFormula).then(res => {
+        var params = {
+          'dcode': this.localFormula.DCODE,
+          'dname': this.localFormula.DNAME,
+          'tname': this.localFormula.TNAME,
+          'begindate': this.localFormula.BEGINDATE.format('yyyy-MM-dd hh:mm:ss'),
+          'enddate': this.localFormula.ENDDATE.format('yyyy-MM-dd hh:mm:ss'),
+          'remark': this.localFormula.REMARK
+        }
+        console.log(params)
+        localAdd(params).then(res => {
           this.$message({
             message: '薪资新增成功',
             type: 'success'
@@ -268,7 +276,7 @@ export default {
       this.rawTemp = rawString
       // this.rawTemp2 = rawString
       var queryString = getLastStrByOperator(rawString)
-      var result = queryString ? this.dict.filter(state => state.TCODE.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.dict
+      var result = queryString ? this.dict.filter(state => state.TCODE.toLowerCase().indexOf(queryString.toLowerCase()) === 0 || state.TNAME.indexOf(queryString) === 0) : this.dict
       cb(result)
     },
     autoFixInput(item) { // el-input中的下拉框发生点击事件之时,已经将input中的内容更新成了item中的内容

@@ -20,7 +20,7 @@
       border
     >
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="center" label="科室编号" width="100">
+      <el-table-column align="left" label="科室编号" width="100">
         <template slot-scope="scope">
           {{ scope.row.DEPT_CODE }}
         </template>
@@ -30,7 +30,7 @@
           {{ scope.row.DEPT_NAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="上级科室编号" width="100">
+      <el-table-column align="left" label="上级科室编号" width="100">
         <template slot-scope="scope">
           {{ scope.row.SUPER_CODE }}
         </template>

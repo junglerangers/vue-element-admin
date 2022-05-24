@@ -36,7 +36,11 @@
     <div class="dynamic-salary">
       <el-descriptions v-for="(list,i) in currentUser.slvList" :key="list.TCODE" border :column="1" class="salary">
         <el-descriptions-item :label="list.TNAME"><el-input v-model="summarySalary[i].value" :disabled="summarySalary[i].readonly" /></el-descriptions-item>
-        <el-descriptions-item v-for="item in list.ChilList" :key="item.TCODE" :label="item.TNAME"><input v-model="item.AMOUNT" :name="item.TCODE" @input="updateSalary"></el-descriptions-item>
+        <el-descriptions-item>
+          <el-descriptions :column="1" border>
+            <el-descriptions-item v-for="item in list.ChilList" :key="item.TCODE" :label="item.TNAME"><input v-model="item.AMOUNT" :name="item.TCODE" @input="updateSalary"></el-descriptions-item>
+          </el-descriptions>
+        </el-descriptions-item>
       </el-descriptions>
     </div>
   </el-dialog>

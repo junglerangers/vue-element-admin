@@ -5,6 +5,9 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
+      <div class="right-menu-item">
+        <p :style="{'line-height':'100%'}">{{ userInfo.dep }}-{{ userInfo.name }},欢迎您!</p>
+      </div>
       <template v-if="device!=='mobile'">
         <el-tooltip content="模块功能搜索" effect="dark" placement="bottom">
           <search id="header-search" class="right-menu-item" />
@@ -14,23 +17,13 @@
         <el-tooltip content="网页全局设置" effect="dark" placement="bottom">
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
         </el-tooltip>
-
-        <el-tooltip content="字体大小设置" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
-
       </template>
-
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatarURL" class="user-avatar">
-          <p class="avatar-tip">[名字]-[角色],欢迎您!</p>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/index">
-            <el-dropdown-item>个人设置</el-dropdown-item>
-          </router-link>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">登出</span>
           </el-dropdown-item>
@@ -46,7 +39,6 @@ import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import * as localAvatar from '@/assets/images/avatar16.png'
 
@@ -56,7 +48,6 @@ export default {
     Hamburger,
     ErrorLog,
     Screenfull,
-    SizeSelect,
     Search
   },
   data() {
@@ -69,7 +60,10 @@ export default {
       'sidebar',
       'avatar',
       'device'
-    ])
+    ]),
+    userInfo: function() {
+      return this.$store.state.user.userInfo
+    }
   },
   methods: {
     toggleSideBar() {
@@ -117,7 +111,6 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
-
     &:focus {
       outline: none;
     }

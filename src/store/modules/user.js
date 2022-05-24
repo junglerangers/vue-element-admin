@@ -1,16 +1,33 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+// import user from 'mock/user'
 
 const state = {
   token: getToken(),
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
+  userInfo: {
+    token: '',
+    code: '',
+    name: '',
+    dep: ''
+  }
 }
 
 const mutations = {
+  SET_USERINFO: (state, user) => {
+    state.userInfo = user
+  },
+  CLEAR_USERINFO: (state) => {
+    state.userInfo = {
+      code: '',
+      name: '',
+      dep: ''
+    }
+  },
   SET_TOKEN: (state, token) => {
     state.token = token
   },
@@ -44,31 +61,44 @@ const actions = {
     })
   },
 
+  setUserInfo({ commit }, userInfo) {
+    commit('SET_USERINFO', userInfo)
+  },
+  clearUserInfo({ commit }) {
+    commit('CLEAR_USERINFO')
+  },
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-
-        if (!data) {
-          reject('Verification failed, please Login again.')
-        }
-
-        const { roles, name, avatar, introduction } = data
-
-        // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
-          reject('getInfo: roles must be a non-null array!')
-        }
-
-        commit('SET_ROLES', roles)// 权限
-        commit('SET_NAME', name)// 姓名
-        commit('SET_AVATAR', avatar)// 头像
-        commit('SET_INTRODUCTION', introduction)// 介绍
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
+      var data = {
+        roles: ['admin'],
+        name: '',
+        avatar: '',
+        introduction: ''
+      }
+      commit('SET_ROLES', ['admin'])// 权限
+      commit('SET_NAME', '')// 姓名
+      commit('SET_AVATAR', '')// 头像
+      commit('SET_INTRODUCTION', '')// 介绍
+      resolve(data)
+      // getInfo(state.token).then(response => {
+      //   const { data } = response
+      //   if (!data) {
+      //     reject('Verification failed, please Login again.')
+      //   }
+      //   const { roles, name, avatar, introduction } = data
+      //   // roles must be a non-empty array
+      //   if (!roles || roles.length <= 0) {
+      //     reject('getInfo: roles must be a non-null array!')
+      //   }
+      //   commit('SET_ROLES', roles)// 权限
+      //   commit('SET_NAME', name)// 姓名
+      //   commit('SET_AVATAR', avatar)// 头像
+      //   commit('SET_INTRODUCTION', introduction)// 介绍
+      //   resolve(data)
+      // }).catch(error => {
+      //   reject(error)
+      // })
     })
   },
 
