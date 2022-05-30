@@ -35,7 +35,7 @@
     </div>
     <div class="dynamic-salary">
       <el-descriptions v-for="(list,i) in currentUser.slvList" :key="list.TCODE" border :column="1" class="salary">
-        <el-descriptions-item :label="list.TNAME"><el-input v-model="summarySalary[i].value" :disabled="summarySalary[i].readonly" /></el-descriptions-item>
+        <el-descriptions-item :label="list.TNAME"><el-input v-model="summarySalary[i].value.d[0]" :disabled="summarySalary[i].readonly" /></el-descriptions-item>
         <el-descriptions-item>
           <el-descriptions :column="1" border>
             <el-descriptions-item v-for="item in list.ChilList" :key="item.TCODE" :label="item.TNAME"><input v-model="item.AMOUNT" :name="item.TCODE" @input="updateSalary"></el-descriptions-item>
@@ -49,6 +49,7 @@
 <script>
 import { UpdateSlv } from '@/api/salary'
 import { formularToAlgorithm } from '@/utils/stringAdvanced'
+import Decimal from 'decimal.js'
 
 export default {
   name: 'DetailDialog',
@@ -91,7 +92,7 @@ export default {
     },
     summarySalary: function() {
       var slvList = this.currentUser.slvList
-      var result = Array(slvList.length).fill().map(u => ({ code: null, value: 0, sign: false, readonly: true }))
+      var result = Array(slvList.length).fill().map(u => ({ code: null, value: new Decimal('0'), sign: false, readonly: true }))
       var i = 0; var j = 0
       for (i = 0; i < slvList.length; i++) {
         result[i].code = slvList[i].TCODE
@@ -102,11 +103,11 @@ export default {
         } else {
           result[i].sign = true
           if (slvList[i].ChilList === null) {
-            result[i].value = slvList[i].AMOUNT
+            result[i].value = new Decimal(slvList[i].AMOUNT)
             result[i].readonly = true
           } else {
             for (j = 0; j < slvList[i].ChilList?.length; j++) {
-              result[i].value += +slvList[i].ChilList[j].AMOUNT
+              result[i].value = result[i].value.plus(slvList[i].ChilList[j].AMOUNT)
             }
           }
         }
@@ -188,9 +189,9 @@ export default {
         .catch(_ => {})
     },
     updateSalary(e) {
-      console.log(e)
-      var name = e.target.getAttribute('name')
-      console.log(name)
+      // console.log(e)
+      // var name = e.target.getAttribute('name')
+      // console.log(name)
     },
     async save() {
       var params = this.uploadList

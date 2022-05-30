@@ -14,9 +14,19 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 // 如果这个路由是用于网站中的某个模块,那么该模块的加载已经路由等待,因为异步的原因,就不会影响其他模块的使用?
 router.beforeEach(async(to, from, next) => { // 导航守卫,在所有导航之前的行为
   // start progress bar
-  var cookieCode = getToken('code')
+  var token = store.getters.user_token
+  if (!token.code) {
+    var cookie = {
+      token: getToken('token'),
+      code: getToken('code'),
+      name: getToken('dep'),
+      dep: getToken('name')
+    }
+    if (cookie.code) {
+      store.dispatch('user/setUserInfo', cookie)
+    }
+  }
   NProgress.start()
-  const token = store.state.user.userInfo.token
   // set page title
   document.title = getPageTitle(to.meta.title)
 
@@ -25,11 +35,10 @@ router.beforeEach(async(to, from, next) => { // 导航守卫,在所有导航之�
   // determine whether the user has obtained his permission roles through getInfo
   const hasRoles = store.getters.roles && store.getters.roles.length > 0
   if (hasRoles) {
-    if (cookieCode) {
+    if (token.code) {
       next()
     } else if (
       to.path !== '/salary/salaryAdd' &&
-      !token &&
       to.path !== '/401' &&
       to.path !== '/404'
     ) {

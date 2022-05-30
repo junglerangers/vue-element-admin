@@ -30,7 +30,7 @@
           {{ scope.row.TCODE }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="类别名称" width="100">
+      <el-table-column align="center" label="类别名称" width="200">
         <template slot-scope="scope">
           {{ scope.row.TNAME }}
         </template>

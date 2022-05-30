@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js'
 
 function getColorByCode(code, index) {
   if (/^[0-9]/.test(code)) {
@@ -214,5 +215,5 @@ export function formularToAlgorithm(str, dict) {
     }
   }
   // eslint-disable-next-line no-eval
-  return eval(str)
+  return new Decimal(eval(str))
 }

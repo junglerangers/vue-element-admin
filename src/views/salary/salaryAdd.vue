@@ -190,35 +190,42 @@ export default {
     }
   },
   created() {
-    var temp = this.$route.query.ssoToken
-    if (temp) {
-      var temp2 = decodeURIComponent(temp)
-      getEmp(temp2)
-        .then(res => {
-          setToken('name', res.data.EMP_NAME)
-          setToken('code', res.data.EMP_CODE)
-          setToken('dep', res.data.DEPT_NAME)
-          var token = {
-            token: temp2,
-            code: res.data[0]?.EMP_CODE,
-            name: res.data[0]?.EMP_NAME,
-            dep: res.data[0]?.DEPT_NAME
-          }
-          this.$store.dispatch('user/setUserInfo', token)
-        })
-        .catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '请通过OA登录'
-          })
-          this.$router.replace('/401')
-        })
+    var token = this.$store.getters.user_token
+    if (token.code) {
+      console.log('has done.')
     } else {
-      this.$message({
-        type: 'warning',
-        message: '请通过OA登录!!!!'
-      })
-      this.$router.replace('/401')
+      var temp = this.$route.query.ssoToken
+      if (temp) {
+        var temp2 = decodeURIComponent(temp)
+        getEmp(temp2)
+          .then(res => {
+            console.log(res)
+            setToken('name', res.data.EMP_NAME)
+            setToken('code', res.data.EMP_CODE)
+            setToken('dep', res.data.DEPT_NAME)
+            setToken('token', temp2)
+            var token = {
+              token: temp2,
+              code: res.data?.EMP_CODE,
+              name: res.data?.EMP_NAME,
+              dep: res.data?.DEPT_NAME
+            }
+            this.$store.dispatch('user/setUserInfo', token)
+          })
+          .catch(() => {
+            this.$message({
+              type: 'warning',
+              message: '请通过OA登录'
+            })
+            this.$router.replace('/401')
+          })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '请通过OA登录!!!!'
+        })
+        this.$router.replace('/401')
+      }
     }
     this.getSalaryTypeList()
   },
