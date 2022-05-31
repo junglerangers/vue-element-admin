@@ -27,6 +27,7 @@
     "element-ui": "2.15.7",
     "file-saver": "2.0.1",
     "fuse.js": "3.4.4",
+    "iframe-resizer": "^4.3.2",
     "js-cookie": "2.2.0",
     "js-md5": "^0.7.3",
     "jsonlint": "1.6.3",

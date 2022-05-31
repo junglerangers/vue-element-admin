@@ -3,6 +3,7 @@ const state = {
   kindCode2List: [], // 人员性质2
   hosAreaList: [], // 院区标志
   empClsList: [], // 人员分类
+  reportUrl: '',
   monthNo:
     new Date().getFullYear() +
     '-' +
@@ -10,6 +11,10 @@ const state = {
 }
 
 const mutations = {
+  SET_REPORTURL: (state, url) => {
+    console.log(url)
+    state.reportUrl = url
+  },
   SET_MONTHNO: (state, monthNo) => {
     state.monthNo = monthNo
   },
@@ -43,6 +48,9 @@ const mutations = {
 }
 
 const actions = {
+  setReportUrl({ commit }, url) {
+    commit('SET_REPORTURL', url)
+  },
   getMonthNo({ commit }, monthNo) {
     commit('SET_MONTHNO', monthNo)
   },
