@@ -5,6 +5,7 @@
         v-model="monthTime"
         type="month"
         placeholder="请选择相应月份"
+        :clearable="false"
         @change="decorateMonthChange"
       />
     </div>
@@ -174,7 +175,7 @@ export default {
      * 获取字典列表
      */
     async getDataList() {
-      this.searchModel.monthNo = this.monthTime
+      this.searchModel.monthNo = this.monthNo
       var params = {
         queryModel: this.searchModel,
         pageHandler: {
@@ -182,7 +183,6 @@ export default {
           size: this.page_size
         }
       }
-      console.log(params)
       this.loading = true
       const res = await pageQuery(params)
       this.dataList = res.data

@@ -365,7 +365,8 @@ export default {
           const h = this.$createElement
           this.$notify({
             title: '通知',
-            message: h('i', { style: 'color: teal' }, task.taskName + task.taskState)
+            message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+            duration: 0
           })
         })
       }

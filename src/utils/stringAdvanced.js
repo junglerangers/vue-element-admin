@@ -215,5 +215,5 @@ export function formularToAlgorithm(str, dict) {
     }
   }
   // eslint-disable-next-line no-eval
-  return new Decimal(eval(str))
+  return new Decimal(eval(str).toFixed(4))
 }

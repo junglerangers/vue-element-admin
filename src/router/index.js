@@ -150,6 +150,16 @@ export const asyncRoutes = [
           icon: 'num2',
           roles: ['admin']
         }
+      },
+      {
+        path: 'welfare',
+        component: () => import('@/views/salary/welfare'),
+        name: 'welfare',
+        meta: {
+          title: '奖金福利导入',
+          icon: 'num3',
+          roles: ['admin']
+        }
       }
     ]
   },

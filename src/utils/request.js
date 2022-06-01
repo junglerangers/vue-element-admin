@@ -36,6 +36,11 @@ service.interceptors.request.use(
   error => {
     // do something with request error
     // 对请求错误做出一些事情
+    Message({
+      message: error || 'Error',
+      type: 'error',
+      duration: 5 * 1000
+    })
     console.log(error) // for debug
     return Promise.reject(error)
   }
@@ -66,7 +71,7 @@ service.interceptors.response.use(
         duration: 5 * 1000
       })
       console.log(res.message)
-      return Promise.reject(new Error(res || 'Error'))
+      return Promise.reject(new Error(res.message || 'Error'))
     } else if (res.status.indexOf('W') >= 0) {
       Message({
         message: res.message || 'Error',

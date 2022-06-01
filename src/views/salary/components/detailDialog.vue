@@ -35,10 +35,12 @@
     </div>
     <div class="dynamic-salary">
       <el-descriptions v-for="(list,i) in currentUser.slvList" :key="list.TCODE" border :column="1" class="salary">
-        <el-descriptions-item :label="list.TNAME"><el-input v-model="summarySalary[i].value.d[0]" :disabled="summarySalary[i].readonly" /></el-descriptions-item>
+        <el-descriptions-item :label="list.TNAME"><el-input v-model="summarySalary[i].value" :disabled="summarySalary[i].readonly" /></el-descriptions-item>
         <el-descriptions-item>
           <el-descriptions :column="1" border>
-            <el-descriptions-item v-for="item in list.ChilList" :key="item.TCODE" :label="item.TNAME"><input v-model="item.AMOUNT" :name="item.TCODE" @input="updateSalary"></el-descriptions-item>
+            <el-descriptions-item v-for="item in list.ChilList" :key="item.TCODE" :label="item.TNAME">
+              <el-input v-model="item.AMOUNT" :name="item.TCODE" @input="updateSalary" />
+            </el-descriptions-item>
           </el-descriptions>
         </el-descriptions-item>
       </el-descriptions>
@@ -78,7 +80,8 @@ export default {
   data: function() {
     return {
       test: '',
-      loading: false
+      loading: false,
+      uploadSign: true
     }
   },
   computed: {
@@ -103,10 +106,24 @@ export default {
         } else {
           result[i].sign = true
           if (slvList[i].ChilList === null) {
+            if (!/^[+-]?[0-9]\d*(\.\d+)?$/.test(slvList[i].AMOUNT)) {
+              console.log('wrong' + slvList[i].AMOUNT)
+              for (i = 0; i < result.length; i++) {
+                result[i].value = result[i].value.toFixed()
+              }
+              return result
+            }
             result[i].value = new Decimal(slvList[i].AMOUNT)
             result[i].readonly = true
           } else {
             for (j = 0; j < slvList[i].ChilList?.length; j++) {
+              if (!/^[+-]?[0-9]\d*(\.\d+)?$/.test(slvList[i].ChilList[j].AMOUNT)) {
+                console.log('wrong' + slvList[i].ChilList[j].AMOUNT)
+                for (i = 0; i < result.length; i++) {
+                  result[i].value = result[i].value.toFixed()
+                }
+                return result
+              }
               result[i].value = result[i].value.plus(slvList[i].ChilList[j].AMOUNT)
             }
           }
@@ -120,39 +137,8 @@ export default {
           result[i].sign = true
         }
       }
-      return result
-    },
-    uploadList: function() {
-      var result = {
-        mst: {
-          mstid: this.currentUser.mst.MSTID,
-          enum: this.currentUser.mst.ENUM,
-          ename: this.currentUser.mst.ENAME
-        },
-        slvList: []
-      }
-      var slvList = this.currentUser.slvList
-      var i = 0; var j = 0
-      for (i = 0; i < slvList.length; i++) {
-        result.slvList.push({
-          'autoid': slvList[i].AUTOID,
-          'mstid': this.currentUser.mst.MSTID,
-          'enum': this.currentUser.mst.ENUM,
-          'ename': this.currentUser.mst.ENAME,
-          'tcode': slvList[i].TCODE,
-          'amount': this.summarySalary[i].value
-        })
-        for (j = 0; j < slvList[i].ChilList?.length; j++) {
-          var temp = slvList[i].ChilList[j]
-          result.slvList.push({
-            'autoid': temp.AUTOID,
-            'mstid': this.currentUser.mst.MSTID,
-            'enum': this.currentUser.mst.ENUM,
-            'ename': this.currentUser.mst.ENAME,
-            'tcode': temp.TCODE,
-            'amount': temp.AMOUNT
-          })
-        }
+      for (i = 0; i < result.length; i++) {
+        result[i].value = result[i].value.toFixed()
       }
       return result
     }
@@ -193,8 +179,42 @@ export default {
       // var name = e.target.getAttribute('name')
       // console.log(name)
     },
+    uploadList() {
+      var result = {
+        mst: {
+          mstid: this.currentUser.mst.MSTID,
+          enum: this.currentUser.mst.ENUM,
+          ename: this.currentUser.mst.ENAME
+        },
+        slvList: []
+      }
+      var slvList = this.currentUser.slvList
+      var i = 0; var j = 0
+      for (i = 0; i < slvList.length; i++) {
+        result.slvList.push({
+          'autoid': slvList[i].AUTOID,
+          'mstid': this.currentUser.mst.MSTID,
+          'enum': this.currentUser.mst.ENUM,
+          'ename': this.currentUser.mst.ENAME,
+          'tcode': slvList[i].TCODE,
+          'amount': this.summarySalary[i].value
+        })
+        for (j = 0; j < slvList[i].ChilList?.length; j++) {
+          var temp = slvList[i].ChilList[j]
+          result.slvList.push({
+            'autoid': temp.AUTOID,
+            'mstid': this.currentUser.mst.MSTID,
+            'enum': this.currentUser.mst.ENUM,
+            'ename': this.currentUser.mst.ENAME,
+            'tcode': temp.TCODE,
+            'amount': temp.AMOUNT
+          })
+        }
+      }
+      return result
+    },
     async save() {
-      var params = this.uploadList
+      var params = this.uploadList()
       console.log(params)
       this.loading = true
       await UpdateSlv(params).then(res => {

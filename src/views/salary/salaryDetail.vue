@@ -305,10 +305,12 @@ export default {
         ename: scope.row.员工姓名
       }
       GetSlvFormModel(params).then(res => {
-        this.loading = false
         this.currentModel = res.data
         this.dialogVisible = true
       })
+        .finally(() => {
+          this.loading = false
+        })
     },
     searchHandler(searchModel) {
       this.searchModel = { ...searchModel }

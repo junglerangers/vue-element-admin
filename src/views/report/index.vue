@@ -64,12 +64,10 @@ export default {
   created: function() {
     console.log(this.code)
     Encryption(this.code).then(res => {
-      console.log(res)
       this.EncryptionCode = res.data
     })
     this.loading = true
     GetTreeList().then(res => {
-      console.log(res)
       this.dataList = res.data[0].ChildNav
       this.loading = false
     })
@@ -78,7 +76,6 @@ export default {
     View(scope) {
       // console.log(scope.row)
       var url = scope.row.LINK_URL + '&ssoToken=' + encodeURIComponent(this.EncryptionCode)
-      console.log(url)
       this.$store.commit('universal/SET_REPORTURL', url)
       this.$router.push('/report/content')
     }

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import store from '@/store'
 import { isString, isArray } from '@/utils/validate'
 import settings from '@/settings'
+import { Message } from 'element-ui'
 
 // you can set in settings.js
 // errorLog:'production' | ['production', 'development']
@@ -31,6 +32,11 @@ if (checkNeed()) {
         url: window.location.href
       })
       console.error(err, info)// 错误捕获直接输出到了控制台上.
+      Message({
+        message: err || 'Error',
+        type: 'error',
+        duration: 5 * 1000
+      })
     })
   }
 }
