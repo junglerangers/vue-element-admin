@@ -197,7 +197,7 @@ export default {
       this.currentModel = Object.assign({}, defaultModel)
       // bug?
       this.currentModel.BEGINDATE = new Date(date.getFullYear(), date.getMonth(), 1)
-      this.currentModel.ENDDATE = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+      this.currentModel.ENDDATE = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59)
       this.$store.dispatch('formula/getFormula', this.currentModel)
       this.$router.push('/formula/detail?type=new')
     },
