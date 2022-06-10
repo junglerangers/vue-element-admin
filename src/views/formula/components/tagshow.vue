@@ -1,10 +1,10 @@
 <template>
   <div class="tagshow">
-    <div>公式结果展示:</div>
-    {{ result }} =
+    <!-- <div>公式结果展示:</div> -->
+    {{ deResult }}
     <template v-for="item in content">
       <!-- eslint-disable-next-line vue/valid-v-for -->
-      <el-tag v-if="isTag(item.type)" :type="item.type">{{ item.element }}</el-tag>
+      <el-tag v-if="isTag(item.type)" :type="getTagType(item.type)">{{ item.element }}</el-tag>
       <template v-else>{{ item.element }}</template>
     </template>
   </div>
@@ -21,8 +21,7 @@ export default {
     },
     result: {
       type: String,
-      default: '',
-      required: true
+      default: ''
     }
   },
   data: function() {
@@ -35,10 +34,24 @@ export default {
     }
   },
   computed: {
+    deResult: function() {
+      if (this.result) {
+        return this.result + '='
+      } else {
+        return this.result
+      }
+    }
   },
   methods: {
     isTag(type) {
       return type !== 'op'
+    },
+    getTagType(type) {
+      switch (type) {
+        case 'pureNums':return 'info'
+        case 'element' :return 'success'
+        case 'undefined': return 'danger'
+      }
     }
   }
 }
@@ -46,7 +59,6 @@ export default {
 
 <style lang="scss" scoped>
   .tagshow{
-    margin-top: 20px;
     line-height: 30px;
   }
 </style>

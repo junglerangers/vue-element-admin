@@ -56,6 +56,7 @@ const responseFake = (url, type, respond) => {
 // app指的是express.application()
 // 所以MockServer模拟的是后端的操作
 // 模拟的是用户访问前端,前端请求后端时的行为
+// 该js文件导出的
 module.exports = app => {
   // parse app.body
   // https://expressjs.com/en/4x/api.html#req.body

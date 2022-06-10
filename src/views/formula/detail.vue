@@ -60,11 +60,11 @@
     <!-- 显示模块 -->
     <tagshow :content="showFormular" :result="localFormula.TNAME" />
     <div class="inputFormular">
-      公式输入:
+      主公式:
       <!-- 输入模块(输入这里要增加智能搜索模块,智能提示需要的输入) -->
       <el-autocomplete
         ref="input"
-        v-model="rawFormular"
+        v-model="formualrContent"
         :fetch-suggestions="queryAsync"
         :trigger-on-focus="false"
         placeholder="请输入公式内容"
@@ -79,25 +79,91 @@
         </template>
       </el-autocomplete>
     </div>
-    <el-button type="primary" @click="save">保存修改</el-button>
+    <div class="right">
+      <el-button type="primary" @click="save">保存</el-button>
+    </div>
+    <div>条件公式:</div>
+    <el-table
+      v-loading="loading"
+      :data="formularSlv"
+      style="width: 100%"
+      element-loading-text="数据拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+      class="table"
+      border=""
+    >
+      <el-table-column label="人员性质" width="150" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.NATURALLABEL }}
+        </template>
+      </el-table-column>
+      <el-table-column label="人员入职时间" width="150" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.HOSTIMEBMONTH|timeFormatS }} 至 {{ scope.row.HOSTIMEEMONTH|timeFormatE }}
+        </template>
+      </el-table-column>
+      <el-table-column label="公式" align="center">
+        <template slot-scope="scope">
+          <tagshow :content="scope.row.FORMULALABEL" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center">
+        <template slot="header">
+          <el-button-group>
+            <el-button type="primary" size="small" icon="el-icon-document-add" title="条件公式新增" @click="handleSubAdd" />
+          </el-button-group>
+        </template>
+        <template slot-scope="scope">
+          <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleSubEdit(scope)">编辑</el-button>
+          <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleSubDelete(scope)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <detail-dialog :raw-model="currentSlvFormular" :type="dialogType" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @update="getFormularSlv" />
   </div>
 </template>
 
 <script>
-import { tagshow } from './components'
+import { tagshow, detailDialog } from './components'
 import { splictStringByOperator, getLastStrByOperator, splictStringByOperatorSign } from '@/utils/stringAdvanced'
 import { debounce } from '@/utils/index'
-import { getSalaryTypeList } from '@/api/salaryType'
 // import { salaryTypeModel as defaultModel } from '@/dataModel/SalaryTypeModel'
-import { getTreeList, getGridList, localAdd, localUpdate } from '@/api/salaryType'
+import { getTreeList, getGridList, localAdd, localUpdate, getSalaryTypeList } from '@/api/salaryType'
+import { getGridList as getFormularSlv } from '@/api/formularSlv'
+import { getNatureList } from '@/api/enum'
 export default {
+  name: 'FormularDetail',
   components: {
-    tagshow
+    tagshow,
+    detailDialog
+  },
+  setup(props) {
+    console.log(props)
+  },
+  filters: {
+    timeFormatS: function(value) {
+      if (!value) {
+        return '-∞'
+      }
+    },
+    timeFormatE: function(value) {
+      if (!value) {
+        return '+∞'
+      }
+    }
   },
   data: function() {
     return {
-      rawFormular: '', // 存储的是字符串的形式
-      dict: [],
+      formualrContent: '', // 存储的是字符串的形式
+      formularSlv: [],
+      loading: false,
+      currentSlvFormular: {},
+      dialogVisible: false,
+      naturalList: [], // 人员性质表
+      dialogType: '',
+      rawID: '',
+      dict: [], // 用于公式自动补全框中的输入提示
       salaryTypeDict: [], // 存储工资类别,包括工资,奖金,福利,社保缴费等
       testdata: 0,
       searchDebounce: debounce(this.querySearchRemote, 500),
@@ -149,7 +215,7 @@ export default {
   },
   computed: {
     showFormular: function() {
-      return splictStringByOperator(this.rawFormular, this.dict)
+      return splictStringByOperator(this.formualrContent, this.dict) // 前台存储的字符串转换为展示用的字符串
     },
     formula: function() {
       // 先computed,然后再created
@@ -160,11 +226,16 @@ export default {
     }
   },
   created: function() {
+    console.log('created')
     if (this.formula) {
       this.localFormula = Object.assign({}, this.formula)
       this.getSalaryType()
       this.getSalaryDict()
       this.getSalaryType2()
+      this.getNatureList().then(() => {
+        this.getFormularSlv()
+      })
+      this.rawID = this.formula.AUTOID
     } else {
       this.$message({
         message: '请选择一条公式或者选择新增公式!',
@@ -173,6 +244,18 @@ export default {
       this.$store.dispatch('tagsView/delView', this.$route)
       this.$router.replace('/formula/index')
       // 关闭当前页面
+    }
+  },
+  activated: function() {
+    if (this.rawID !== this.formula.AUTOID) {
+      this.localFormula = Object.assign({}, this.formula)
+      this.getSalaryType()
+      this.getSalaryDict()
+      this.getSalaryType2()
+      this.getNatureList().then(() => {
+        this.getFormularSlv()
+      })
+      this.rawID = this.formula.AUTOID
     }
   },
   methods: {
@@ -219,7 +302,7 @@ export default {
       this.$store.dispatch('tagsView/delView', this.$route)
       this.$router.replace('/formula/index')
     },
-    async getSalaryType() { // 获取父级节点
+    async getSalaryType() { // 获取树状薪酬类型,用于指定父级节点
       var param = {
         monthNo: this.monthNo
       }
@@ -227,12 +310,12 @@ export default {
         this.typeOptions = res.data
       })
     },
-    async getSalaryType2() { // 获取dcode
+    async getSalaryType2() { // 获取最基础的四个薪酬类型,即获取dcode
       getSalaryTypeList().then(res => {
         this.salaryTypeDict = res.data
       })
     },
-    async getSalaryDict() {
+    async getSalaryDict() { // 获取用于自动补全所使用的薪酬类型字典
       var param = {
         monthNo: this.monthNo
       }
@@ -241,27 +324,54 @@ export default {
         this.initialFormular()
       })
     },
-    updateDCODE(value) {
+    async getNatureList() {
+      return getNatureList().then(res => {
+        this.naturalList = res.data
+      })
+    },
+    async getFormularSlv() { // 获取薪酬公式子公式
+      // var stid = this.formula.AUTOID
+      var params = {
+        stid: '654'
+      }
+      // console.log(params)
+      this.loading = true
+      getFormularSlv(params).then(res => {
+        this.formularSlv = res.data
+        for (var i = 0; i < res.data.length; i++) {
+          var array = this.formularSlv[i].KINDCODELIST.split(',')
+          var label = ''
+          for (var j = 0; j < array.length; j++) {
+            var item = this.naturalList.find(element => element.Code.toString() === array[j])
+            // console.log(item)
+            label += item.Label + ','
+          }
+          this.formularSlv[i].NATURALLABEL = label
+          var splitarr = splictStringByOperatorSign(this.formularSlv[i].FORMULA, this.dict)
+          let str = ''
+          for (let i = 0; i < splitarr.length; i++) {
+            str += splitarr[i].element
+          }
+          this.formularSlv[i].FORMULCONTENT = str
+          this.formularSlv[i].FORMULALABEL = splictStringByOperator(str, this.dict)
+        }
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    updateDCODE(value) { // 选择薪酬类别名称的时候,自动更新薪酬类别代码
       var temp = this.salaryTypeDict.find(element => element.DNAME === value)
       this.localFormula.DCODE = temp.DCODE
     },
     initialFormular() {
       if (this.localFormula.FORMULA) {
         var temp = this.localFormula.FORMULA
-        const splitarr = splictStringByOperatorSign(temp, this.dict)
+        const splitarr = splictStringByOperatorSign(temp, this.dict) // 数据库存储的转换为前台存储的字符串
         let str = ''
         for (let i = 0; i < splitarr.length; i++) {
           str += splitarr[i].element
         }
-        this.rawFormular = str
-      }
-    },
-    /**
-     * 根据所在列控制颜色显示
-     */
-    columnColorControll: function({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex === 1) {
-        return 'backgroundcolor:blue'
+        this.formualrContent = str
       }
     },
     queryAsync(rawString, cb) {
@@ -269,24 +379,44 @@ export default {
       if (!queryString) {
         cb([])
       } else {
-        return this.searchDebounce(rawString, cb)
+        this.rawTemp = rawString
+        return this.searchDebounce(queryString, cb)
       }
     },
-    async querySearchRemote(rawString, cb) { // 该函数会在用户每次input时调用
-      this.rawTemp = rawString
-      // this.rawTemp2 = rawString
-      var queryString = getLastStrByOperator(rawString)
+    async querySearchRemote(queryString, cb) { // 该函数会在用户每次input时调用
       var result = queryString ? this.dict.filter(state => state.TCODE.toLowerCase().indexOf(queryString.toLowerCase()) === 0 || state.TNAME.indexOf(queryString) === 0) : this.dict
       cb(result)
     },
     autoFixInput(item) { // el-input中的下拉框发生点击事件之时,已经将input中的内容更新成了item中的内容
       // console.log('this is test')
       let index = 0
-      // console.log(this.rawTemp)
-      index = this.rawTemp.search(/[\/\+\-\*%()\\=][\u4e00-\u9fa5\w]*$/)
+      index = this.rawTemp.search(/[\/\+\-\*%()\\=][\u4e00-\u9fa5\w]*$/) // 匹配中文字母数字下划线
       // console.log(index)
-      this.rawFormular = this.rawTemp.slice(0, index + 1) + item.TNAME
+      this.formualrContent = this.rawTemp.slice(0, index + 1) + item.TNAME
       this.$refs.input.focus()
+    },
+    handleSubEdit(scope) {
+      // console.log(scope)
+      this.currentSlvFormular = scope.row
+      this.dialogType = 'edit'
+      this.dialogVisible = true
+    },
+    handleSubDelete(scope) {
+      console.log(`删除当前${scope}`)
+    },
+    handleSubAdd() {
+      this.currentSlvFormular = {
+        // 'autoid': 0,
+        tcode: this.formula.TCODE,
+        'kindcodelist': '',
+        'hostimebmonth': '',
+        'hostimeemonth': '',
+        'formula': '',
+        'begindate': this.formula.BEGINDATE,
+        'enddate': this.formula.ENDDATE
+      }
+      this.dialogType = 'new'
+      this.dialogVisible = true
     }
   }
 }
@@ -308,5 +438,10 @@ export default {
   }
   .width220{
     width: 220px;
+  }
+  .right{
+    text-align: right;
+    margin-bottom: 20px;
+    margin-right: 60px;
   }
 </style>

@@ -22,6 +22,14 @@ router.beforeEach(async(to, from, next) => { // 导航守卫,在所有导航之�
       name: getToken('dep'),
       dep: getToken('name')
     }
+    if (process.env.NODE_ENV === 'development') {
+      cookie = {
+        token: 'test',
+        code: 'test',
+        name: '测试员',
+        dep: '开发部门'
+      }
+    }
     if (cookie.code) {
       store.dispatch('user/setUserInfo', cookie)
     }

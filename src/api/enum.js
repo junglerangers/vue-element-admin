@@ -6,7 +6,7 @@ import request from '@/utils/request'
  */
 export function getNatureList() {
   return request({
-    url: 'http://10.88.88.193:5000/api/BasicManage/Eunms/GetList', // 假地址 自行替换
+    url: 'http://10.88.88.193:5000/api/BasicManage/Eunms/GetList', //
     method: 'post',
     data: {
       enumsName: 'KindCode'

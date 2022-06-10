@@ -207,7 +207,7 @@ export default {
     handleEdit(scope) {
       this.currentModel = Object.assign({}, scope.row)
       this.$store.dispatch('formula/getFormula', this.currentModel)
-      this.$router.push('/formula/detail?type=edit')
+      this.$router.push('/formula/detail/?type=edit')
     },
     searchEmpty() {
       this.searchString = ''

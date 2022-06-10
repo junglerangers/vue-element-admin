@@ -216,7 +216,7 @@ export const asyncRoutes = [
       {
         path: 'detail',
         component: () => import('@/views/formula/detail'),
-        name: 'formularDetail',
+        name: 'FormularDetail',
         hidden: true,
         meta: {
           title: '类别详情',

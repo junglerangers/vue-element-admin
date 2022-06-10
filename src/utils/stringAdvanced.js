@@ -2,12 +2,12 @@ import Decimal from 'decimal.js'
 
 function getColorByCode(code, index) {
   if (/^[0-9]/.test(code)) {
-    return 'success'
+    return 'pureNums'
   } else {
     if (index < 0) {
-      return 'danger'
+      return 'undefined'
     } else {
-      return 'primary'
+      return 'element'
     }
   }
 }
@@ -31,8 +31,7 @@ export function splictStringByOperator(rawString, dict) {
         strResult.push({
           element: temp,
           type: type,
-          index: index,
-          code: type === 'success' ? temp : (index < 0 ? 0 : dict[index].TCODE)
+          code: type === 'pureNums' ? temp : (index < 0 ? 0 : dict[index].TCODE)
         })
         strTemp.length = 0 // 清空temp数组
       }
@@ -48,8 +47,7 @@ export function splictStringByOperator(rawString, dict) {
     strResult.push({
       element: temp,
       type: type,
-      index: index,
-      code: type === 'success' ? temp : index < 0 ? 0 : dict[index].TCODE
+      code: type === 'pureNums' ? temp : index < 0 ? 0 : dict[index].TCODE
     })
   }
   return strResult
@@ -71,9 +69,8 @@ export function splictStringByOperatorSign(rawString, dict) {
         const index = dict.findIndex(element => (element.TCODE === (temp)))
         type = getColorByCode(temp, index)
         strResult.push({
-          element: type === 'success' ? temp : index < 0 ? 'undefined' : dict[index].TNAME,
+          element: type === 'pureNums' ? temp : index < 0 ? 'undefined' : dict[index].TNAME,
           type: type,
-          index: index,
           code: temp
         })
         strTemp.length = 0 // 清空temp数组
@@ -91,9 +88,8 @@ export function splictStringByOperatorSign(rawString, dict) {
     const index = dict.findIndex(element => (element.TCODE === (temp)))
     type = getColorByCode(temp, index)
     strResult.push({
-      element: type === 'success' ? temp : index < 0 ? 'undefined' : dict[index].TNAME,
+      element: type === 'pureNums' ? temp : index < 0 ? 'undefined' : dict[index].TNAME,
       type: type,
-      index: index,
       code: temp
     })
   }

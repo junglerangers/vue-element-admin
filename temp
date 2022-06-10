@@ -1350,3 +1350,15 @@ vue
     data 和 computed 的优先级比created要更高
 
 计算属性也可以v-model?!
+export statement is used in javascript modules to export functions.
+
+this.form.validate(()=>{})
+this.form.validateField('columnName')
+
+组件渲染
+    数据向下传
+    事件向上传
+
+组件中的动态参数
+
+Single File component
