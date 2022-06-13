@@ -69,12 +69,6 @@ export default {
       type: Boolean,
       default: false,
       required: true
-    },
-    dict: {
-      type: Array,
-      default: function() {
-        return []
-      }
     }
   },
   data: function() {

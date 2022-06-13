@@ -8,7 +8,7 @@ export function findTCODE(tname, dict) {
   if (tname === '姓名') {
     return 'ENAME'
   }
-  const result = dict.find(item => item.TNAME === tname)
+  const result = dict?.find(item => item.TNAME === tname)
   if (result !== undefined) {
     return result.TCODE
   } else {
@@ -18,6 +18,7 @@ export function findTCODE(tname, dict) {
 
 export async function upload(mstID, rawFile, dict) {
   return new Promise((resolve, reject) => {
+    console.log(dict)
     var uploadData = {
       mstId: mstID,
       fileBase64: '',
@@ -46,8 +47,8 @@ export function checkData(rawFile, dict) {
     var time = new Date()
     const reader = new FileReader()
     /**
-     * 该事件在读取完成时触发
-     */
+           * 该事件在读取完成时触发
+           */
     reader.onload = (e) => {
       const data = e.target.result
       const workbook = XLSX.read(data, { type: 'array' })

@@ -154,7 +154,7 @@ export default {
     handleEdit(scope) {
       this.currentModel = scope.row
       this.$store.dispatch('salary/getSalary', this.currentModel)
-      this.$router.push('/salary/salaryDetail?type=edit')
+      this.$router.push('/salary/salaryDetail')
     },
     searchHandler(searchModel) {
       this.searchModel = Object.assign(this.searchModel, searchModel)

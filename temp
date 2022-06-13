@@ -1362,3 +1362,31 @@ this.form.validateField('columnName')
 组件中的动态参数
 
 Single File component
+
+Progressive Framework
+
+
+focuse on the view layer only
+
+Single Page Application
+
+text
+attribute
+structure
+event-listener
+all dom manipulations are handled by vue
+
+composing with components
+
+self-contained component
+
+a tree of components
+
+pass data between components in vusjs
+
+a natural data flow 
+
+1. VueJS props
+    vertify your props
+
+函数内部的函数定义也要位于使用的上方
