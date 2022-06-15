@@ -203,6 +203,23 @@ export function formularToAlgorithm(str, dict) {
     var code = 'T' + str.slice(start + 1, end)
     var index = dict.findIndex(element => element.code === code)
     if (dict[index].sign === true) {
+      str = str.substring(0, start) + getDictValue(code, dict) + str.substring(end + 1)
+    } else {
+      dict[index].value = formularToAlgorithm(dict[index].value, dict)
+      dict[index].sign = true
+    }
+  }
+  // eslint-disable-next-line no-eval
+  return new Decimal(eval(str).toFixed(4))
+}
+
+export function strCalculate(str, dict) {
+  while (str.indexOf('[') >= 0) {
+    var start = str.indexOf('[')
+    var end = str.indexOf(']')
+    var code = 'T' + str.slice(start + 1, end)
+    var index = dict.findIndex((element) => element.code === code)
+    if (dict[index].sign === true) {
       str =
         str.substring(0, start) + dict[index].value + str.substring(end + 1)
     } else {
@@ -212,4 +229,35 @@ export function formularToAlgorithm(str, dict) {
   }
   // eslint-disable-next-line no-eval
   return new Decimal(eval(str).toFixed(4))
+}
+
+export function amountCalculate(list, dict) {
+  for (var i = 0; i < list.length; i++) {
+    console.log('sum')
+  }
+}
+
+export function test(list, dict) {
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i]
+    if (item.sign === true) {
+      continue
+    } else {
+      if (item.formula !== null) {
+        item.AMOUNT = strCalculate(item.formula, dict)
+      } else if (item.ChilList !== null) {
+        console.log('sum')
+      }
+    }
+  }
+}
+
+export function getDictValue(code, dict) {
+  var index = dict?.findIndex((element) => element.code === code)
+  if (index < 0) {
+    console.log(`can not find${code} in dict`)
+    return 0
+  } else {
+    return dict[index].value
+  }
 }
