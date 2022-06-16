@@ -294,6 +294,7 @@ export default {
       GetSlvFormModel(params)
         .then(res => {
           this.currentModel = res.data
+          console.log(this.currentModel)
           this.dialogVisible = true
         })
         .finally(() => {

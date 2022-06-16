@@ -1390,3 +1390,6 @@ a natural data flow
     vertify your props
 
 函数内部的函数定义也要位于使用的上方
+
+组件上的v-model是基于prop来实现的.
+通过指明v-model映射后的属性和相应的事件,以一种间接的方式实现v-model的双向绑定

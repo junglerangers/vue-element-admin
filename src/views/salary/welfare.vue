@@ -13,6 +13,9 @@
       :clearable="false"
     />
     <el-button type="primary" @click="test">导入</el-button>
+    <el-form>
+      <form-item :form-list="dataObject.dataList" />
+    </el-form>
   </div>
 </template>
 
@@ -20,12 +23,22 @@
 import { Import } from '@/api/welfare'
 import { getCurrentTime } from '@/utils/time'
 import { mapActions } from 'vuex'
+import FormItem from './components/formItem.vue'
 
 export default {
+  components: {
+    FormItem
+  },
   data() {
     return {
       monthTime: '',
-      loading: false
+      loading: false,
+      dataObject: {
+        dataList: [
+          { value: 0 },
+          { value: 1 }
+        ]
+      }
     }
   },
   methods: {

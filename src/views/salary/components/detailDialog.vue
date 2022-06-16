@@ -34,7 +34,8 @@
       </span>
     </div>
     <div class="dynamic-salary">
-      <el-descriptions v-for="(list,i) in currentUser.slvList" :key="list.TCODE" border :column="1" class="salary">
+      <el-button type="primary" @click="test">test</el-button>
+      <!-- <el-descriptions v-for="(list,i) in currentUser.slvList" :key="list.TCODE" border :column="1" class="salary">
         <el-descriptions-item :label="list.TNAME"><el-input v-model="summarySalary[i].value" :disabled="summarySalary[i].readonly" /></el-descriptions-item>
         <el-descriptions-item>
           <el-descriptions :column="1" border>
@@ -43,15 +44,15 @@
             </el-descriptions-item>
           </el-descriptions>
         </el-descriptions-item>
-      </el-descriptions>
+      </el-descriptions> -->
     </div>
   </el-dialog>
 </template>
 
 <script>
 import { UpdateSlv } from '@/api/salary'
-import { formularToAlgorithm } from '@/utils/stringAdvanced'
-import Decimal from 'decimal.js'
+import { initialDict } from '@/utils/stringAdvanced'
+// import Decimal from 'decimal.js'
 
 export default {
   name: 'DetailDialog',
@@ -73,7 +74,6 @@ export default {
   },
   data: function() {
     return {
-      test: '',
       loading: false,
       uploadSign: true
     }
@@ -88,58 +88,18 @@ export default {
       }
     },
     summarySalary: function() {
-      var slvList = this.currentUser.slvList
-      var result = Array(slvList.length).fill().map(u => ({ code: null, value: new Decimal('0'), sign: false, readonly: true }))
-      var i = 0; var j = 0
-      for (i = 0; i < slvList.length; i++) {
-        result[i].code = slvList[i].TCODE
-        if (slvList[i].ChilList === null && slvList[i].FORMULA !== null) { // 如果孩子为空,公式不为空,说明值是通过公式算出来的
-          result[i].value = slvList[i].FORMULA
-          result[i].sign = false
-          // formularToAlgorithm(slvList[i].FORMULA, result)
-        } else {
-          result[i].sign = true
-          if (slvList[i].ChilList === null) {
-            if (!/^[+-]?[0-9]\d*(\.\d+)?$/.test(slvList[i].AMOUNT)) {
-              console.log('wrong' + slvList[i].AMOUNT)
-              for (i = 0; i < result.length; i++) {
-                result[i].value = result[i].value.toFixed()
-              }
-              return result
-            }
-            result[i].value = new Decimal(slvList[i].AMOUNT)
-            result[i].readonly = true
-          } else {
-            for (j = 0; j < slvList[i].ChilList?.length; j++) {
-              if (!/^[+-]?[0-9]\d*(\.\d+)?$/.test(slvList[i].ChilList[j].AMOUNT)) {
-                console.log('wrong' + slvList[i].ChilList[j].AMOUNT)
-                for (i = 0; i < result.length; i++) {
-                  result[i].value = result[i].value.toFixed()
-                }
-                return result
-              }
-              result[i].value = result[i].value.plus(slvList[i].ChilList[j].AMOUNT)
-            }
-          }
-        }
-      }
-      for (i = 0; i < result.length; i++) {
-        if (result[i].sign === true) {
-          continue
-        } else {
-          result[i].value = formularToAlgorithm(result[i].value, result)
-          result[i].sign = true
-        }
-      }
-      for (i = 0; i < result.length; i++) {
-        result[i].value = result[i].value.toFixed()
-      }
-      return result
+      return 0
     }
   },
   created: function() {
   },
   methods: {
+    test() {
+      var slvList = this.currentUser.slvList
+      initialDict(slvList, slvList)
+      console.log(slvList)
+      return slvList
+    },
     addList(result, list) {
       if (!list) {
         return

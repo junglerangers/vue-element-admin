@@ -196,68 +196,85 @@ export function validateArithmeti(str, objList) {
   }
 }
 
-export function formularToAlgorithm(str, dict) {
-  while (str.indexOf('[') >= 0) {
-    var start = str.indexOf('[')
-    var end = str.indexOf(']')
-    var code = 'T' + str.slice(start + 1, end)
-    var index = dict.findIndex(element => element.code === code)
-    if (dict[index].sign === true) {
-      str = str.substring(0, start) + getDictValue(code, dict) + str.substring(end + 1)
-    } else {
-      dict[index].value = formularToAlgorithm(dict[index].value, dict)
-      dict[index].sign = true
-    }
-  }
-  // eslint-disable-next-line no-eval
-  return new Decimal(eval(str).toFixed(4))
-}
-
-export function strCalculate(str, dict) {
-  while (str.indexOf('[') >= 0) {
-    var start = str.indexOf('[')
-    var end = str.indexOf(']')
-    var code = 'T' + str.slice(start + 1, end)
-    var index = dict.findIndex((element) => element.code === code)
-    if (dict[index].sign === true) {
-      str =
-        str.substring(0, start) + dict[index].value + str.substring(end + 1)
-    } else {
-      dict[index].value = formularToAlgorithm(dict[index].value, dict)
-      dict[index].sign = true
-    }
-  }
-  // eslint-disable-next-line no-eval
-  return new Decimal(eval(str).toFixed(4))
-}
-
-export function amountCalculate(list, dict) {
-  for (var i = 0; i < list.length; i++) {
-    console.log('sum')
-  }
-}
-
-export function test(list, dict) {
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i]
-    if (item.sign === true) {
-      continue
-    } else {
-      if (item.formula !== null) {
-        item.AMOUNT = strCalculate(item.formula, dict)
-      } else if (item.ChilList !== null) {
-        console.log('sum')
+export function initialDict(dict, rawdict) {
+  for (var i = 0; i < dict.length; i++) {
+    var item = dict[i]
+    if (!item.sign) {
+      if (item.FORMULA) {
+        item.AMOUNT = strCalculate(item.FORMULA, rawdict)
+        item.readonly = true
+      } else if (item.ChilList) {
+        item.AMOUNT = amountCalculate(item.ChilList, rawdict)
+        item.readonly = true
+      } else {
+        item.AMOUNT = new Decimal(item.AMOUNT)
+        item.readonly = false
       }
+      item.sign = true
+    }
+    if (dict.ChilList) {
+      initialDict(dict.ChilList, dict)
     }
   }
 }
 
-export function getDictValue(code, dict) {
-  var index = dict?.findIndex((element) => element.code === code)
-  if (index < 0) {
-    console.log(`can not find${code} in dict`)
-    return 0
-  } else {
-    return dict[index].value
+function strCalculate(str, dict) {
+  while (str.indexOf('[') >= 0) {
+    var start = str.indexOf('[')
+    var end = str.indexOf(']')
+    var code = 'T' + str.slice(start + 1, end)
+    var item = getDictItem(code, dict)
+    if (!item.sign) {
+      if (item.FORMULA) {
+        item.AMOUNT = strCalculate(item.FORMULA, dict)
+        item.readonly = true
+      } else if (item.ChilList) {
+        item.AMOUNT = amountCalculate(item.ChilList, dict)
+        item.readonly = true
+      } else {
+        item.AMOUNT = new Decimal(item.AMOUNT)
+        item.readonly = false
+      }
+      item.sign = true
+    }
+    str = str.substring(0, start) + item.AMOUNT + str.substring(end + 1)
   }
+  // eslint-disable-next-line no-eval
+  return new Decimal(eval(str).toFixed(4))
+}
+
+function amountCalculate(list, dict) {
+  var result = new Decimal(0)
+  for (var i = 0; i < list.length; i++) {
+    var item = getDictItem(list[i].TCODE, dict)
+    if (!item.sign) {
+      if (item.FORMULA) {
+        item.AMOUNT = strCalculate(item.FORMULA, dict)
+        item.readonly = true
+      } else if (item.ChilList !== null) {
+        item.AMOUNT = amountCalculate(item.ChilList, dict)
+        item.readonly = true
+      } else {
+        item.AMOUNT = new Decimal(item.AMOUNT)
+        item.readonly = false
+      }
+      item.sign = true
+    }
+    result = result.plus(item.AMOUNT)
+  }
+  return new Decimal(result)
+}
+
+function getDictItem(tcode, dict) {
+  var index = dict.findIndex(element => tcode.indexOf(element.TCODE) >= 0)
+  if (index >= 0) {
+    if (tcode === dict[index].TCODE.toString()) {
+      return dict[index]
+    }
+    if (dict[index].ChilList?.length > 0) {
+      return getDictItem(tcode, dict[index].ChilList)
+    }
+  }
+  console.log(`can not find tcode:${tcode}'s value,it will be zero`)
+  return { AMOUNT: 0, TCODE: tcode, sign: true }
 }
