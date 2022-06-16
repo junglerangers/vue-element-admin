@@ -6,15 +6,13 @@
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)"
   >
-    <el-date-picker
-      v-model="monthTime"
-      type="month"
-      placeholder="请选择相应月份"
-      :clearable="false"
-    />
+    <el-date-picker v-model="monthTime" type="month" placeholder="请选择相应月份" :clearable="false" />
     <el-button type="primary" @click="test">导入</el-button>
-    <el-form>
-      <form-item :form-list="dataObject.dataList" />
+    <el-form class="flex">
+      <form-item :form-list="dataObject.dataList" :level="0" @update="update" />
+      <form-item :form-list="dataObject.dataList" :level="0" @update="update" />
+      <form-item :form-list="dataObject.dataList" :level="0" @update="update" />
+      <form-item :form-list="dataObject.dataList" :level="0" @update="update" />
     </el-form>
   </div>
 </template>
@@ -35,8 +33,11 @@ export default {
       loading: false,
       dataObject: {
         dataList: [
-          { value: 0 },
-          { value: 1 }
+          { TCODE: 'T01', AMOUNT: '500', Chilist: [
+            { AMOUNT: '50', TCODE: 'T0101' },
+            { AMOUNT: '450', TCODE: 'T0102' }
+          ] },
+          { TCODE: 'T02', AMOUNT: '253' }
         ]
       }
     }
@@ -46,6 +47,9 @@ export default {
       addEvent: 'app/addEvent',
       changeEventState: 'app/changeEventState'
     }),
+    update() {
+      console.log('update')
+    },
     test() {
       if (!this.monthTime) {
         this.$message.error('请先选择时间后再操作!')
@@ -98,5 +102,10 @@ export default {
 <style lang="scss">
 .margin50{
   margin: 50px;
+}
+.flex{
+  display: flex;
+  justify-content: flex-start;
+  width: 1200px;
 }
 </style>

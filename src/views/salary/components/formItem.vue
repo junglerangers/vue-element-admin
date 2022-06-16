@@ -1,16 +1,25 @@
 <template>
   <div>
-    <el-form-item>
-      <div class="inputModel">
-        <el-input v-model="formList[0].value" class="input" placeholder="审批人" @blur="testmethod">
-          <template slot="prepend">实际输入</template>
-        </el-input>
-      </div>
-      <de-input v-model="test" />
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="onSubmit">查询</el-button>
-    </el-form-item>
+    <de-input
+      v-for="item,index in formList"
+      :key="item.TCODE"
+      v-model="item.AMOUNT"
+      :label="item.TCODE"
+      :level="level"
+      :has-child="!!item.Chilist"
+      @expand="toggleChiList(index)"
+      @update="update"
+    >
+      <transition name="fade">
+        <form-item
+          v-if="!!item.Chilist"
+          v-show="ChiListVisible[index]"
+          :level="level+1"
+          :form-list="item.Chilist"
+          @update="update"
+        />
+      </transition>
+    </de-input>
   </div>
 </template>
 
@@ -28,45 +37,32 @@ export default {
       default: function() {
         return []
       }
+    },
+    level: {
+      type: Number,
+      default: 0
     }
   },
   data() {
     return {
-      formInline: {
-        name: '',
-        region: ''
-      },
-      rules: {
-        value: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-        ]
-      },
-      test: '123'
+      ChiListVisible: Array(this.formList.length).fill(false)
     }
-  },
-  computed: {
-    localvalue: function() {
-      console.log(this.formList)
-      return this.formList
-    }
-  },
-  created: function() {
-    console.log(this.formList)
   },
   methods: {
-    onSubmit() {
-      console.log('submit!')
+    toggleChiList(index) { // vue 在监听数组时,无法监听到数组内的值所发生的变化
+      this.ChiListVisible[index] = !this.ChiListVisible[index]
+      this.ChiListVisible = [...this.ChiListVisible]
     },
-    testmethod(event) {
-      var value = event.target.value
-      console.log(value)
+    update() {
+      console.log('get input update')
+      this.$emit('update')
     }
   }
 }
 </script>
 
 <style lang='scss' scoped>
+
 .tip{
     margin: 0px;
     color:#f56c6c;
@@ -83,14 +79,23 @@ export default {
 .inputModel{
     width:fit-content
 }
-.local_label{
-    text-align: right;
-    vertical-align: middle;
-    float: left;
-    font-size: 14px;
-    color: #606266;
-    line-height: 40px;
-    padding: 0 12px 0 0;
-    box-sizing: border-box;
+.el-icon{
+  position:absolute;
+  left: 50%;
+  top:50%;
+  margin-left: -5px;
+  margin-top:-5px
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .5s;
+}
+
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active below version 2.1.8 */
+  {
+  opacity: 0;
 }
 </style>
