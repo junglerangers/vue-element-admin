@@ -340,7 +340,7 @@ export default {
       } else {
         var task = {
           taskID: Math.floor(Math.random() * 100),
-          taskName: '薪资明细上传',
+          taskName: this.params + '薪资明细上传',
           startTime: getCurrentTime(),
           endTime: '',
           taskState: '运行中',
@@ -353,7 +353,7 @@ export default {
           task.taskState = '完成'
           task.endTime = getCurrentTime()
           this.$message({
-            message: '薪资明细上传成功!',
+            message: this.params + '薪资明细上传成功!',
             type: 'success'
           })
           this.active = 5

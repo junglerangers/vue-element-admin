@@ -1,21 +1,22 @@
 <template>
-  <div>
+  <div :class="{flex:level===0}">
     <de-input
       v-for="item,index in formList"
       :key="item.TCODE"
       v-model="item.AMOUNT"
-      :label="item.TCODE"
+      :label="item.TNAME"
       :level="level"
-      :has-child="!!item.Chilist"
+      :has-child="!!item.ChilList"
+      :readonly="item.readonly"
       @expand="toggleChiList(index)"
       @update="update"
     >
       <transition name="fade">
         <form-item
-          v-if="!!item.Chilist"
+          v-if="!!item.ChilList"
           v-show="ChiListVisible[index]"
           :level="level+1"
-          :form-list="item.Chilist"
+          :form-list="item.ChilList"
           @update="update"
         />
       </transition>
@@ -45,7 +46,7 @@ export default {
   },
   data() {
     return {
-      ChiListVisible: Array(this.formList.length).fill(false)
+      ChiListVisible: Array(this.formList.length).fill(this.level === 0)
     }
   },
   methods: {
@@ -54,7 +55,6 @@ export default {
       this.ChiListVisible = [...this.ChiListVisible]
     },
     update() {
-      console.log('get input update')
       this.$emit('update')
     }
   }
@@ -62,7 +62,10 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-
+.flex{
+  display: flex;
+  justify-content: flex-start;
+}
 .tip{
     margin: 0px;
     color:#f56c6c;
@@ -88,14 +91,15 @@ export default {
 }
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity .5s;
+  transition: all .5s;
 }
 
 .fade-enter,
 .fade-leave-to
 
 /* .fade-leave-active below version 2.1.8 */
-  {
+{
   opacity: 0;
+  transform: translateY(-30px);
 }
 </style>

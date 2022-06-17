@@ -207,7 +207,7 @@ export function initialDict(dict, rawdict) {
         item.AMOUNT = amountCalculate(item.ChilList, rawdict)
         item.readonly = true
       } else {
-        item.AMOUNT = new Decimal(item.AMOUNT)
+        item.AMOUNT = item.AMOUNT.toString()
         item.readonly = false
       }
       item.sign = true
@@ -232,7 +232,7 @@ function strCalculate(str, dict) {
         item.AMOUNT = amountCalculate(item.ChilList, dict)
         item.readonly = true
       } else {
-        item.AMOUNT = new Decimal(item.AMOUNT)
+        item.AMOUNT = new Decimal(item.AMOUNT).toString()
         item.readonly = false
       }
       item.sign = true
@@ -240,7 +240,8 @@ function strCalculate(str, dict) {
     str = str.substring(0, start) + item.AMOUNT + str.substring(end + 1)
   }
   // eslint-disable-next-line no-eval
-  return new Decimal(eval(str).toFixed(4))
+  var result = new Decimal(eval(str).toFixed(4))
+  return result.toString()
 }
 
 function amountCalculate(list, dict) {
@@ -255,14 +256,14 @@ function amountCalculate(list, dict) {
         item.AMOUNT = amountCalculate(item.ChilList, dict)
         item.readonly = true
       } else {
-        item.AMOUNT = new Decimal(item.AMOUNT)
+        item.AMOUNT = new Decimal(item.AMOUNT).toString()
         item.readonly = false
       }
       item.sign = true
     }
     result = result.plus(item.AMOUNT)
   }
-  return new Decimal(result)
+  return result.toString()
 }
 
 function getDictItem(tcode, dict) {

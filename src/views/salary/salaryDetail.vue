@@ -219,7 +219,7 @@ export default {
       }
       var task = {
         taskID: Math.floor(Math.random() * 100),
-        taskName: '薪资明细上传',
+        taskName: this.monthNo + '薪资明细上传',
         startTime: getCurrentTime(),
         endTime: '',
         taskState: '运行中',
@@ -294,7 +294,6 @@ export default {
       GetSlvFormModel(params)
         .then(res => {
           this.currentModel = res.data
-          console.log(this.currentModel)
           this.dialogVisible = true
         })
         .finally(() => {

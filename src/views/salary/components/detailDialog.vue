@@ -33,29 +33,23 @@
         <el-button @click="toggleDialogVisible">关 闭</el-button>
       </span>
     </div>
-    <div class="dynamic-salary">
-      <el-button type="primary" @click="test">test</el-button>
-      <!-- <el-descriptions v-for="(list,i) in currentUser.slvList" :key="list.TCODE" border :column="1" class="salary">
-        <el-descriptions-item :label="list.TNAME"><el-input v-model="summarySalary[i].value" :disabled="summarySalary[i].readonly" /></el-descriptions-item>
-        <el-descriptions-item>
-          <el-descriptions :column="1" border>
-            <el-descriptions-item v-for="item in list.ChilList" :key="item.TCODE" :label="item.TNAME">
-              <el-input v-model="item.AMOUNT" :name="item.TCODE" @input="updateSalary" />
-            </el-descriptions-item>
-          </el-descriptions>
-        </el-descriptions-item>
-      </el-descriptions> -->
-    </div>
+    <el-form class="flex">
+      <form-item :form-list="slvList" :level="0" @update="updateSlv" />
+    </el-form>
   </el-dialog>
 </template>
 
 <script>
 import { UpdateSlv } from '@/api/salary'
 import { initialDict } from '@/utils/stringAdvanced'
+import FormItem from './formItem.vue'
 // import Decimal from 'decimal.js'
 
 export default {
   name: 'DetailDialog',
+  components: {
+    FormItem
+  },
   props: {
     currentUser: {
       type: Object,
@@ -75,7 +69,8 @@ export default {
   data: function() {
     return {
       loading: false,
-      uploadSign: true
+      uploadSign: true,
+      slvList: []
     }
   },
   computed: {
@@ -86,9 +81,13 @@ export default {
       set: function(v) {
         this.toggleDialogVisible()
       }
-    },
-    summarySalary: function() {
-      return 0
+    }
+  },
+  watch: {
+    currentUser: function(newValue, oldValue) {
+      var slvList = newValue.slvList
+      initialDict(slvList, slvList)
+      this.slvList = slvList
     }
   },
   created: function() {
@@ -97,26 +96,9 @@ export default {
     test() {
       var slvList = this.currentUser.slvList
       initialDict(slvList, slvList)
+      this.slvList = slvList
       console.log(slvList)
       return slvList
-    },
-    addList(result, list) {
-      if (!list) {
-        return
-      } else {
-        var i = 0
-        for (i = 0; i < list.length; i++) {
-          result.push({
-            'autoid': list[i].AUTOID,
-            'mstid': this.currentUser.mst.MSTID,
-            'enum': this.currentUser.mst.ENUM,
-            'ename': this.currentUser.mst.ENAME,
-            'tcode': list[i].TCODE,
-            'amount': this.summarySalary[i].value
-          })
-        }
-        this.addList(result, list.ChilList)
-      }
     },
     toggleDialogVisible() {
       this.$emit('toggleVisible')
@@ -133,6 +115,18 @@ export default {
       // var name = e.target.getAttribute('name')
       // console.log(name)
     },
+    updateSlv() {
+      this.initialSlv(this.slvList)
+      initialDict(this.slvList, this.slvList)
+    },
+    initialSlv(list) {
+      for (var i = 0; i < list?.length; i++) {
+        list[i].sign = false
+        if (list[i].ChilList) {
+          this.initialSlv(list[i].ChilList)
+        }
+      }
+    },
     uploadList() {
       var result = {
         mst: {
@@ -142,34 +136,28 @@ export default {
         },
         slvList: []
       }
-      var slvList = this.currentUser.slvList
-      var i = 0; var j = 0
-      for (i = 0; i < slvList.length; i++) {
+      var slvList = this.slvList
+      this.addUpList(result, slvList)
+      return result
+    },
+    addUpList(result, list) {
+      for (var i = 0; i < list.length; i++) {
+        var item = list[i]
         result.slvList.push({
-          'autoid': slvList[i].AUTOID,
+          'autoid': item.AUTOID,
           'mstid': this.currentUser.mst.MSTID,
           'enum': this.currentUser.mst.ENUM,
           'ename': this.currentUser.mst.ENAME,
-          'tcode': slvList[i].TCODE,
-          'amount': this.summarySalary[i].value
+          'tcode': item.TCODE,
+          'amount': item.AMOUNT
         })
-        for (j = 0; j < slvList[i].ChilList?.length; j++) {
-          var temp = slvList[i].ChilList[j]
-          result.slvList.push({
-            'autoid': temp.AUTOID,
-            'mstid': this.currentUser.mst.MSTID,
-            'enum': this.currentUser.mst.ENUM,
-            'ename': this.currentUser.mst.ENAME,
-            'tcode': temp.TCODE,
-            'amount': temp.AMOUNT
-          })
+        if (list[i].ChilList) {
+          this.addUpList(result, list[i].ChilList)
         }
       }
-      return result
     },
     async save() {
       var params = this.uploadList()
-      console.log(params)
       this.loading = true
       await UpdateSlv(params).then(res => {
         this.$message({
@@ -207,5 +195,11 @@ export default {
 .right{
   position: absolute;
   right: 20px;
+}
+.flex{
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 1200px;
 }
 </style>

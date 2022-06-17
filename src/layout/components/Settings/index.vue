@@ -3,8 +3,9 @@
     任务列表
     <el-button :style="{'float':'right'}" @click="handleEmpty">清空日志</el-button>
     <el-table
-      style="width: 100%"
+      :style="{'width': '100%'}"
       :data="events"
+      height="650"
       :max-height="1200"
     >
       <el-table-column
@@ -15,12 +16,12 @@
       <el-table-column
         prop="startTime"
         label="开始时间"
-        width="130px"
+        width="140px"
       />
       <el-table-column
         prop="endTime"
         label="结束时间"
-        width="130px"
+        width="140px"
       />
       <el-table-column
         prop="taskState"
@@ -120,7 +121,6 @@ export default {
   font-size: 14px;
   line-height: 1.5;
   word-wrap: break-word;
-
   .drawer-title {
     margin-bottom: 12px;
     color: rgba(0, 0, 0, .85);

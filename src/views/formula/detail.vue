@@ -332,7 +332,7 @@ export default {
     async getFormularSlv() { // 获取薪酬公式子公式
       // var stid = this.formula.AUTOID
       var params = {
-        stid: '654'
+        stid: this.formula.AUTOID
       }
       // console.log(params)
       this.loading = true

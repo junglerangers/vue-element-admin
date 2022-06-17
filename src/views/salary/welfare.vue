@@ -8,12 +8,6 @@
   >
     <el-date-picker v-model="monthTime" type="month" placeholder="请选择相应月份" :clearable="false" />
     <el-button type="primary" @click="test">导入</el-button>
-    <el-form class="flex">
-      <form-item :form-list="dataObject.dataList" :level="0" @update="update" />
-      <form-item :form-list="dataObject.dataList" :level="0" @update="update" />
-      <form-item :form-list="dataObject.dataList" :level="0" @update="update" />
-      <form-item :form-list="dataObject.dataList" :level="0" @update="update" />
-    </el-form>
   </div>
 </template>
 
@@ -21,12 +15,8 @@
 import { Import } from '@/api/welfare'
 import { getCurrentTime } from '@/utils/time'
 import { mapActions } from 'vuex'
-import FormItem from './components/formItem.vue'
 
 export default {
-  components: {
-    FormItem
-  },
   data() {
     return {
       monthTime: '',
@@ -91,7 +81,7 @@ export default {
           this.$notify({
             title: '通知',
             message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
-            duration: 0
+            duration: 5000
           })
         })
     }

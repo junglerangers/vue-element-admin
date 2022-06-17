@@ -11,6 +11,7 @@
         v-model="localValue"
         :class="{'kr-input-error-border':errorSign}"
         :style="{'width':inputWidth}"
+        :disabled="readonly"
         @blur="numberValidate"
       >
         <template slot="prepend">
@@ -47,13 +48,17 @@ export default {
     hasChild: {
       default: false,
       type: Boolean
+    },
+    readonly: {
+      default: false,
+      type: Boolean
     }
   },
   data() {
     return {
       // hasChild: false, // 该节点是否有孩子 --> 由父级组件传入
       errorSign: false, // 该节点输入是否有错误
-      expandSign: false, // 该节点是否处于展开状态 --> 展开会触发事件返回父级组件
+      expandSign: this.level === 0, // 该节点是否处于展开状态 --> 展开会触发事件返回父级组件
       errorTip: '请输入合法内容'
     }
   },
@@ -85,15 +90,14 @@ export default {
         this.errorTip = ''
         this.errorSign = false
       }
-      console.log('blur')
       if (!this.errorSign) {
-        console.log('success')
+        // console.log('success')
         this.$emit('update')
       }
     },
     expandItems() {
       this.expandSign = !this.expandSign
-      console.log('expand!')
+      // console.log('expand!')
       this.$emit('expand')
     }
   }
@@ -111,6 +115,9 @@ export default {
   padding-top: 4px;
   //top:100%;
   //left:0;
+}
+.el-input-group__prepend{
+  width:90px
 }
 .kr-input-decorate{
     width:200px;
@@ -146,6 +153,8 @@ export default {
   transform: rotate(90deg);
 }
 .kr-el-form-item-decorate{
-  margin:0px 1px 0px 0px!important
+  margin:0px 1px 0px 0px!important;
+  border-right: 3px ridge #60666d4f;
+  box-shadow: 0px 0px 2px 0px #333;
 }
 </style>
