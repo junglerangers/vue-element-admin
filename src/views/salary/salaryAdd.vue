@@ -450,7 +450,7 @@ export default {
         this.dialogVisible = false
       } else {
         var start = this.startCopyMonth
-        start = start.getFullYear() + '-' + (start.getMonth() + 1)
+        start = start.getFullYear() + '-' + (start.getMonth() + 1).toString().padStart('2', '0')
         var params = {
           'monthNo': this.params,
           'copyFromMonthNo': start
@@ -481,14 +481,6 @@ export default {
 <style lang="scss" scoped>
 .margin50{
   margin: 50px;
-}
-.year-class{
-  width:220px;
-  display: inline-block;
-}
-.month-class{
-  width:240px;
-  display: inline-block;
 }
 .el-step__main{
     transition: color 5s;

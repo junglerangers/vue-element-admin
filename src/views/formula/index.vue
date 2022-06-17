@@ -60,6 +60,7 @@
         <template slot="header">
           <el-button-group>
             <el-button type="primary" size="small" icon="el-icon-document-add" title="薪资类别新增" @click="handleAddSalaryType" />
+            <el-button type="primary" size="small" icon="el-icon-document-copy" title="薪资类别复制" @click="dialogVisible=true" />
           </el-button-group>
         </template>
         <template slot-scope="scope">
@@ -85,17 +86,19 @@
       width="30%"
     >
       <div class="block">
-        <span>薪资复制(月份)</span>
         <el-date-picker
-          v-model="copyMonth"
-          type="monthrange"
-          align="right"
-          unlink-panels
-          range-separator="至"
-          start-placeholder="开始月份"
-          end-placeholder="结束月份"
-          :picker-options="pickerOptions"
-          class="dialogContent"
+          v-model="startCopyMonth"
+          type="month"
+          placeholder="选择月"
+          class="year-class"
+        />
+        至
+        <el-date-picker
+          v-model="monthNo"
+          type="month"
+          placeholder="选择月"
+          disabled
+          class="month-class"
         />
       </div>
       <span slot="footer" class="dialog-footer">
@@ -107,7 +110,7 @@
 </template>
 
 <script>
-import { pageQuery, localDelete, localCopy } from '@/api/salaryType'
+import { pageQuery, localDelete, localCopy, isExist as salaryTypeIsExist } from '@/api/salaryType'
 import { search } from './components'
 import { salaryTypeModel as defaultModel } from '@/dataModel/SalaryTypeModel'
 import resize from '@/mixins/resize'
@@ -127,7 +130,7 @@ export default {
       currentModel: Object.assign({}, defaultModel), // 当前选中的模型
       monthTime: '',
       dataList: [], // 所有数据列表
-      copyMonth: [],
+      startCopyMonth: '',
       searchModel: { // 搜索模型
         'dcode': '',
         'tcode': '',
@@ -171,6 +174,31 @@ export default {
     this.getDataList()
   },
   methods: {
+    async beforeRmoeteTest(fun, params) {
+      var temp = params || this.monthNo
+      var sign1 = await fun(temp)
+      var sign2 = true
+      if (sign1) {
+        sign2 = await this.confirm()
+      }
+      if (sign1 && !sign2) {
+        return false
+      }
+      return true
+    },
+    async confirm() {
+      var result = false
+      await this.$confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        result = true
+      }).catch(() => {
+        result = false
+      })
+      return result
+    },
     /**
      * 获取字典列表
      */
@@ -216,23 +244,34 @@ export default {
     decorateMonthChange(value) {
       return this.monthChange(value, this.searchEmpty)
     },
-    salaryTypeCopy() {
-      this.dialogVisible = false
-      var start = this.copyMonth[0]
-      start = start.getFullYear() + '-' + (start.getMonth() + 1)
-      var end = this.copyMonth[1]
-      end = end.getFullYear() + '-' + (end.getMonth() + 1)
-      var params = {
-        'monthNo': start,
-        'copyFromMonthNo': end
-      }
-      localCopy(params).then(res => {
+    async salaryTypeCopy() {
+      console.log(this.startCopyMonth)
+      if (!this.startCopyMonth) {
         this.$message({
-          message: '薪资复制成功!',
-          type: 'success'
+          message: '请先选择相应的复制时间',
+          type: 'warning'
         })
-      })
-      // 发送复制的请求
+        return
+      }
+      var sign = await this.beforeRmoeteTest(salaryTypeIsExist)
+      if (!sign) {
+        this.dialogVisible = false
+      } else {
+        var start = this.startCopyMonth
+        start = start.getFullYear() + '-' + (start.getMonth() + 1).toString().padStart('2', '0')
+        var params = {
+          'monthNo': this.monthNo,
+          'copyFromMonthNo': start
+        }
+        console.log(params)
+        localCopy(params).then(res => {
+          this.$message({
+            message: '薪资复制成功!',
+            type: 'success'
+          })
+        })
+        this.dialogVisible = false
+      }
     },
     /**
      * 删除特定项目
@@ -293,5 +332,13 @@ export default {
 }
 .dialogContent{
   margin-top: 10px;
+}
+.year-class{
+  width:180px;
+  display: inline-block;
+}
+.month-class{
+  width:180px;
+  display: inline-block;
 }
 </style>
