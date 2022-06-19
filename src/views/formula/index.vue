@@ -2,11 +2,10 @@
   <div ref="main" class="app-container">
     <div class="block">
       <el-date-picker
-        v-model="monthTime"
+        v-model="monthNo"
         type="month"
         placeholder="请选择相应月份"
         :clearable="false"
-        @change="decorateMonthChange"
       />
     </div>
     <search v-model="searchString" @search="searchHandler" />
@@ -60,7 +59,7 @@
         <template slot="header">
           <el-button-group>
             <el-button type="primary" size="small" icon="el-icon-document-add" title="薪资类别新增" @click="handleAddSalaryType" />
-            <el-button type="primary" size="small" icon="el-icon-document-copy" title="薪资类别复制" @click="dialogVisible=true" />
+            <el-button type="primary" size="small" icon="el-icon-document-copy" title="薪资类别导入" @click="dialogVisible=true" />
           </el-button-group>
         </template>
         <template slot-scope="scope">
@@ -128,7 +127,6 @@ export default {
     return {
       loading: false,
       currentModel: Object.assign({}, defaultModel), // 当前选中的模型
-      monthTime: '',
       dataList: [], // 所有数据列表
       startCopyMonth: '',
       searchModel: { // 搜索模型
@@ -141,63 +139,57 @@ export default {
         'monthNo': '',
         'islock': ''
       },
+      rawTime: '',
       searchString: '',
-      dialogVisible: false,
-      pickerOptions: {
-        shortcuts: [{
-          text: '最近一个月',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            end.setMonth(end.getMonth() + 1)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      }
+      dialogVisible: false
     }
   },
   computed: {
-    monthNo: function() {
-      return this.$store.state.universal.monthNo
+    monthNo: {
+      get: function() { return this.$store.state.universal.monthNo },
+      set: function(v) {
+        if (v !== this.monthNo) {
+          this.monthChange(v, this.searchEmpty)
+        }
+      }
     }
   },
   created() {
-    var time = new Date()
-    console.log(time)
-    this.monthTime = this.monthNo
+    this.rawTime = this.monthNo
     this.getDataList()
-    // this.getDepList()
-    // this.getTypeList()
   },
   activated() {
-    this.monthTime = this.monthNo
-    this.getDataList()
+    if (this.rawTime !== this.monthNo) {
+      this.rawTime = this.monthNo
+      this.monthChange(this.monthNo, this.searchEmpty)
+    }
   },
   methods: {
     async beforeRmoeteTest(fun, params) {
+      var vue = this
+      async function confirm() {
+        var result = false
+        await vue.$confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          result = true
+        }).catch(() => {
+          result = false
+        })
+        return result
+      }
       var temp = params || this.monthNo
       var sign1 = await fun(temp)
       var sign2 = true
       if (sign1) {
-        sign2 = await this.confirm()
+        sign2 = await confirm()
       }
       if (sign1 && !sign2) {
         return false
       }
       return true
-    },
-    async confirm() {
-      var result = false
-      await this.$confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        result = true
-      }).catch(() => {
-        result = false
-      })
-      return result
     },
     /**
      * 获取字典列表
@@ -212,10 +204,11 @@ export default {
         }
       }
       this.loading = true
-      const res = await pageQuery(params)
-      this.dataList = res.data
-      this.page_total = res.pageHandler.records
-      this.loading = false
+      pageQuery(params).then(res => {
+        this.dataList = res.data
+        this.page_total = res.pageHandler.records
+        this.loading = false
+      })
     },
     /**
      * 添加新项
@@ -241,11 +234,7 @@ export default {
       this.searchString = ''
       this.searchModel = {}
     },
-    decorateMonthChange(value) {
-      return this.monthChange(value, this.searchEmpty)
-    },
     async salaryTypeCopy() {
-      console.log(this.startCopyMonth)
       if (!this.startCopyMonth) {
         this.$message({
           message: '请先选择相应的复制时间',
@@ -263,14 +252,16 @@ export default {
           'monthNo': this.monthNo,
           'copyFromMonthNo': start
         }
-        console.log(params)
         localCopy(params).then(res => {
           this.$message({
             message: '薪资复制成功!',
             type: 'success'
           })
+          this.dialogVisible = false
+          this.$nextTick().then(() => {
+            this.getDataList()
+          })
         })
-        this.dialogVisible = false
       }
     },
     /**
@@ -282,7 +273,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then((val) => {
-        console.log('确认删除')
         localDelete({ autoId: scope.row.AUTOID }).then(() => {
           this.$message({
             message: '删除成功!',

@@ -15,7 +15,7 @@
       :model="rawModel"
     >
       <el-form-item label="人员性质">
-        <el-select v-model="test" multiple placeholder="请选择">
+        <el-select v-model="naturalChoice" multiple placeholder="请选择">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -27,13 +27,13 @@
       <el-form-item label="入职时间范围" :style="{'width':'400px'}">
         <el-col :span="11">
           <el-form-item prop="HOSTIMEBMONTH">
-            <el-date-picker v-model="rawModel.HOSTIMEBMONTH" type="date" placeholder="选择时间" style="width: 100%;" />
+            <el-date-picker v-model="localRawModual.HOSTIMEBMONTH" type="date" placeholder="选择时间" style="width: 100%;" />
           </el-form-item>
         </el-col>
         <el-col class="line" :span="2">-</el-col>
         <el-col :span="11">
           <el-form-item prop="date2">
-            <el-date-picker v-model="rawModel.HOSTIMEEMONTH" type="date" placeholder="选择时间" style="width: 100%;" />
+            <el-date-picker v-model="localRawModual.HOSTIMEEMONTH" type="date" placeholder="选择时间" style="width: 100%;" />
           </el-form-item>
         </el-col>
       </el-form-item>
@@ -43,7 +43,7 @@
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="toggleDialogVisible">取 消</el-button>
-      <el-button type="primary" @click="toggleDialogVisible">确 定</el-button>
+      <el-button type="primary" @click="testMethod()">确 定</el-button>
     </span>
   </el-dialog>
 </template>
@@ -53,7 +53,7 @@
 export default {
   name: 'DetailDialog',
   props: {
-    rawModel: {
+    rawModel: { // 子公式模型
       type: Object,
       default: function() {
         return {
@@ -62,12 +62,26 @@ export default {
         }
       }
     },
+    naturalList: { // 人员性质字典
+      type: Array,
+      default: function() {
+        return []
+      },
+      required: true
+    },
+    salryTypeDict: { // 薪酬类型字典
+      type: Array,
+      default: function() {
+        return []
+      },
+      required: true
+    },
     dialogVisible: {
       type: Boolean,
       default: false,
       required: true
     },
-    type: {
+    type: { // 调用的接口类型
       type: String,
       default: 'new'
     }
@@ -75,7 +89,8 @@ export default {
   data: function() {
     return {
       loading: false,
-      test: [],
+      test: '',
+      naturalChoice: [],
       options: [{
         value: '选项1',
         label: '黄金糕'
@@ -92,30 +107,7 @@ export default {
         value: '选项5',
         label: '北京烤鸭'
       }],
-      rules: {
-        title: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-        ],
-        region: [
-          { required: true, message: '请选择活动区域', trigger: 'change' }
-        ],
-        HOSTIMEBMONTH: [
-          { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-        ],
-        date2: [
-          { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-        ],
-        type: [
-          { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-        ],
-        resource: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
-        ],
-        desc: [
-          { required: true, message: '请填写活动形式', trigger: 'blur' }
-        ]
-      }
+      testModel: this.rawModel
     }
   },
   computed: {
@@ -127,9 +119,10 @@ export default {
         this.toggleDialogVisible()
       }
     },
-    localRawModual: function() {
-      console.log(this.rawModel)
-      return this.rawModel
+    localRawModual: {
+      get: function() {
+        return this.rawModel
+      }
     }
   },
   created: function() {
@@ -144,6 +137,10 @@ export default {
           done()
         })
         .catch(_ => {})
+    },
+    testMethod() {
+      var sign = /^[0-9]$/.test('2')
+      console.log(sign)
     }
   }
 }

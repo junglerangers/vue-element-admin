@@ -1,5 +1,11 @@
 <template>
-  <div class="app-container">
+  <div
+    v-loading="loading"
+    class="app-container"
+    element-loading-text="数据拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <el-descriptions title="公式详细信息" :column="2">
       <el-descriptions-item label="类别编码">
         <el-input v-model="localFormula.TCODE" class="width220" disabled />
@@ -13,7 +19,7 @@
       <el-descriptions-item label="薪资名称">
         <el-select v-model="localFormula.DNAME" placeholder="请选择" class="width220" @change="updateDCODE">
           <el-option
-            v-for="item in salaryTypeDict"
+            v-for="item in slaryCateDict"
             :key="item.DCODE"
             :label="item.DNAME"
             :value="item.DNAME"
@@ -26,7 +32,6 @@
           align="right"
           type="date"
           placeholder="选择日期"
-          :picker-options="datePickerOptions"
           disabled
         />
       </el-descriptions-item>
@@ -36,12 +41,11 @@
           align="right"
           type="date"
           placeholder="选择日期"
-          :picker-options="datePickerOptions"
           disabled
         />
       </el-descriptions-item>
       <el-descriptions-item label="父级节点">
-        <el-cascader v-model="localFormula.SUPERCODE" :options="typeOptions" :props="props" filterable clearable>
+        <el-cascader v-model="localFormula.SUPERCODE" :options="salaryTypeTreeList" :props="props" filterable clearable>
           <template slot-scope="{ node, data }">
             <span>{{ data.label }}</span>
             <span v-if="!node.isLeaf"> ({{ data.options.length }}) </span>
@@ -49,7 +53,7 @@
         </el-cascader>
       </el-descriptions-item>
       <el-descriptions-item label="是否锁定">
-        {{ localFormula.ISLOCK }}
+        {{ localFormula.ISLOCK|lockFormat }}
       </el-descriptions-item>
       <el-descriptions-item label="备注" span="2">
         <el-input v-model="localFormula.REMARK" type="textarea" :readonly="false" :style="{'width':'800px'}" />
@@ -58,13 +62,13 @@
     <!-- 其它信息模块 -->
     <el-divider />
     <!-- 显示模块 -->
-    <tagshow :content="showFormular" :result="localFormula.TNAME" />
+    <tagshow :content="standFormula" :result="localFormula.TNAME" />
     <div class="inputFormular">
       主公式:
       <!-- 输入模块(输入这里要增加智能搜索模块,智能提示需要的输入) -->
       <el-autocomplete
         ref="input"
-        v-model="formualrContent"
+        v-model="formularContent"
         :fetch-suggestions="queryAsync"
         :trigger-on-focus="false"
         placeholder="请输入公式内容"
@@ -82,14 +86,10 @@
     <div class="right">
       <el-button type="primary" @click="save">保存</el-button>
     </div>
-    <div>条件公式:</div>
+    <div :style="{'line-height':'2'}">条件公式:</div>
     <el-table
-      v-loading="loading"
       :data="formularSlv"
       style="width: 100%"
-      element-loading-text="数据拼命加载中"
-      element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(0, 0, 0, 0.8)"
       class="table"
       border=""
     >
@@ -120,26 +120,82 @@
         </template>
       </el-table-column>
     </el-table>
-    <detail-dialog :raw-model="currentSlvFormular" :type="dialogType" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @update="getFormularSlv" />
+    <el-dialog
+      title="条件公式"
+      :visible.sync="dialogVisible"
+      :before-close="handleClose"
+      width="1200px"
+    >
+      <el-form
+        label-position="left"
+        label-width="100px"
+        :model="currentSlvFormular"
+      >
+        <el-form-item label="人员性质">
+          <el-select v-model="naturalChoice" multiple placeholder="请选择">
+            <el-option
+              v-for="item in naturalList"
+              :key="item.Code"
+              :label="item.Label"
+              :value="item.Code"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="入职时间范围" :style="{'width':'400px'}">
+          <el-col :span="11">
+            <el-form-item prop="HOSTIMEBMONTH">
+              <el-date-picker v-model="currentSlvFormular.HOSTIMEBMONTH" type="month" placeholder="选择开始时间" style="width: 100%;" clearble />
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-form-item prop="date2">
+              <el-date-picker v-model="currentSlvFormular.HOSTIMEEMONTH" type="month" placeholder="选择结束时间" style="width: 100%;" clearble />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="主计算公式">
+          <tagshow :content="standFormula" :result="localFormula.TNAME" />
+        </el-form-item>
+        <el-form-item label="计算公式">
+          <tagshow :content="slvStandFormula" :result="localFormula.TNAME" />
+          <el-autocomplete
+            ref="subInput"
+            v-model="subFormularContent"
+            :fetch-suggestions="queryAsync"
+            :trigger-on-focus="false"
+            placeholder="请输入公式内容"
+            value-key="TCODE"
+            class="block"
+            @select="autoFixInput"
+          >
+            <template slot="prepend">{{ localFormula.TNAME }} =</template>
+            <template v-slot="{item}">
+              <span style="float: left">{{ item.TNAME }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.TCODE }}</span>
+            </template>
+          </el-autocomplete>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="test()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { tagshow, detailDialog } from './components'
-import { splictStringByOperator, getLastStrByOperator, splictStringByOperatorSign } from '@/utils/stringAdvanced'
+import { tagshow } from './components'
+import { splictStringByOperator, getLastStrByOperator } from '@/utils/stringAdvanced'
 import { debounce } from '@/utils/index'
-// import { salaryTypeModel as defaultModel } from '@/dataModel/SalaryTypeModel'
-import { getTreeList, getGridList, localAdd, localUpdate, getSalaryTypeList } from '@/api/salaryType'
+import { getTreeList, getGridList, localAdd, localUpdate, getSalaryTypeList as getSalaryCateDict } from '@/api/salaryType'
 import { getGridList as getFormularSlv } from '@/api/formularSlv'
 import { getNatureList } from '@/api/enum'
 export default {
   name: 'FormularDetail',
   components: {
-    tagshow,
-    detailDialog
-  },
-  setup(props) {
-    console.log(props)
+    tagshow
   },
   filters: {
     timeFormatS: function(value) {
@@ -151,24 +207,35 @@ export default {
       if (!value) {
         return '+∞'
       }
+    },
+    lockFormat: function(value) {
+      var temp = value.toString()
+      if (temp === '0') {
+        return '未锁定'
+      } else if (temp === '1') {
+        return '锁定'
+      } else {
+        return '未定义'
+      }
     }
   },
   data: function() {
     return {
-      formualrContent: '', // 存储的是字符串的形式
+      formularContent: '', // 存储的是字符串的形式
       formularSlv: [],
       loading: false,
       currentSlvFormular: {},
       dialogVisible: false,
       naturalList: [], // 人员性质表
+      naturalChoice: [],
+      subFormularContent: '',
       dialogType: '',
       rawID: '',
-      dict: [], // 用于公式自动补全框中的输入提示
-      salaryTypeDict: [], // 存储工资类别,包括工资,奖金,福利,社保缴费等
-      testdata: 0,
+      salaryTypeDict: [], // 用于公式自动补全框中的输入提示
+      slaryCateDict: [], // 存储工资类别,包括工资,奖金,福利,社保缴费等
       searchDebounce: debounce(this.querySearchRemote, 500),
       rawTemp: '',
-      typeOptions: [],
+      salaryTypeTreeList: [],
       props: {
         checkStrictly: true,
         children: 'options',
@@ -188,34 +255,17 @@ export default {
         ENDDATE: '',
         ISLOCK: '',
         RNUM: ''
-      },
-      datePickerOptions: {
-        shortcuts: [{
-          text: '今天',
-          onClick(picker) {
-            picker.$emit('pick', new Date())
-          }
-        }, {
-          text: '本月第一天',
-          onClick(picker) {
-            const date = new Date()
-            var firstday = new Date(date.getFullYear(), date.getMonth(), 1)
-            picker.$emit('pick', firstday)
-          }
-        }, {
-          text: '本月最后一天',
-          onClick(picker) {
-            const date = new Date()
-            var lastday = new Date(date.getFullYear(), date.getMonth() + 1, 0)
-            picker.$emit('pick', lastday)
-          }
-        }]
       }
     }
   },
   computed: {
-    showFormular: function() {
-      return splictStringByOperator(this.formualrContent, this.dict) // 前台存储的字符串转换为展示用的字符串
+    standFormula: function() {
+      return splictStringByOperator(this.formularContent, this.salaryTypeDict) // 前台存储的字符串转换为展示用的字符串
+    },
+    slvStandFormula: function() {
+      var items = splictStringByOperator(this.subFormularContent, this.salaryTypeDict)
+      console.log(items)
+      return items
     },
     formula: function() {
       // 先computed,然后再created
@@ -226,16 +276,8 @@ export default {
     }
   },
   created: function() {
-    console.log('created')
     if (this.formula) {
-      this.localFormula = Object.assign({}, this.formula)
-      this.getSalaryType()
-      this.getSalaryDict()
-      this.getSalaryType2()
-      this.getNatureList().then(() => {
-        this.getFormularSlv()
-      })
-      this.rawID = this.formula.AUTOID
+      this.pageInitial()
     } else {
       this.$message({
         message: '请选择一条公式或者选择新增公式!',
@@ -248,34 +290,42 @@ export default {
   },
   activated: function() {
     if (this.rawID !== this.formula.AUTOID) {
+      this.pageInitial()
+    }
+  },
+  methods: {
+    pageInitial() {
       this.localFormula = Object.assign({}, this.formula)
-      this.getSalaryType()
-      this.getSalaryDict()
-      this.getSalaryType2()
+      this.getSalaryTypeTreeList()
+      this.getSalaryTypeList()
+      this.getSalaryCateDict()
       this.getNatureList().then(() => {
         this.getFormularSlv()
       })
       this.rawID = this.formula.AUTOID
-    }
-  },
-  methods: {
+    },
     save() {
       const type = this.$route.query.type
       let i = 0
       let str = ''
       let temp = ''
-      for (i = 0; i < this.showFormular.length; i++) {
-        if (this.showFormular[i].type === 'primary') {
-          temp = '[' + this.showFormular[i].code.replace('T', '') + ']'
+      for (i = 0; i < this.standFormula.length; i++) {
+        if (this.standFormula[i].type === 'undefined') {
+          this.$message({
+            type: 'error',
+            message: '当前公式中存在错误,请检查修正后重新保存'
+          })
+          return
+        }
+        if (this.standFormula[i].type === 'element') {
+          temp = '[' + this.standFormula[i].code.replace('T', '') + ']'
         } else {
-          temp = this.showFormular[i].code
+          temp = this.standFormula[i].code
         }
         str += temp
       }
       this.localFormula.FORMULA = str
-      console.log(this.localFormula)
       if (type === 'edit') {
-        console.log('edit')
         localUpdate(this.localFormula).then(res => {
           this.$message({
             message: '薪资更新成功!',
@@ -291,7 +341,6 @@ export default {
           'enddate': this.localFormula.ENDDATE.format('yyyy-MM-dd hh:mm:ss'),
           'remark': this.localFormula.REMARK
         }
-        console.log(params)
         localAdd(params).then(res => {
           this.$message({
             message: '薪资新增成功',
@@ -302,31 +351,32 @@ export default {
       this.$store.dispatch('tagsView/delView', this.$route)
       this.$router.replace('/formula/index')
     },
-    async getSalaryType() { // 获取树状薪酬类型,用于指定父级节点
+    async getSalaryTypeTreeList() { // 获取树状薪酬类型,用于指定父级节点
       var param = {
         monthNo: this.monthNo
       }
       await getTreeList(param).then(res => {
-        this.typeOptions = res.data
+        this.salaryTypeTreeList = res.data
       })
     },
-    async getSalaryType2() { // 获取最基础的四个薪酬类型,即获取dcode
-      getSalaryTypeList().then(res => {
-        this.salaryTypeDict = res.data
+    async getSalaryCateDict() { // 获取最基础的四个薪酬类型,即获取dcode
+      getSalaryCateDict().then(res => {
+        this.slaryCateDict = res.data
       })
     },
-    async getSalaryDict() { // 获取用于自动补全所使用的薪酬类型字典
+    async getSalaryTypeList() { // 获取用于自动补全所使用的薪酬类型字典
       var param = {
         monthNo: this.monthNo
       }
       getGridList(param).then(res => {
-        this.dict = res.data
-        this.initialFormular()
+        this.salaryTypeDict = res.data
+        this.formulaInitial()
       })
     },
-    async getNatureList() {
+    async getNatureList() { // 获取人员性质
       return getNatureList().then(res => {
         this.naturalList = res.data
+        console.log(this.naturalList)
       })
     },
     async getFormularSlv() { // 获取薪酬公式子公式
@@ -335,11 +385,10 @@ export default {
         stid: this.formula.AUTOID
       }
       // console.log(params)
-      this.loading = true
       getFormularSlv(params).then(res => {
         this.formularSlv = res.data
         for (var i = 0; i < res.data.length; i++) {
-          var array = this.formularSlv[i].KINDCODELIST.split(',')
+          var array = this.formularSlv[i].KINDCODELIST.split(',')// 获取当前自子公式适用的人员性质
           var label = ''
           for (var j = 0; j < array.length; j++) {
             var item = this.naturalList.find(element => element.Code.toString() === array[j])
@@ -347,34 +396,31 @@ export default {
             label += item.Label + ','
           }
           this.formularSlv[i].NATURALLABEL = label
-          var splitarr = splictStringByOperatorSign(this.formularSlv[i].FORMULA, this.dict)
+          var splitarr = splictStringByOperator(this.formularSlv[i].FORMULA, this.salaryTypeDict)
           let str = ''
-          for (let i = 0; i < splitarr.length; i++) {
+          for (let i = 0; i < splitarr?.length; i++) {
             str += splitarr[i].element
           }
-          this.formularSlv[i].FORMULCONTENT = str
-          this.formularSlv[i].FORMULALABEL = splictStringByOperator(str, this.dict)
+          this.formularSlv[i].FORMULARCONTENT = str
         }
-      }).finally(() => {
-        this.loading = false
       })
     },
     updateDCODE(value) { // 选择薪酬类别名称的时候,自动更新薪酬类别代码
-      var temp = this.salaryTypeDict.find(element => element.DNAME === value)
+      var temp = this.slaryCateDict.find(element => element.DNAME === value)
       this.localFormula.DCODE = temp.DCODE
     },
-    initialFormular() {
+    formulaInitial() { // 将数据库存储的字符串形式的公式转换为前端的形式
       if (this.localFormula.FORMULA) {
         var temp = this.localFormula.FORMULA
-        const splitarr = splictStringByOperatorSign(temp, this.dict) // 数据库存储的转换为前台存储的字符串
+        const splitarr = splictStringByOperator(temp, this.salaryTypeDict) // 数据库存储的转换为前台存储的字符串
         let str = ''
-        for (let i = 0; i < splitarr.length; i++) {
+        for (let i = 0; i < splitarr?.length; i++) {
           str += splitarr[i].element
         }
-        this.formualrContent = str
+        this.formularContent = str
       }
     },
-    queryAsync(rawString, cb) {
+    queryAsync(rawString, cb) { // 返回自动补全中的待候选列表
       var queryString = getLastStrByOperator(rawString)
       if (!queryString) {
         cb([])
@@ -384,20 +430,27 @@ export default {
       }
     },
     async querySearchRemote(queryString, cb) { // 该函数会在用户每次input时调用
-      var result = queryString ? this.dict.filter(state => state.TCODE.toLowerCase().indexOf(queryString.toLowerCase()) === 0 || state.TNAME.indexOf(queryString) === 0) : this.dict
+      var result = queryString ? this.salaryTypeDict.filter(state => state.TCODE.toLowerCase().indexOf(queryString.toLowerCase()) === 0 || state.TNAME.indexOf(queryString) === 0) : this.salaryTypeDict
       cb(result)
     },
     autoFixInput(item) { // el-input中的下拉框发生点击事件之时,已经将input中的内容更新成了item中的内容
       // console.log('this is test')
       let index = 0
+      console.log(item)
       index = this.rawTemp.search(/[\/\+\-\*%()\\=][\u4e00-\u9fa5\w]*$/) // 匹配中文字母数字下划线
       // console.log(index)
-      this.formualrContent = this.rawTemp.slice(0, index + 1) + item.TNAME
-      this.$refs.input.focus()
+      if (this.dialogVisible) {
+        this.subFormularContent = this.rawTemp.slice(0, index + 1) + item.TNAME
+        this.$refs.subInput.focus()
+      } else {
+        this.formularContent = this.rawTemp.slice(0, index + 1) + item.TNAME
+        this.$refs.input.focus()
+      }
     },
     handleSubEdit(scope) {
       // console.log(scope)
-      this.currentSlvFormular = scope.row
+      this.currentSlvFormular = Object.assign({}, scope.row)
+      this.subFormularContent = this.currentSlvFormular.FORMULARCONTENT
       this.dialogType = 'edit'
       this.dialogVisible = true
     },
@@ -405,7 +458,7 @@ export default {
       console.log(`删除当前${scope}`)
     },
     handleSubAdd() {
-      this.currentSlvFormular = {
+      this.currentSlvFormular = Object.assign({}, {
         // 'autoid': 0,
         tcode: this.formula.TCODE,
         'kindcodelist': '',
@@ -414,9 +467,19 @@ export default {
         'formula': '',
         'begindate': this.formula.BEGINDATE,
         'enddate': this.formula.ENDDATE
-      }
+      })
       this.dialogType = 'new'
       this.dialogVisible = true
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => {})
+    },
+    test() {
+      console.log('test')
     }
   }
 }
@@ -426,6 +489,7 @@ export default {
   .inputFormular{
     margin-top: 20px;
     margin-bottom: 20px;
+    line-height: 2;
   }
   #formular.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
     background-color: rgba(255, 255, 255, 0)

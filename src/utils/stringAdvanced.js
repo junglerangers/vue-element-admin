@@ -1,14 +1,21 @@
 import Decimal from 'decimal.js'
 
-function getColorByCode(code, index) {
-  if (/^[0-9]/.test(code)) {
-    return 'pureNums'
-  } else {
-    if (index < 0) {
-      return 'undefined'
+/**
+ * @descriptions 获取元素的类型
+ * @param {*} element
+ * @returns ['pureNums','undefined','element']
+ */
+function getElementType(element) {
+  if (typeof (element) === 'string') {
+    if (/^[0-9]+[\.]?[0-9]*$/.test(element)) {
+      return 'pureNums'
     } else {
-      return 'element'
+      return 'undefined'
     }
+  } else if (element instanceof Object) {
+    return 'element'
+  } else {
+    return 'undefined'
   }
 }
 
@@ -18,86 +25,51 @@ function getColorByCode(code, index) {
  * @returns Array
  */
 export function splictStringByOperator(rawString, dict) {
-  const strArray = rawString.split('')
-  const strTemp = []; const strResult = []
-  let temp = ''
-  let type = ''
-  for (let i = 0; i < strArray.length; i++) {
-    if (/[\/\+\-\*%()\\=]/.test(strArray[i])) {
-      if (strTemp.length > 0) {
-        temp = strTemp.join('')
-        const index = dict.findIndex(element => element.TNAME === temp)
-        type = getColorByCode(temp, index)
-        strResult.push({
-          element: temp,
-          type: type,
-          code: type === 'pureNums' ? temp : (index < 0 ? 0 : dict[index].TCODE)
-        })
-        strTemp.length = 0 // 清空temp数组
-      }
-      strResult.push({ element: strArray[i], type: 'op', code: strArray[i] })
-    } else {
-      strTemp.push(strArray[i])
-    }
+  if (!rawString) {
+    return
   }
-  if (strTemp.length > 0) {
-    temp = strTemp.join('')
-    const index = dict.findIndex((element) => element.TNAME === temp)
-    type = getColorByCode(temp, index)
-    strResult.push({
-      element: temp,
-      type: type,
-      code: type === 'pureNums' ? temp : index < 0 ? 0 : dict[index].TCODE
-    })
-  }
-  return strResult
-}
-
-export function splictStringByOperatorSign(rawString, dict) {
   const strArray = rawString.split('')
+  strArray.push('#')
   const strTemp = []
   const strResult = []
   let temp = ''
   let type = ''
   for (let i = 0; i < strArray.length; i++) {
-    if (/[\/\+\-\*%()\\=]/.test(strArray[i])) {
+    if (/[\/\+\-\*%()\\=#]/.test(strArray[i])) {
       if (strTemp.length > 0) {
         temp = strTemp.join('')
-        if (temp[0] === '[' && temp[temp.length - 1] === ']') {
+        var element
+        if (/^[0-9]+[\.]?[0-9]*$/.test(temp)) {
+          element = temp
+        } else if (temp[0] === '[' && temp[temp.length - 1] === ']') {
+          // 通过代码在相应的字典中找到元素
           temp = 'T' + temp.substring(1, temp.length - 1)
+          element = dict.find((element) => element.TCODE === temp)
+        } else {
+          // 通过名称在相应字典中找到相应的元素
+          element = dict.find((element) => element.TNAME === temp)
         }
-        const index = dict.findIndex(element => (element.TCODE === (temp)))
-        type = getColorByCode(temp, index)
+        type = getElementType(element)
         strResult.push({
-          element: type === 'pureNums' ? temp : index < 0 ? 'undefined' : dict[index].TNAME,
+          element: type === 'element' ? element.TNAME : temp,
           type: type,
-          code: temp
+          code: type === 'element' ? element?.TCODE : temp
         })
         strTemp.length = 0 // 清空temp数组
       }
-      strResult.push({ element: strArray[i], type: 'op', code: strArray[i] })
+      if (strArray[i] !== '#') {
+        strResult.push({ element: strArray[i], type: 'op', code: strArray[i] })
+      }
     } else {
       strTemp.push(strArray[i])
     }
-  }
-  if (strTemp.length > 0) {
-    temp = strTemp.join('')
-    if (temp[0] === '[' && temp[temp.length - 1] === ']') {
-      temp = 'T' + temp.substring(1, temp.length - 1)
-    }
-    const index = dict.findIndex(element => (element.TCODE === (temp)))
-    type = getColorByCode(temp, index)
-    strResult.push({
-      element: type === 'pureNums' ? temp : index < 0 ? 'undefined' : dict[index].TNAME,
-      type: type,
-      code: temp
-    })
   }
   return strResult
 }
 
 /**
  * @param {String} str
+ * @descriptions 获取当前字符串的最后一个操作符后的元素
  * @returns String
  */
 export function getLastStrByOperator(str) {
