@@ -3,8 +3,9 @@ import store from './store'// 全局变量管理
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar 一个进度条
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+// import { getToken, setToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import { getEmp } from '@/api/RSA'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -14,24 +15,37 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 // 如果这个路由是用于网站中的某个模块,那么该模块的加载已经路由等待,因为异步的原因,就不会影响其他模块的使用?
 router.beforeEach(async(to, from, next) => { // 导航守卫,在所有导航之前的行为
   // start progress bar
-  var token = store.getters.user_token
-  if (!token.code) {
-    var cookie = {
-      token: getToken('token'),
-      code: getToken('code'),
-      name: getToken('dep'),
-      dep: getToken('name')
-    }
+  var validateToken = store.getters.user_token
+  if (!validateToken.code) {
     if (process.env.NODE_ENV === 'development') {
-      cookie = {
+      validateToken = {
         token: 'test',
         code: 'test',
         name: '测试员',
         dep: '开发部门'
       }
     }
-    if (cookie.code) {
-      store.dispatch('user/setUserInfo', cookie)
+    if (to.query.ssoToken) {
+      var temp = decodeURIComponent(to.query.ssoToken)
+      await getEmp(temp)
+        .then((res) => {
+          // console.log(res)
+          validateToken = {
+            token: temp,
+            code: res.data?.EMP_CODE,
+            name: res.data?.EMP_NAME,
+            dep: res.data?.DEPT_NAME
+          }
+        })
+        .catch(() => {
+          Message({
+            type: 'warning',
+            message: '无效验证,请联系管理员'
+          })
+        })
+    }
+    if (validateToken.code) {
+      store.dispatch('user/setUserInfo', validateToken)
     }
   }
   NProgress.start()
@@ -43,17 +57,17 @@ router.beforeEach(async(to, from, next) => { // 导航守卫,在所有导航之�
   // determine whether the user has obtained his permission roles through getInfo
   const hasRoles = store.getters.roles && store.getters.roles.length > 0
   if (hasRoles) {
-    if (token.code) {
+    if (validateToken.code) {
       next()
-    } else if (
-      to.path !== '/salary/salaryAdd' &&
-      to.path !== '/401' &&
-      to.path !== '/404'
-    ) {
-      next('/salary/salaryAdd')
+    } else if (to.path === '/401') {
+      Message({
+        type: 'warning',
+        message: '请通过OA登录!!!!'
+      })
+      next()
     } else {
-      next()
-    }// 单独的next()才是放行,其它都是跳转
+      next('/401')
+    }
   } else {
     try {
       // get user info

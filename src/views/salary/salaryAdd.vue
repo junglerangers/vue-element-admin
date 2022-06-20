@@ -128,8 +128,6 @@ import { localAdd, localImport as salaryImport, UpdateMst, isExist as salaryDeta
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
 import { getCurrentTime } from '@/utils/time'
-import { getEmp } from '@/api/RSA'
-import { setToken } from '@/utils/auth'
 
 export default {
   name: 'SalaryAdd',
@@ -190,43 +188,6 @@ export default {
     }
   },
   created() {
-    var token = this.$store.getters.user_token
-    if (token.code) {
-      console.log('has done.')
-    } else {
-      var temp = this.$route.query.ssoToken
-      if (temp) {
-        var temp2 = decodeURIComponent(temp)
-        getEmp(temp2)
-          .then(res => {
-            console.log(res)
-            setToken('name', res.data.EMP_NAME)
-            setToken('code', res.data.EMP_CODE)
-            setToken('dep', res.data.DEPT_NAME)
-            setToken('token', temp2)
-            var token = {
-              token: temp2,
-              code: res.data?.EMP_CODE,
-              name: res.data?.EMP_NAME,
-              dep: res.data?.DEPT_NAME
-            }
-            this.$store.dispatch('user/setUserInfo', token)
-          })
-          .catch(() => {
-            this.$message({
-              type: 'warning',
-              message: '请通过OA登录'
-            })
-            this.$router.replace('/401')
-          })
-      } else {
-        this.$message({
-          type: 'warning',
-          message: '请通过OA登录!!!!'
-        })
-        this.$router.replace('/401')
-      }
-    }
     this.getSalaryTypeList()
   },
   methods: {
@@ -336,7 +297,8 @@ export default {
       }
       var sign = await this.beforeRmoeteTest(salaryDetailExist, this.mstID)
       if (!sign) {
-        console.log('test')
+        // console.log('test')
+        return
       } else {
         var task = {
           taskID: Math.floor(Math.random() * 100),

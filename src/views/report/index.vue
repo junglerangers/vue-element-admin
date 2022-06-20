@@ -62,7 +62,7 @@ export default {
     }
   },
   created: function() {
-    console.log(this.code)
+    // console.log(this.code)
     Encryption(this.code).then(res => {
       this.EncryptionCode = res.data
     })

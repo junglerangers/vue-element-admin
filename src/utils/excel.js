@@ -18,7 +18,7 @@ export function findTCODE(tname, dict) {
 
 export async function upload(mstID, rawFile, dict) {
   return new Promise((resolve, reject) => {
-    console.log(dict)
+    // console.log(dict)
     var uploadData = {
       mstId: mstID,
       fileBase64: '',
@@ -44,7 +44,6 @@ export async function upload(mstID, rawFile, dict) {
 
 export function checkData(rawFile, dict) {
   return new Promise((resolve, reject) => {
-    var time = new Date()
     const reader = new FileReader()
     /**
            * 该事件在读取完成时触发
@@ -68,7 +67,7 @@ export function checkData(rawFile, dict) {
       // 如果表头检查没有问题,就发送文件到远程客户端
       // console.log(results)
       // this.generateData({ header, results })
-      console.log(new Date() - time)
+      // console.log(new Date() - time)
       resolve('Excel表单表头检查成功,信息导入成功.')
     }
     reader.readAsArrayBuffer(rawFile)

@@ -12,7 +12,7 @@ const state = {
 
 const mutations = {
   SET_REPORTURL: (state, url) => {
-    console.log(url)
+    // console.log(url)
     state.reportUrl = url
   },
   SET_MONTHNO: (state, monthNo) => {

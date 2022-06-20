@@ -83,7 +83,7 @@ export default {
   },
   methods: {
     userRequest: function() {
-      console.log('request')
+      // console.log('request')
       this.toggleDialogVisible()
       this.$emit('change')
     },

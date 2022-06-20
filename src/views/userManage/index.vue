@@ -52,14 +52,6 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">
-        <!-- <template slot="header">
-          <el-button-group>
-            <el-button type="primary" size="small" icon="el-icon-upload" @click="importEmployee">员工信息导入</el-button>
-            <el-button type="primary" size="small" icon="el-icon-upload2">
-              <input ref="upload" class="myinput" type="file" accept=".xlsx" title="Excel儿科员工更新" @focus="importExcel">
-            </el-button>
-          </el-button-group>
-        </template> -->
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-view" title="编辑" @click="handleViewUser(scope)">查看</el-button>
         </template>
@@ -77,25 +69,6 @@
         @current-change="decoreateCurrentChange"
       />
     </div>
-    <!-- 用户界面创建/编辑框 -->
-    <el-dialog
-      title="人员导入月份选择框"
-      :visible.sync="dialogVisible2"
-      width="30%"
-    >
-      <div class="block">
-        <span>月份选择</span>
-        <el-date-picker
-          v-model="test"
-          type="month"
-          placeholder="选择月"
-        />
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="monthImport">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -167,15 +140,9 @@ export default {
       this.CurrentModel = scope.row
       this.dialogVisible = true
     },
-    monthImport() {
-      console.log('员工信息按月份导入')
-    },
     emptySearch() {
       this.searchString = ''
       this.searchModel = {}
-    },
-    importEmployee() {
-      console.log('数据导入')
     },
     decorateMonthChange(value) {
       return this.monthChange(value, this.emptySearch)

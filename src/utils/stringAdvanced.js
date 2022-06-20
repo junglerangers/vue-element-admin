@@ -90,8 +90,8 @@ export function getLastStrByOperator(str) {
 }
 
 export function validateArithmeti(str, objList) {
-  console.log(str)
-  console.log(objList)
+  // console.log(str)
+  // console.log(objList)
   // 存在不合理的变量
   if (objList.some(element => element.index === -1)) {
     return false

@@ -183,7 +183,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then((val) => {
-        console.log('确认删除')
+        // console.log('确认删除')
         localDelete({ DCODE: scope.row.DCODE }).then(() => {
           this.$message({
             message: '删除成功!',

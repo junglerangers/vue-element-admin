@@ -35,7 +35,7 @@ export function localUpdate(params) {
     url: 'http://10.88.88.193:5000/api/BasicManage/SalaryType/FormnulaSlv/Update',
     method: 'post',
     data: {
-      params
+      ...params
     }
   })
 }

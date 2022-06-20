@@ -146,7 +146,7 @@ export default {
 
       params.SUPERCODE = this.localSuperCode
       await localfun(params).then(res => {
-        console.log(res)
+        // console.log(res)
         if (this.type === 'new') {
           this.$message({
             message: '数据新增成功!',

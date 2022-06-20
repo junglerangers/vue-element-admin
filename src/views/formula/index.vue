@@ -162,6 +162,8 @@ export default {
     if (this.rawTime !== this.monthNo) {
       this.rawTime = this.monthNo
       this.monthChange(this.monthNo, this.searchEmpty)
+    } else {
+      this.getDataList()
     }
   },
   methods: {

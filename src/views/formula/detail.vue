@@ -105,7 +105,7 @@
       </el-table-column>
       <el-table-column label="公式" align="center">
         <template slot-scope="scope">
-          <tagshow :content="scope.row.FORMULALABEL" />
+          {{ scope.row.FORMULARCONTENT }}
         </template>
       </el-table-column>
       <el-table-column align="center">
@@ -137,7 +137,7 @@
               v-for="item in naturalList"
               :key="item.Code"
               :label="item.Label"
-              :value="item.Code"
+              :value="item.Code.toString()"
             />
           </el-select>
         </el-form-item>
@@ -157,7 +157,7 @@
         <el-form-item label="主计算公式">
           <tagshow :content="standFormula" :result="localFormula.TNAME" />
         </el-form-item>
-        <el-form-item label="计算公式">
+        <el-form-item label="子计算公式">
           <tagshow :content="slvStandFormula" :result="localFormula.TNAME" />
           <el-autocomplete
             ref="subInput"
@@ -179,7 +179,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="test()">确 定</el-button>
+        <el-button type="primary" @click="subSave">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -190,7 +190,7 @@ import { tagshow } from './components'
 import { splictStringByOperator, getLastStrByOperator } from '@/utils/stringAdvanced'
 import { debounce } from '@/utils/index'
 import { getTreeList, getGridList, localAdd, localUpdate, getSalaryTypeList as getSalaryCateDict } from '@/api/salaryType'
-import { getGridList as getFormularSlv } from '@/api/formularSlv'
+import { getGridList as getFormularSlv, localAdd as subAdd, localUpdate as subUpdate, localDelete as subDelete } from '@/api/formularSlv'
 import { getNatureList } from '@/api/enum'
 export default {
   name: 'FormularDetail',
@@ -201,11 +201,15 @@ export default {
     timeFormatS: function(value) {
       if (!value) {
         return '-∞'
+      } else {
+        return value
       }
     },
     timeFormatE: function(value) {
       if (!value) {
         return '+∞'
+      } else {
+        return value
       }
     },
     lockFormat: function(value) {
@@ -264,7 +268,6 @@ export default {
     },
     slvStandFormula: function() {
       var items = splictStringByOperator(this.subFormularContent, this.salaryTypeDict)
-      console.log(items)
       return items
     },
     formula: function() {
@@ -289,8 +292,18 @@ export default {
     }
   },
   activated: function() {
-    if (this.rawID !== this.formula.AUTOID) {
-      this.pageInitial()
+    if (this.formula) {
+      if (this.rawID !== this.formula.AUTOID) {
+        this.pageInitial()
+      }
+    } else {
+      this.$message({
+        message: '请选择一条公式或者选择新增公式!',
+        type: 'warning'
+      })
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.replace('/formula/index')
+      // 关闭当前页面
     }
   },
   methods: {
@@ -304,27 +317,31 @@ export default {
       })
       this.rawID = this.formula.AUTOID
     },
-    save() {
-      const type = this.$route.query.type
+    convertToUploadFormula(type, standFormula) {
+      // console.log(standFormula)
       let i = 0
       let str = ''
       let temp = ''
-      for (i = 0; i < this.standFormula.length; i++) {
-        if (this.standFormula[i].type === 'undefined') {
+      for (i = 0; i < standFormula?.length; i++) {
+        if (standFormula[i].type === 'undefined') {
           this.$message({
             type: 'error',
             message: '当前公式中存在错误,请检查修正后重新保存'
           })
           return
         }
-        if (this.standFormula[i].type === 'element') {
-          temp = '[' + this.standFormula[i].code.replace('T', '') + ']'
+        if (standFormula[i].type === 'element') {
+          temp = '[' + standFormula[i].code.replace('T', '') + ']'
         } else {
-          temp = this.standFormula[i].code
+          temp = standFormula[i].code
         }
         str += temp
       }
-      this.localFormula.FORMULA = str
+      return str
+    },
+    save() {
+      const type = this.$route.query.type
+      this.localFormula.FORMULA = this.convertToUploadFormula(type, this.standFormula)
       if (type === 'edit') {
         localUpdate(this.localFormula).then(res => {
           this.$message({
@@ -376,7 +393,6 @@ export default {
     async getNatureList() { // 获取人员性质
       return getNatureList().then(res => {
         this.naturalList = res.data
-        console.log(this.naturalList)
       })
     },
     async getFormularSlv() { // 获取薪酬公式子公式
@@ -402,6 +418,7 @@ export default {
             str += splitarr[i].element
           }
           this.formularSlv[i].FORMULARCONTENT = str
+          console.log(this.formularSlv)
         }
       })
     },
@@ -436,7 +453,6 @@ export default {
     autoFixInput(item) { // el-input中的下拉框发生点击事件之时,已经将input中的内容更新成了item中的内容
       // console.log('this is test')
       let index = 0
-      console.log(item)
       index = this.rawTemp.search(/[\/\+\-\*%()\\=][\u4e00-\u9fa5\w]*$/) // 匹配中文字母数字下划线
       // console.log(index)
       if (this.dialogVisible) {
@@ -451,23 +467,44 @@ export default {
       // console.log(scope)
       this.currentSlvFormular = Object.assign({}, scope.row)
       this.subFormularContent = this.currentSlvFormular.FORMULARCONTENT
+      this.naturalChoice = this.currentSlvFormular.KINDCODELIST.split(',')
       this.dialogType = 'edit'
       this.dialogVisible = true
     },
     handleSubDelete(scope) {
-      console.log(`删除当前${scope}`)
+      // console.log(`删除当前${scope}`)
+      // console.log(scope.row)
+      var AUTOID = scope.row.AUTOID
+      var params = {
+        AUTOID: AUTOID
+      }
+      this.$confirm('确认删除当前子公式?(此操作无法撤销!!!)', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        subDelete(params).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          })
+          this.getFormularSlv()
+        })
+      }).catch(() => {})
     },
     handleSubAdd() {
       this.currentSlvFormular = Object.assign({}, {
-        // 'autoid': 0,
-        tcode: this.formula.TCODE,
-        'kindcodelist': '',
-        'hostimebmonth': '',
-        'hostimeemonth': '',
-        'formula': '',
-        'begindate': this.formula.BEGINDATE,
-        'enddate': this.formula.ENDDATE
+        'AUTOID': 0,
+        'TCODE': this.formula.TCODE,
+        'KINDCODELIST': '',
+        'HOSTIMEBMONTH': '',
+        'HOSTIMEEMONTH': '',
+        'FORMULA': '',
+        'BEGINDATE': this.formula.BEGINDATE,
+        'ENDDATE': this.formula.ENDDATE
       })
+      this.naturalChoice = ''
+      this.subFormularContent = ''
       this.dialogType = 'new'
       this.dialogVisible = true
     },
@@ -478,8 +515,40 @@ export default {
         })
         .catch(_ => {})
     },
-    test() {
-      console.log('test')
+    subSave() {
+      // console.log('subSave')
+      function timeToMonth(str) {
+        if (str) {
+          var time = new Date(str)
+          return time.getFullYear() + '-' + (time.getMonth() + 1).toString().padStart('2', '0')
+        } else {
+          return ''
+        }
+      }
+      this.currentSlvFormular.FORMULA = this.convertToUploadFormula(this.dialogType, this.slvStandFormula)
+      this.currentSlvFormular.HOSTIMEBMONTH = timeToMonth(this.currentSlvFormular.HOSTIMEBMONTH)
+      this.currentSlvFormular.HOSTIMEEMONTH = timeToMonth(this.currentSlvFormular.HOSTIMEEMONTH)
+      this.currentSlvFormular.KINDCODELIST = this.naturalChoice.toString()
+      // console.log(this.currentSlvFormular)
+      var fun
+      var message
+      if (this.dialogType === 'new') {
+        fun = subAdd
+        message = '子公式新增成功'
+      } else if (this.dialogType === 'edit') {
+        fun = subUpdate
+        message = '子公式更新成功'
+      }
+      this.currentSlvFormular.autoid = this.currentSlvFormular.AUTOID
+      fun(this.currentSlvFormular).then(res => {
+        // console.log(res)
+        this.getFormularSlv()
+        this.$message({
+          type: 'success',
+          message: message
+        })
+        this.dialogVisible = false
+      })
     }
   }
 }
