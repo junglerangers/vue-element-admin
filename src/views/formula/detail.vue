@@ -308,12 +308,15 @@ export default {
   },
   methods: {
     pageInitial() {
+      const type = this.$route.query.type
       this.localFormula = Object.assign({}, this.formula)
       this.getSalaryTypeTreeList()
       this.getSalaryTypeList()
       this.getSalaryCateDict()
       this.getNatureList().then(() => {
-        this.getFormularSlv()
+        if (type === 'edit') {
+          this.getFormularSlv()
+        }
       })
       this.rawID = this.formula.AUTOID
     },
