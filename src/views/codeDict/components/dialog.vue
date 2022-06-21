@@ -115,6 +115,9 @@ export default {
         this.toggleDialogVisible()
       }
     },
+    userName: function() {
+      return this.$store.state.userInfo.name
+    },
     currentModel: function() {
       return this.rawModel
     },
@@ -140,7 +143,7 @@ export default {
       if (this.type === 'edit') {
         localfun = localUpdate
       } else if (this.type === 'new') {
-        params.CREATEUSER = 'admin'
+        params.CREATEUSER = this.userName
         localfun = localAdd
       }
 

@@ -185,6 +185,9 @@ export default {
   computed: {
     params: function() {
       return this.time.yearNo + '-' + this.time.monthNo
+    },
+    userName: function() {
+      return this.$store.state.userInfo.name
     }
   },
   created() {
@@ -361,8 +364,8 @@ export default {
       if (!this.timeTest()) {
         return false
       }
-      this.MST.CREATEUSER = 'admin'
-      this.MST.CREATEDATE = new Date().format('yyyy-MM-dd hh:mm:ss')
+      this.MST.CREATEUSER = this.userName
+        .this.MST.CREATEDATE = new Date().format('yyyy-MM-dd hh:mm:ss')
       this.MST.YEARNO = this.time.yearNo
       this.MST.MONTHNO = this.time.monthNo
       this.MST.NUM = this.time.num
