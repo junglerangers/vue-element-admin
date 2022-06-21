@@ -132,6 +132,7 @@ import { mapActions } from 'vuex'
 import { getCurrentTime } from '@/utils/time'
 
 export default {
+  name: 'SalaryDetail',
   components: {
     search,
     detailDialog

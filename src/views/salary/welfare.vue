@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { Import } from '@/api/welfare'
+import { Import, CompInsCal } from '@/api/welfare'
 import { getCurrentTime } from '@/utils/time'
 import { mapActions } from 'vuex'
 
@@ -113,7 +113,7 @@ export default {
         message: temp + '社保开始重新计算,请稍等'
       })
       this.addEvent(task)
-      Import(params)
+      CompInsCal(params)
         .then(res => {
           task.taskState = '完成'
           task.endTime = getCurrentTime()

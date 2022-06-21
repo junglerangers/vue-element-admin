@@ -143,7 +143,7 @@ export const asyncRoutes = [
       {
         path: 'salaryDetail',
         component: () => import('@/views/salary/salaryDetail'),
-        name: 'salaryDetail',
+        name: 'SalaryDetail',
         hidden: true,
         meta: {
           title: '工资单明细表',
