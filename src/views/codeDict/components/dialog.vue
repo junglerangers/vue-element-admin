@@ -25,7 +25,7 @@
           <i class="el-icon-user" />
           代码ID
         </template>
-        <el-input v-model="currentModel.DCODE" />
+        <el-input v-model="currentModel.DCODE" disabled />
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
@@ -39,7 +39,7 @@
           <i class="el-icon-user" />
           系统ID
         </template>
-        <el-input v-model="currentModel.SYSCODE" />
+        <el-input v-model="currentModel.SYSCODE" disabled />
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
@@ -116,7 +116,7 @@ export default {
       }
     },
     userName: function() {
-      return this.$store.state.userInfo.name
+      return this.$store.state.user.userInfo.name
     },
     currentModel: function() {
       return this.rawModel
@@ -146,7 +146,6 @@ export default {
         params.CREATEUSER = this.userName
         localfun = localAdd
       }
-
       params.SUPERCODE = this.localSuperCode
       await localfun(params).then(res => {
         // console.log(res)

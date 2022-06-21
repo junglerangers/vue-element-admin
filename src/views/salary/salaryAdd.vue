@@ -187,7 +187,7 @@ export default {
       return this.time.yearNo + '-' + this.time.monthNo
     },
     userName: function() {
-      return this.$store.state.userInfo.name
+      return this.$store.state.user.userInfo.name
     }
   },
   created() {
@@ -365,7 +365,7 @@ export default {
         return false
       }
       this.MST.CREATEUSER = this.userName
-        .this.MST.CREATEDATE = new Date().format('yyyy-MM-dd hh:mm:ss')
+      this.MST.CREATEDATE = new Date().format('yyyy-MM-dd hh:mm:ss')
       this.MST.YEARNO = this.time.yearNo
       this.MST.MONTHNO = this.time.monthNo
       this.MST.NUM = this.time.num
