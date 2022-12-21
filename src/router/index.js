@@ -184,7 +184,7 @@ export const asyncRoutes = [
         }
       },
       {
-        path: 'content',
+        path: 'content/:id',
         component: () => import('@/views/report/content'),
         name: 'ReportContent',
         meta: {

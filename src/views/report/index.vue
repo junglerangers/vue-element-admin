@@ -77,7 +77,11 @@ export default {
       // console.log(scope.row)
       var url = scope.row.LINK_URL + '&ssoToken=' + encodeURIComponent(this.EncryptionCode)
       this.$store.commit('universal/SET_REPORTURL', url)
-      this.$router.push('/report/content')
+      // 这里可以直接修改route中的meta信息吗?然后加上ID信息
+      var id = scope.row.ID
+      // this.$router.push(`/report/content/${id}`)
+      // this.$router.push({ name: 'ReportContent', query: { id: id }, params: { Id: id, title: scope.row.TITLE }})
+      this.$router.push({ path: `/report/content/${id}`, query: { title: scope.row.TITLE }})
     }
   }
 }

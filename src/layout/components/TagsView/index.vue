@@ -49,7 +49,8 @@ export default {
     }
   },
   watch: {
-    $route() {
+    $route(value) {
+      // console.log(value)
       this.addTags()
       this.moveToCurrentTag()
     },

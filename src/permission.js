@@ -26,7 +26,10 @@ router.beforeEach(async(to, from, next) => { // 导航守卫,在所有导航之�
       }
     }
     if (to.query.ssoToken) {
+      console.log(to.query.ssoToken)
+      console.log(encodeURIComponent(to.query.ssoToken))
       var temp = decodeURIComponent(to.query.ssoToken)
+      console.log(temp)
       await getEmp(temp)
         .then((res) => {
           // console.log(res)
@@ -42,6 +45,7 @@ router.beforeEach(async(to, from, next) => { // 导航守卫,在所有导航之�
             type: 'warning',
             message: '无效验证,请联系管理员'
           })
+          console.log(to.query.ssoToken)
         })
     }
     if (validateToken.code) {

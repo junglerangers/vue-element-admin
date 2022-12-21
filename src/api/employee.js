@@ -51,7 +51,22 @@ export function updateChildren(params) {
     url: 'http://10.88.88.193:5000/api/BasicManage/Employee/UpdateChildren',
     method: 'post',
     data: {
-      params
+      ...params
+    }
+  })
+}
+/**
+ * 将指定月份的员工复制到当前月份
+ * @param {*} params
+ * @returns
+ */
+export function copyEmployee(params) {
+  console.log(params)
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/Employee/Copy',
+    method: 'post',
+    data: {
+      ...params
     }
   })
 }

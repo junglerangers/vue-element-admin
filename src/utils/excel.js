@@ -54,15 +54,20 @@ export function checkData(rawFile, dict) {
       const firstSheetName = workbook.SheetNames[0]
       const worksheet = workbook.Sheets[firstSheetName]
       const header = getHeaderRow(worksheet)
+      var errorInfo = ''
       // const results = XLSX.utils.sheet_to_json(worksheet)
       var i = 0
       for (i = 0; i < header.length; i++) {
         var tcode = findTCODE(header[i], dict)
         if (tcode === null) {
-          reject(
-            `${header[i]}未能找到对应代码,请检查薪资类别字典后重新上传`
-          )
+          errorInfo += `${header[i]}、`
         }
+      }
+      if (errorInfo.length !== 0) {
+        errorInfo = errorInfo.substring(0, errorInfo.length - 1)
+        reject(
+          `Excel列名${errorInfo}未能找到对应代码,请检查相应字典后重新上传`
+        )
       }
       // 如果表头检查没有问题,就发送文件到远程客户端
       // console.log(results)
@@ -87,6 +92,7 @@ export function getHeaderRow(sheet) {
     if (cell && cell.t) hdr = XLSX.utils.format_cell(cell)
     headers.push(hdr)
   }
+  // console.log(headers)
   return headers
 }
 export function isExcel(file) {
