@@ -59,14 +59,41 @@
             <el-input v-model="MST.REMARK" type="textarea" :readonly="false" :style="{'width':'685px'}" :disabled="active !==0" />
           </el-descriptions-item>
         </el-descriptions>
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="setTime">下一步</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==0" @click="setTime">下一步</el-button>
         <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="initial">重新开始</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[1].index+'.'+opOrder[1].info" name="2">
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="getDepartmentList">导入部门数据</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[2].index+'.'+opOrder[2].info" name="3">
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="getUserList">导入员工数据</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="getUserList">导入员工数据(自动获取)</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="dialogVisibleEmployeeCopy=true">导入员工数据(从上月复制)</el-button>
+        <el-upload
+          action="blank"
+          :show-file-list="false"
+          accept="xlsx,xls"
+          :http-request="employeeUpload"
+          :style="{'display':'inline-block'}"
+          :disabled="active!==2"
+        >
+          <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2">从Excel中手工获取</el-button>
+        </el-upload>
+        <el-divider content-position="center">
+          请先获取数据(上述三种方式任选其一)
+          <i class="el-icon-s-custom" />
+          再进行数据追加操作,最后点击下一步
+        </el-divider>
+        <el-upload
+          action="blank"
+          :show-file-list="false"
+          accept="xlsx,xls"
+          :http-request="employeeAddUpload"
+          :style="{'display':'inline-block'}"
+          :disabled="active!==2"
+        >
+          <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2">员工数据追加(Excel)</el-button>
+        </el-upload>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="()=>active=3">下一步</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[3].index+'.'+opOrder[3].info" name="4">
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==3" @click="dialogVisible = true">薪酬类别复制</el-button>
@@ -115,18 +142,47 @@
         <el-button type="primary" @click="salaryTypeCopy">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="人员信息复制选择框"
+      :visible.sync="dialogVisibleEmployeeCopy"
+      width="30%"
+    >
+      <div class="block">
+        <div>
+          <el-date-picker
+            v-model="startCopyMonth"
+            type="month"
+            placeholder="选择月"
+            class="year-class"
+          />
+          至
+          <el-date-picker
+            v-model="params"
+            type="month"
+            placeholder="选择月"
+            disabled
+            class="month-class"
+          />
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisibleEmployeeCopy = false">取 消</el-button>
+        <el-button type="primary" @click="employeeInfoCopy">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 
 import { localImport as departmentImport, isExist as isDepartmentExist } from '@/api/department'
-import { localImport as userImport, isExist as isEmployeeExist } from '@/api/employee'
+import { localImport as userImport, isExist as isEmployeeExist, copyEmployee } from '@/api/employee'
 import { getSalaryTypeList, getGridList } from '@/api/salaryType'
 import { localCopy, isExist as salaryTypeIsExist } from '@/api/salaryType'
 import { localAdd, localImport as salaryImport, UpdateMst, isExist as salaryDetailExist } from '@/api/salary'
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
+import { getEmployeeByExcel as employeeImport, AddEmployeeByExcel as employeeAdd } from '@/api/import'
 import { getCurrentTime } from '@/utils/time'
 
 export default {
@@ -135,15 +191,33 @@ export default {
   },
   data() {
     return {
+      /**
+       * 是否展示数据加载标志
+       */
       loading: false,
+      /**
+       * 薪资复制时间选择框界面是否展示
+       */
       dialogVisible: false,
-      activeName: '1',
+      /**
+       * 人员复制时间选择框界面是否展示
+       */
+      dialogVisibleEmployeeCopy: false,
+      /**
+       * 控制进度条进度位置
+       */
       active: 0,
+      /**
+       * 工资单的年份,月份与期数
+       */
       time: {
         monthNo: (1 + new Date().getMonth()).toString().padStart(2, '0'),
         yearNo: new Date().getFullYear().toString(),
         num: 1
       },
+      /**
+       * 工资单主表信息
+       */
       MST: {
         'DCODE': '',
         'DNAME': '',
@@ -154,7 +228,13 @@ export default {
         'CREATEDATE': '',
         'REMARK': ''
       },
+      /**
+       * 代表当前表单的ID,是其它一切操作的前提
+       */
       mstID: '',
+      /**
+       * 步骤条信息
+       */
       opOrder: [
         {
           index: 1,
@@ -176,28 +256,66 @@ export default {
           info: '导入工资明细'
         }
       ],
-      copyMonth: [],
+      /**
+       * 复制月份时选择的月份
+       */
       startCopyMonth: '',
+      /**
+       * 薪酬大类字典
+       */
       salaryTypeDict: [],
-      salaryDetailTypeDict: []
+      /**
+       * 薪酬细节小类字典
+       */
+      salaryDetailTypeDict: [],
+      /**
+       * 员工表单属性字典
+       */
+      EmployeeTypeDict: [
+        { TNAME: 'EMP_CODE', TCODE: 'EMP_CODE' },
+        { TNAME: 'EMP_NAME', TCODE: 'EMP_NAME' },
+        { TNAME: 'KIND_NAME', TCODE: 'KIND_NAME' },
+        { TNAME: 'EMP_CLASSNAME', TCODE: 'EMP_CLASSNAME' },
+        { TNAME: 'KIND_CODE2', TCODE: 'KIND_CODE2' }
+      ]
     }
   },
   computed: {
+    /**
+     * 返回年-月参数
+     */
     params: function() {
       return this.time.yearNo + '-' + this.time.monthNo
     },
+    /**
+     * 返回登录用户名
+     */
     userName: function() {
       return this.$store.state.user.userInfo.name
+    },
+    activeName: {
+      get() {
+        return (this.active + 1).toString()
+      },
+      set(newValue) {
+
+      }
     }
   },
   created() {
     this.getSalaryTypeList()
   },
   methods: {
+    /**
+     * 将事件管理函数映射进来
+     */
     ...mapActions({
       addEvent: 'app/addEvent',
       changeEventState: 'app/changeEventState'
     }),
+    /**
+     * 指定特定的函数进行检测,以及是否覆盖重传的确认
+     */
     async beforeRmoeteTest(fun, params) {
       var temp = params || this.params
       var sign1 = await fun(temp)
@@ -210,13 +328,15 @@ export default {
       }
       return true
     },
+    /**
+     * 获取部门列表
+     */
     async getDepartmentList() {
       if (!this.timeTest()) {
         return false
       }
       var sign = await this.beforeRmoeteTest(isDepartmentExist)
       if (!sign) {
-        this.activeName = '3'
         this.active = 2
       } else {
         this.loading = true
@@ -225,12 +345,14 @@ export default {
             message: '部门信息导入成功',
             type: 'success'
           })
-          this.activeName = '3'
           this.active = 2
           this.loading = false
         })
       }
     },
+    /**
+     * 从hrp端获取员工数据
+     */
     async getUserList() {
       if (!this.timeTest()) {
         return
@@ -238,8 +360,6 @@ export default {
       var sign = await this.beforeRmoeteTest(isEmployeeExist)
       if (!sign) {
         // 如果已经存在已经有的数据,提示用户是重新导入数据,还是使用现有的数据
-        this.activeName = '4'
-        this.active = 3
       } else {
         this.loading = true
         userImport({ monthNo: this.params }).then(res => {
@@ -247,21 +367,24 @@ export default {
             message: '员工信息导入成功',
             type: 'success'
           })
-          this.activeName = '4'
-          this.active = 3
           this.loading = false
         })
       }
     },
+    /**
+     * 获取薪酬小类字典
+     */
     async getSalaryDetailType() {
       this.loading = true
       getGridList({ monthNo: this.params }).then(res => {
         this.salaryDetailTypeDict = res.data
         this.loading = false
-        this.activeName = '5'
         this.active = 4
       })
     },
+    /**
+     * 重传确认弹窗
+     */
     async confirm() {
       var result = false
       await this.$confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', '提示', {
@@ -283,10 +406,118 @@ export default {
         this.salaryTypeDict = res.data
       })
     },
+    /**
+     * 找到相应薪酬名称的代码
+     */
     updateDCODE(value) {
       var temp = this.salaryTypeDict.find(element => element.DNAME === value)
       this.MST.DCODE = temp.DCODE
     },
+    /**
+     * 人员信息通过excel上传
+     */
+    async employeeUpload(e) {
+      if (!this.timeTest()) {
+        return
+      }
+      if (!this.mstID) {
+        this.$message({
+          type: 'warning',
+          message: '请按顺序完成之前的步骤后,再继续操作'
+        })
+        return
+      }
+      var sign = await this.beforeRmoeteTest(isEmployeeExist)
+      if (!sign) {
+        return
+      } else {
+        var task = {
+          taskID: Math.floor(Math.random() * 100),
+          taskName: this.params + '人员信息Excel导入',
+          startTime: getCurrentTime(),
+          endTime: '',
+          taskState: '运行中',
+          info: ''
+        }
+        this.addEvent(task)
+        this.loading = true
+        await Excelupload(this.mstID, e.file, this.EmployeeTypeDict).then(async params => {
+          params.monthNo = this.params
+          await employeeImport(params)
+        }).then(res => {
+          task.taskState = '完成'
+          task.endTime = getCurrentTime()
+          this.$message({
+            message: this.params + '员工信息导入成功!',
+            type: 'success'
+          })
+        }).catch(err => {
+          task.endTime = getCurrentTime()
+          task.taskState = '错误'
+          task.info = err
+        }).finally(() => {
+          const h = this.$createElement
+          this.$notify({
+            title: '通知',
+            message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+            duration: 0
+          })
+          this.loading = false
+        })
+      }
+    },
+    /**
+     * 人员信息通过excel补充上传
+     */
+    async employeeAddUpload(e) {
+      if (!this.timeTest()) {
+        return
+      }
+      if (!this.mstID) {
+        this.$message({
+          type: 'warning',
+          message: '请按顺序完成之前的步骤后,再继续操作'
+        })
+        return
+      }
+      // var sign = await this.beforeRmoeteTest(isEmployeeExist)
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: this.params + '人员信息Excel追加导入',
+        startTime: getCurrentTime(),
+        endTime: '',
+        taskState: '运行中',
+        info: ''
+      }
+      this.addEvent(task)
+      this.loading = true
+      await Excelupload(this.mstID, e.file, this.EmployeeTypeDict).then(async params => {
+        params.monthNo = this.params
+        await employeeAdd(params)
+      }).then(res => {
+        task.taskState = '完成'
+        task.endTime = getCurrentTime()
+        this.$message({
+          message: this.params + '员工信息追加导入成功!',
+          type: 'success'
+        })
+      }).catch(err => {
+        task.endTime = getCurrentTime()
+        task.taskState = '错误'
+        task.info = err
+      }).finally(() => {
+        const h = this.$createElement
+        this.$notify({
+          title: '通知',
+          message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+          duration: 0
+        })
+        this.loading = false
+      })
+    },
+    /**
+     * 薪酬明细通过excel上传
+     */
     async salaryUpload(e) {
       if (!this.timeTest()) {
         return
@@ -336,6 +567,9 @@ export default {
         })
       }
     },
+    /**
+     * 先检查是否已经选择了相应的时间
+     */
     timeTest() {
       if (!this.time.yearNo) {
         this.$message({
@@ -360,6 +594,9 @@ export default {
       }
       return true
     },
+    /**
+     * 工资单新增操作
+     */
     setTime() {
       if (!this.timeTest()) {
         return false
@@ -385,7 +622,6 @@ export default {
             params.autoid = this.mstID
             await UpdateMst(params)
           }).then(() => {
-            this.activeName = '2'
             this.active = 1
             this.$message({
               message: '工资单更新成功!',
@@ -395,7 +631,6 @@ export default {
           })
         } else {
           this.mstID = res.data.autoid
-          this.activeName = '2'
           this.active = 1
           this.$message({
             message: '工资单创建成功!',
@@ -403,9 +638,12 @@ export default {
           })
         }
       }).catch(res => {
-        console.log(res)
+        // console.log(res)
       })
     },
+    /**
+     * 薪酬类型复制,从指定月份复制到当前月份
+     */
     async salaryTypeCopy() {
       if (!this.timeTest()) {
         return
@@ -427,14 +665,51 @@ export default {
           })
           this.dialogVisible = false
         })
+          .finally(() => {
+            this.dialogVisible = false
+          })
       }
     },
+    /**
+     * 员工信息复制,从指定月份复制到当前月份
+     */
+    async employeeInfoCopy() {
+      if (!this.timeTest()) {
+        return
+      }
+      var sign = await this.beforeRmoeteTest(isEmployeeExist)
+      if (!sign) {
+        this.dialogVisibleEmployeeCopy = false
+      } else {
+        var start = this.startCopyMonth
+        start = start.getFullYear() + '-' + (start.getMonth() + 1).toString().padStart('2', '0')
+        var params = {
+          'monthNo': this.params,
+          'copyFromMonthNo': start
+        }
+        copyEmployee(params).then(res => {
+          this.$message({
+            message: '员工信息复制成功!',
+            type: 'success'
+          })
+          this.dialogVisibleEmployeeCopy = false
+        })
+          .finally(() => {
+            this.dialogVisibleEmployeeCopy = false
+          })
+      }
+    },
+    /**
+     * 页面跳转,跳转至薪酬类型管理页面
+     */
     showSalaryType() {
       this.$store.commit('universal/SET_MONTHNO', this.params)
       this.$router.push('/formula/index')
     },
+    /**
+     * 初始化操作,用于重新开始按钮
+     */
     initial() {
-      this.activeName = '1'
       this.active = 0
       this.time.yearNo = new Date().getFullYear().toString()
       this.time.monthNo = (1 + new Date().getMonth()).toString().padStart(2, '0')
@@ -457,7 +732,7 @@ export default {
   transition: all 5s;
 }
 .animate:hover{
-    background-color: green;
+  background-color: rgb(0, 128, 0);
   cursor: pointer;
   transition: background-color 5s ease-out;
 }

@@ -6,11 +6,20 @@ const state = {
 const mutations = {
   ADD_VISITED_VIEW: (state, view) => {
     if (state.visitedViews.some(v => v.path === view.path)) return
-    state.visitedViews.push(
-      Object.assign({}, view, {
-        title: view.meta.title || 'no-name'
-      })
-    )
+    // console.log(view)
+    if (view.query.title && view.query.title.length !== 0) {
+      state.visitedViews.push(
+        Object.assign({}, view, {
+          title: view.query.title || 'no-name'
+        })
+      )
+    } else {
+      state.visitedViews.push(
+        Object.assign({}, view, {
+          title: view.meta.title || 'no-name'
+        })
+      )
+    }
   },
   ADD_CACHED_VIEW: (state, view) => {
     if (state.cachedViews.includes(view.name)) return
