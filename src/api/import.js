@@ -32,10 +32,22 @@ export function getEmployeeByExcel(params) {
  * @returns
  */
 export function AddEmployeeByExcel(params) {
-  console.log(params)
+  // console.log(params)
   return request({
     timeout: 1000 * 500,
     url: 'http://10.88.88.193:5000/api/BasicManage/Employee/ImportExcelAndAdd', // 假地址 自行替换
+    method: 'post',
+    data: params
+  })
+}
+/**
+ * 导入这个月的工资和银行卡信息
+ * @param {} params
+ * @returns
+ */
+export function SalaryImport(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/Employee/OARYXX/Import',
     method: 'post',
     data: params
   })

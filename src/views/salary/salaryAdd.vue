@@ -6,6 +6,7 @@
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)"
   >
+    <el-button type="primary" plain class="resetButton" @click="initial">重置</el-button>
     <el-steps :active="active" finish-status="success">
       <el-step v-for="op in opOrder" :key="op.index" :title="op.info" />
     </el-steps>
@@ -41,6 +42,7 @@
             :disabled="active !== 0"
           />
         </div>期
+        <span class="must">*</span>
         <el-descriptions title="" class="marginTB50" :column="2" :style="{'width':'875px'}">
           <el-descriptions-item label="薪资名称">
             <el-select v-model="MST.DNAME" placeholder="请选择" class="width220" :disabled="active !==0" @change="updateDCODE">
@@ -51,6 +53,7 @@
                 :value="item.DNAME"
               />
             </el-select>
+            <span class="must">*</span>
           </el-descriptions-item>
           <el-descriptions-item label="薪资编码">
             <el-input v-model="MST.DCODE" class="width220" disabled />
@@ -60,13 +63,11 @@
           </el-descriptions-item>
         </el-descriptions>
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==0" @click="setTime">下一步</el-button>
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" @click="initial">重新开始</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[1].index+'.'+opOrder[1].info" name="2">
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="getDepartmentList">导入部门数据</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="getSalaryandBank">获取工资与银行卡信息</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[2].index+'.'+opOrder[2].info" name="3">
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="getUserList">导入员工数据(自动获取)</el-button>
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="dialogVisibleEmployeeCopy=true">导入员工数据(从上月复制)</el-button>
         <el-upload
           action="blank"
@@ -78,11 +79,6 @@
         >
           <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2">从Excel中手工获取</el-button>
         </el-upload>
-        <el-divider content-position="center">
-          请先获取数据(上述三种方式任选其一)
-          <i class="el-icon-s-custom" />
-          再进行数据追加操作,最后点击下一步
-        </el-divider>
         <el-upload
           action="blank"
           :show-file-list="false"
@@ -93,6 +89,11 @@
         >
           <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2">员工数据追加(Excel)</el-button>
         </el-upload>
+        <el-divider content-position="center">
+          请先获取数据(上述三种方式任选其一)
+          <i class="el-icon-s-custom" />
+          再进行数据追加操作,最后点击下一步
+        </el-divider>
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="()=>active=3">下一步</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[3].index+'.'+opOrder[3].info" name="4">
@@ -109,7 +110,7 @@
           :style="{'margin-left':'50px'}"
           :disabled="active!==4"
         >
-          <el-button size="small" type="primary" plain :disabled="active!==4">Excel文件上传</el-button>
+          <el-button size="small" type="primary" plain :disabled="active!==4">工资明细Excel文件上传</el-button>
         </el-upload>
         <p>因为工资明细表文件过大,上传时可能发生卡顿现象,请耐心等待.</p>
       </el-collapse-item>
@@ -126,7 +127,7 @@
             type="month"
             placeholder="选择月"
             class="year-class"
-          />
+          /><span class="must">*</span>
           至
           <el-date-picker
             v-model="params"
@@ -154,7 +155,7 @@
             type="month"
             placeholder="选择月"
             class="year-class"
-          />
+          /><span class="must">*</span>
           至
           <el-date-picker
             v-model="params"
@@ -175,14 +176,14 @@
 
 <script>
 
-import { localImport as departmentImport, isExist as isDepartmentExist } from '@/api/department'
+import { isExist as isDepartmentExist } from '@/api/department'
 import { localImport as userImport, isExist as isEmployeeExist, copyEmployee } from '@/api/employee'
 import { getSalaryTypeList, getGridList } from '@/api/salaryType'
 import { localCopy, isExist as salaryTypeIsExist } from '@/api/salaryType'
 import { localAdd, localImport as salaryImport, UpdateMst, isExist as salaryDetailExist } from '@/api/salary'
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
-import { getEmployeeByExcel as employeeImport, AddEmployeeByExcel as employeeAdd } from '@/api/import'
+import { getEmployeeByExcel as employeeImport, AddEmployeeByExcel as employeeAdd, SalaryImport } from '@/api/import'
 import { getCurrentTime } from '@/utils/time'
 
 export default {
@@ -211,6 +212,7 @@ export default {
        * 工资单的年份,月份与期数
        */
       time: {
+        beforeMonthNo: (new Date().getMonth()).toString().padStart(2, '0'),
         monthNo: (1 + new Date().getMonth()).toString().padStart(2, '0'),
         yearNo: new Date().getFullYear().toString(),
         num: 1
@@ -241,7 +243,7 @@ export default {
           info: '工资单新增'
         }, {
           index: 2,
-          info: '获取部门数据'
+          info: '获取工资与银行卡信息'
         },
         {
           index: 3,
@@ -304,6 +306,7 @@ export default {
   },
   created() {
     this.getSalaryTypeList()
+    this.startCopyMonth = this.time.yearNo + '-' + this.time.beforeMonthNo
   },
   methods: {
     /**
@@ -331,7 +334,7 @@ export default {
     /**
      * 获取部门列表
      */
-    async getDepartmentList() {
+    async getSalaryandBank() {
       if (!this.timeTest()) {
         return false
       }
@@ -340,9 +343,9 @@ export default {
         this.active = 2
       } else {
         this.loading = true
-        departmentImport({ monthNo: this.params }).then(res => {
+        SalaryImport({ monthNo: this.params }).then(res => {
           this.$message({
-            message: '部门信息导入成功',
+            message: '工资与银行卡信息导入成功',
             type: 'success'
           })
           this.active = 2
@@ -750,5 +753,14 @@ export default {
 .month-class{
   width:180px;
   display: inline-block;
+}
+.resetButton{
+  margin-bottom: 50px;
+  position: absolute;
+  top: 80px;
+  left: 0px;
+}
+.must{
+  color: red;
 }
 </style>

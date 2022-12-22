@@ -52,6 +52,29 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">
+        <template slot="header">
+          <el-button-group>
+            <el-button type="primary" size="small" icon="el-icon-document-add" title="从上月复制数据" @click="dialogVisibleEmployeeCopy=true" />
+            <el-upload
+              action="blank"
+              :show-file-list="false"
+              accept="xlsx,xls"
+              :http-request="employeeUpload"
+              :style="{'display':'inline-block'}"
+            >
+              <el-button type="primary" size="small" icon="el-icon-document-copy" title="从Excel导入数据" />
+            </el-upload>
+            <el-upload
+              action="blank"
+              :show-file-list="false"
+              accept="xlsx,xls"
+              :http-request="employeeAddUpload"
+              :style="{'display':'inline-block'}"
+            >
+              <el-button type="primary" size="small" icon="el-icon-plus" title="Excel追加数据" />
+            </el-upload>
+          </el-button-group>
+        </template>
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-view" title="编辑" @click="handleViewUser(scope)">查看</el-button>
         </template>
@@ -69,6 +92,34 @@
         @current-change="decoreateCurrentChange"
       />
     </div>
+    <el-dialog
+      title="人员信息复制选择框"
+      :visible.sync="dialogVisibleEmployeeCopy"
+      width="30%"
+    >
+      <div class="block">
+        <div>
+          <el-date-picker
+            v-model="startCopyMonth"
+            type="month"
+            placeholder="选择月"
+            class="year-class"
+          /><span class="must">*</span>
+          至
+          <el-date-picker
+            v-model="monthTime"
+            type="month"
+            placeholder="选择月"
+            disabled
+            class="month-class"
+          />
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisibleEmployeeCopy = false">取 消</el-button>
+        <el-button type="primary" @click="employeeInfoCopy">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -78,7 +129,11 @@ import * as defaultModel from '@/dataModel/EmployeeModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 import searchMethod from '@/mixins/search'
-import { pageQuery } from '@/api/employee'
+import { pageQuery, isExist as isEmployeeExist, copyEmployee } from '@/api/employee'
+import { getCurrentTime } from '@/utils/time'
+import { upload as Excelupload } from '@/utils/excel'
+import { getEmployeeByExcel as employeeImport, AddEmployeeByExcel as employeeAdd } from '@/api/import'
+import { mapActions } from 'vuex'
 // import xlsx from 'xlsx'
 
 export default {
@@ -91,7 +146,9 @@ export default {
   data: function() {
     return {
       loading: false,
+      dialogVisibleEmployeeCopy: false,
       searchString: '',
+      startCopyMonth: '',
       CurrentModel: Object.assign({}, defaultModel), // 当前选中的用户
       dialogVisible: false, // 对话框是否可见
       dialogVisible2: false,
@@ -101,7 +158,17 @@ export default {
       searchModel: {
         monthNo: ''
       },
-      test: ''
+      test: '',
+      /**
+       * 员工表单属性字典
+       */
+      EmployeeTypeDict: [
+        { TNAME: 'EMP_CODE', TCODE: 'EMP_CODE' },
+        { TNAME: 'EMP_NAME', TCODE: 'EMP_NAME' },
+        { TNAME: 'KIND_NAME', TCODE: 'KIND_NAME' },
+        { TNAME: 'EMP_CLASSNAME', TCODE: 'EMP_CLASSNAME' },
+        { TNAME: 'KIND_CODE2', TCODE: 'KIND_CODE2' }
+      ]
     }
   },
   computed: {
@@ -120,6 +187,13 @@ export default {
     }
   },
   methods: {
+    /**
+     * 将事件管理函数映射进来
+     */
+    ...mapActions({
+      addEvent: 'app/addEvent',
+      changeEventState: 'app/changeEventState'
+    }),
     async getDataList() {
       this.searchModel.monthNo = this.monthNo
       var temp = {
@@ -146,6 +220,148 @@ export default {
     },
     decorateMonthChange(value) {
       return this.monthChange(value, this.emptySearch)
+    },
+    /**
+     * 人员信息通过excel上传
+     */
+    async employeeUpload(e) {
+      var sign = await this.beforeRmoeteTest(isEmployeeExist, this.monthTime)
+      if (!sign) {
+        return
+      } else {
+        var task = {
+          taskID: Math.floor(Math.random() * 100),
+          taskName: this.monthTime + '人员信息Excel导入',
+          startTime: getCurrentTime(),
+          endTime: '',
+          taskState: '运行中',
+          info: ''
+        }
+        this.addEvent(task)
+        this.loading = true
+        await Excelupload('', e.file, this.EmployeeTypeDict).then(async params => {
+          params.monthNo = this.monthTime
+          await employeeImport(params)
+        }).then(res => {
+          task.taskState = '完成'
+          task.endTime = getCurrentTime()
+          this.$message({
+            message: this.monthTime + '员工信息导入成功!',
+            type: 'success'
+          })
+          this.getDataList()
+        }).catch(err => {
+          task.endTime = getCurrentTime()
+          task.taskState = '错误'
+          task.info = err
+        }).finally(() => {
+          const h = this.$createElement
+          this.$notify({
+            title: '通知',
+            message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+            duration: 0
+          })
+          this.loading = false
+        })
+      }
+    },
+    async employeeInfoCopy() {
+      var sign = await this.beforeRmoeteTest(isEmployeeExist, this.monthTime)
+      if (!sign) {
+        this.dialogVisibleEmployeeCopy = false
+      } else {
+        var start = this.startCopyMonth
+        start = start.getFullYear() + '-' + (start.getMonth() + 1).toString().padStart('2', '0')
+        var params = {
+          'monthNo': this.monthTime,
+          'copyFromMonthNo': start
+        }
+        // console.log(params)
+        this.loading = true
+        copyEmployee(params).then(res => {
+          this.$message({
+            message: '员工信息复制成功!',
+            type: 'success'
+          })
+          this.dialogVisibleEmployeeCopy = false
+        })
+          .finally(() => {
+            this.dialogVisibleEmployeeCopy = false
+            this.getDataList()
+            this.loading = false
+          })
+      }
+    },
+    /**
+     * 人员信息通过excel补充上传
+     */
+    async employeeAddUpload(e) {
+      // var sign = await this.beforeRmoeteTest(isEmployeeExist)
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: this.monthTime + '人员信息Excel追加导入',
+        startTime: getCurrentTime(),
+        endTime: '',
+        taskState: '运行中',
+        info: ''
+      }
+      this.addEvent(task)
+      this.loading = true
+      await Excelupload('', e.file, this.EmployeeTypeDict).then(async params => {
+        params.monthNo = this.monthTime
+        await employeeAdd(params)
+      }).then(res => {
+        task.taskState = '完成'
+        task.endTime = getCurrentTime()
+        this.$message({
+          message: this.monthTime + '员工信息追加导入成功!',
+          type: 'success'
+        })
+        this.getDataList()
+      }).catch(err => {
+        task.endTime = getCurrentTime()
+        task.taskState = '错误'
+        task.info = err
+      }).finally(() => {
+        const h = this.$createElement
+        this.$notify({
+          title: '通知',
+          message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+          duration: 0
+        })
+        this.loading = false
+      })
+    },
+    /**
+     * 指定特定的函数进行检测,以及是否覆盖重传的确认
+     */
+    async beforeRmoeteTest(fun, params) {
+      var temp = params || this.params
+      var sign1 = await fun(temp)
+      var sign2 = true
+      if (sign1) {
+        sign2 = await this.confirm()
+      }
+      if (sign1 && !sign2) {
+        return false
+      }
+      return true
+    },
+    /**
+     * 重传确认弹窗
+     */
+    async confirm() {
+      var result = false
+      await this.$confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        result = true
+      }).catch(() => {
+        result = false
+      })
+      return result
     }
   }
 }
@@ -182,5 +398,16 @@ export default {
 .el-dialog .el-dialog__body{
   flex:1;
   overflow:auto;
+}
+.must{
+  color: red;
+}
+.year-class{
+  width:180px;
+  display: inline-block;
+}
+.month-class{
+  width:180px;
+  display: inline-block;
 }
 </style>
