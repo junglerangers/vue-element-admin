@@ -59,7 +59,7 @@
         <template slot="header">
           <el-button-group>
             <el-button type="primary" size="small" icon="el-icon-document-add" title="薪资类别新增" @click="handleAddSalaryType" />
-            <el-button type="primary" size="small" icon="el-icon-document-copy" title="薪资类别导入" @click="dialogVisible=true" />
+            <el-button type="primary" size="small" icon="el-icon-document-copy" title="薪资类别复制" @click="dialogVisible=true" />
           </el-button-group>
         </template>
         <template slot-scope="scope">

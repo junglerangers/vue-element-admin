@@ -176,7 +176,7 @@
 
 <script>
 
-import { isExist as isDepartmentExist } from '@/api/department'
+// import { isExist as isDepartmentExist } from '@/api/department'
 import { localImport as userImport, isExist as isEmployeeExist, copyEmployee } from '@/api/employee'
 import { getSalaryTypeList, getGridList } from '@/api/salaryType'
 import { localCopy, isExist as salaryTypeIsExist } from '@/api/salaryType'
@@ -338,20 +338,16 @@ export default {
       if (!this.timeTest()) {
         return false
       }
-      var sign = await this.beforeRmoeteTest(isDepartmentExist)
-      if (!sign) {
-        this.active = 2
-      } else {
-        this.loading = true
-        SalaryImport({ monthNo: this.params }).then(res => {
-          this.$message({
-            message: '工资与银行卡信息导入成功',
-            type: 'success'
-          })
-          this.active = 2
-          this.loading = false
+      // var sign = await this.beforeRmoeteTest(isDepartmentExist)
+      this.loading = true
+      SalaryImport({ monthNo: this.params }).then(res => {
+        this.$message({
+          message: '工资与银行卡信息导入成功',
+          type: 'success'
         })
-      }
+        this.active = 2
+        this.loading = false
+      })
     },
     /**
      * 从hrp端获取员工数据

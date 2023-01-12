@@ -13,12 +13,17 @@
       重新计算社保:<el-date-picker v-model="monthTime2" type="month" placeholder="请选择相应月份" :clearable="false" />
       <el-button type="primary" @click="updateSocialInsurance">计算</el-button>
     </div>
+    <div>
+      获取工资与银行卡信息:<el-date-picker v-model="monthTime3" type="month" placeholder="请选择相应月份" :clearable="false" />
+      <el-button type="primary" @click="updateSalaryandBankcard">获取</el-button>
+    </div>
   </div>
 </template>
 
 <script>
 import { Import, CompInsCal } from '@/api/welfare'
 import { getCurrentTime } from '@/utils/time'
+import { SalaryImport } from '@/api/import'
 import { mapActions } from 'vuex'
 
 export default {
@@ -26,6 +31,7 @@ export default {
     return {
       monthTime: '',
       monthTime2: '',
+      monthTime3: '',
       loading: false,
       dataObject: {
         dataList: [
@@ -114,6 +120,51 @@ export default {
       })
       this.addEvent(task)
       CompInsCal(params)
+        .then(res => {
+          task.taskState = '完成'
+          task.endTime = getCurrentTime()
+        })
+        .catch(err => {
+          console.log(err)
+          task.endTime = getCurrentTime()
+          task.taskState = '错误'
+          task.info = err
+        })
+        .finally(() => {
+          const h = this.$createElement
+          this.$notify({
+            title: '通知',
+            message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+            duration: 5000
+          })
+        })
+    },
+    updateSalaryandBankcard() {
+      if (!this.monthTime3) {
+        this.$message.error('请先选择时间后再操作!')
+        return
+      }
+      var date = new Date(this.monthTime3)
+      var temp =
+        date.getFullYear() +
+        '-' +
+        (1 + date.getMonth()).toString().padStart(2, '0')
+      var params = {
+        'monthNo': temp
+      }
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: temp + '导入工资与银行卡信息',
+        startTime: getCurrentTime(),
+        endTime: '',
+        taskState: '运行中',
+        info: ''
+      }
+      this.$message({
+        message: temp + '工资与银行卡信息开始导入,请稍等'
+      })
+      this.addEvent(task)
+      SalaryImport(params)
         .then(res => {
           task.taskState = '完成'
           task.endTime = getCurrentTime()

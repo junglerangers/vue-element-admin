@@ -31,5 +31,14 @@ export const EmployeeModel = {
   islock: '',
   hr_dept_code: '',
   hr_dept_name: '',
-  kind_code2: ''
+  kind_code2: '',
+  sfz: '',
+  yhhm: '',
+  gzyh: '',
+  gzkh: '',
+  jjyh: '',
+  jjkh: '',
+  flyh: '',
+  flkh: '',
+  runm: ''
 }
