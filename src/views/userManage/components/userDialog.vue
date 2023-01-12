@@ -15,150 +15,87 @@
         </template>
         {{ rawUser.EMP_NAME }}
       </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          人员性别
-        </template>
-        {{ rawUser.SEX_NAME }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          人员性质
-        </template>
-        {{ rawUser.KIND_CODE_NAME }}
-      </el-descriptions-item>
-
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          参加工作时间
-        </template>
-        {{ rawUser.WORKTIME|timeFormatter }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          进单位时间
-        </template>
-        {{ rawUser.HOSTIME|timeFormatter }}
-      </el-descriptions-item>
       <el-descriptions-item span="2">
         <template slot="label">
-          <i class="el-icon-user" />
+          <i class="el-icon-c-scale-to-original" />
           证件编号
         </template>
-        {{ rawUser.ID_CARD }}
+        {{ rawUser.SFZ }}
       </el-descriptions-item>
 
       <el-descriptions-item>
         <template slot="label">
-          <i class="el-icon-user" />
-          出生日期
-        </template>
-        {{ rawUser.BIRTH|timeFormatter }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-user" />
-          年龄
-        </template>
-        {{ rawUser.AGE }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-mobile-phone" />
-          手机号
-        </template>
-        {{ rawUser.C01RH }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-mobile-phone" />
-          虚拟网
-        </template>
-        {{ rawUser.C01RJ }}
-      </el-descriptions-item>
-
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-location-outline" />
-          工资等级
-        </template>
-        {{ rawUser.C01RE_NAME }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-location-outline" />
-          岗位等级
-        </template>
-        {{ rawUser.C01RV_NAME }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-location-outline" />
-          岗位工资级别
-        </template>
-        {{ rawUser.C01RS_NAME }}
-      </el-descriptions-item>
-      <el-descriptions-item />
-
-      <el-descriptions-item span="2">
-        <template slot="label">
-          <i class="el-icon-location-outline" />
-          银行卡号
-        </template>
-        {{ rawUser.BANK_NO }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-location-outline" />
-          从事岗位
-        </template>
-        {{ rawUser.C01RX_NAME }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-location-outline" />
-          实际岗位
-        </template>
-        {{ rawUser.C01RY_NAME }}
-      </el-descriptions-item>
-
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-location-outline" />
+          <i class="el-icon-notebook-1" />
           人员性质
         </template>
         {{ rawUser.KIND_NAME }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
-          <i class="el-icon-location-outline" />
+          <i class="el-icon-notebook-1" />
           人员分类
         </template>
         {{ rawUser.EMP_CLASSNAME }}
       </el-descriptions-item>
-      <el-descriptions-item>
+      <el-descriptions-item span="2">
         <template slot="label">
           <i class="el-icon-location-outline" />
           院区名称
         </template>
         {{ rawUser.HOSAREANAME }}
       </el-descriptions-item>
-      <el-descriptions-item />
-
+      <el-descriptions-item span="1">
+        <template slot="label">
+          <i class="el-icon-office-building" />
+          工资银行
+        </template>
+        {{ rawUser.GZYH }}
+      </el-descriptions-item>
+      <el-descriptions-item span="3">
+        <template slot="label">
+          <i class="el-icon-bank-card" />
+          工资卡号
+        </template>
+        {{ rawUser.GZKH }}
+      </el-descriptions-item>
+      <el-descriptions-item span="1">
+        <template slot="label">
+          <i class="el-icon-office-building" />
+          奖金银行
+        </template>
+        {{ rawUser.JJYH }}
+      </el-descriptions-item>
+      <el-descriptions-item span="3">
+        <template slot="label">
+          <i class="el-icon-bank-card" />
+          奖金卡号
+        </template>
+        {{ rawUser.JJKH }}
+      </el-descriptions-item>
+      <el-descriptions-item span="1">
+        <template slot="label">
+          <i class="el-icon-office-building" />
+          福利银行
+        </template>
+        {{ rawUser.FLYH }}
+      </el-descriptions-item>
+      <el-descriptions-item span="3">
+        <template slot="label">
+          <i class="el-icon-bank-card" />
+          福利卡号
+        </template>
+        {{ rawUser.FLKH }}
+      </el-descriptions-item>
       <el-descriptions-item span="2">
         <template slot="label">
-          <i class="el-icon-location-outline" />
+          <i class="el-icon-time" />
           生效日期
         </template>
         {{ rawUser.BEGINDATE|timeFormatter }}
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template slot="label">
-          <i class="el-icon-location-outline" />
+          <i class="el-icon-time" />
           失效日期
         </template>
         {{ rawUser.ENDDATE|timeFormatter }}
@@ -166,7 +103,7 @@
 
       <el-descriptions-item>
         <template slot="label">
-          <i class="el-icon-location-outline" />
+          <i class="el-icon-notebook-1" />
           人员性质2
         </template>
         <el-select v-model="rawUser.KIND_CODE2" placeholder="请选择" size="mini" style="width:90px" disabled>
@@ -183,7 +120,7 @@
       </el-descriptions-item>
     </el-descriptions>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="save">保 存</el-button>
+      <!-- <el-button type="primary" @click="save">保 存</el-button> -->
       <el-button @click="toggleDialogVisible">关 闭</el-button>
     </span>
   </el-dialog>
