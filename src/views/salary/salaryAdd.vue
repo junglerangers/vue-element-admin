@@ -274,11 +274,11 @@ export default {
        * 员工表单属性字典
        */
       EmployeeTypeDict: [
-        { TNAME: 'EMP_CODE', TCODE: 'EMP_CODE' },
-        { TNAME: 'EMP_NAME', TCODE: 'EMP_NAME' },
-        { TNAME: 'KIND_NAME', TCODE: 'KIND_NAME' },
-        { TNAME: 'EMP_CLASSNAME', TCODE: 'EMP_CLASSNAME' },
-        { TNAME: 'KIND_CODE2', TCODE: 'KIND_CODE2' }
+        { TNAME: '人员编码', TCODE: 'EMP_CODE' },
+        { TNAME: '姓名', TCODE: 'EMP_NAME' },
+        { TNAME: '人员性质', TCODE: 'KIND_NAME' },
+        { TNAME: '人员性质2', TCODE: 'KIND_CODE2' },
+        { TNAME: '人员分类', TCODE: 'EMP_CLASSNAME' }
       ]
     }
   },
