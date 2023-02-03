@@ -127,6 +127,7 @@ import { getGridList } from '@/api/salaryType'
 import { search, detailDialog } from './components'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
+import searchMethod from '@/mixins/search'
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
 import { getCurrentTime } from '@/utils/time'
@@ -137,7 +138,7 @@ export default {
     search,
     detailDialog
   },
-  mixins: [resize, tablePage],
+  mixins: [resize, tablePage, searchMethod],
   data: function() {
     return {
       loading: false,
@@ -301,10 +302,6 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    },
-    searchHandler(searchModel) {
-      this.searchModel = { ...searchModel }
-      this.getDataList()
     }
   }
 }

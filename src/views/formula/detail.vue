@@ -195,7 +195,6 @@ import { debounce } from '@/utils/index'
 import { getTreeList, getGridList, localAdd, localUpdate, getSalaryTypeList as getSalaryCateDict } from '@/api/salaryType'
 import { getGridList as getFormularSlv, localAdd as subAdd, localUpdate as subUpdate, localDelete as subDelete } from '@/api/formularSlv'
 import { getNatureList } from '@/api/enum'
-import { salaryTypeModel } from '@/dataModel/SalaryTypeModel'
 export default {
   name: 'FormularDetail',
   components: {
@@ -317,7 +316,7 @@ export default {
       const type = this.$route.query.type
       this.localFormula = Object.assign({}, this.formula)
       this.getSalaryCateDict().then(() => {
-        this.getSalaryTypeTreeList()
+        this.getSalaryTypeTreeList(this.localFormula.DCODE)
       })
       this.getSalaryTypeList()
       this.getNatureList().then(() => {
@@ -349,13 +348,18 @@ export default {
       }
       return str
     },
-    save() {
+    save() { // 父级页面传递进来的时候,是值,选择的时候是数组
       const type = this.$route.query.type
       this.localFormula.FORMULA = this.convertToUploadFormula(type, this.standFormula)
-      // console.log(this.localFormula)
-      if (this.localFormula.SUPERCODE !== null && this.localFormula.SUPERCODE.length > 0) {
-        this.localFormula.SUPERCODE = this.localFormula.SUPERCODE.at(-1)
+      // console.log(this.localFormula.SUPERCODE)
+      if (this.localFormula.SUPERCODE !== null && this.localFormula.SUPERCODE !== undefined && this.localFormula.SUPERCODE.length > 0) {
+        if (Array.isArray(this.localFormula.SUPERCODE)) {
+          this.localFormula.SUPERCODE = this.localFormula.SUPERCODE[this.localFormula.SUPERCODE.length - 1]
+        }
+      } else {
+        this.localFormula.SUPERCODE = ''
       }
+      // console.log(this.localFormula)
       if (type === 'edit') {
         localUpdate(this.localFormula).then(res => {
           this.$message({
@@ -372,7 +376,8 @@ export default {
           'tname': this.localFormula.TNAME,
           'begindate': this.localFormula.BEGINDATE.format('yyyy-MM-dd hh:mm:ss'),
           'enddate': this.localFormula.ENDDATE.format('yyyy-MM-dd hh:mm:ss'),
-          'remark': this.localFormula.REMARK
+          'remark': this.localFormula.REMARK,
+          'supercode': this.localFormula.SUPERCODE
         }
         localAdd(params).then(res => {
           this.$message({
@@ -384,14 +389,13 @@ export default {
         })
       }
     },
-    async getSalaryTypeTreeList() { // 获取树状薪酬类型,用于指定父级节点
+    async getSalaryTypeTreeList(DCODE) { // 获取树状薪酬类型,用于指定父级节点
       var param = {
         monthNo: this.monthNo
       }
       await getTreeList(param).then(res => {
         this.salaryTypeTreeList = res.data
-        this.salaryTypeTreeListUpdate = res.data
-        this.updateDCODE(this.localFormula?.DNAME)
+        this.salaryTypeTreeListUpdate = this.salaryTypeTreeList.filter(el => el.Attribute.toString() === DCODE.toString())
       })
     },
     async getSalaryCateDict() { // 获取最基础的四个薪酬类型,即获取dcode
