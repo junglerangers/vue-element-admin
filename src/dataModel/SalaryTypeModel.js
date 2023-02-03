@@ -11,5 +11,6 @@ export const salaryTypeModel = {
   BEGINDATE: '',
   ENDDATE: '',
   ISLOCK: '',
-  RNUM: ''
+  RNUM: '',
+  SUPERNAME: ''
 }

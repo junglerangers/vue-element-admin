@@ -61,6 +61,7 @@ service.interceptors.response.use(
    */
   // 20000范围内的状态码就会触发这个
   response => {
+    // console.log(response)
     const res = response.data
     // console.log(response)
     // console.log('Here is response interceptor')
@@ -70,7 +71,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-      console.log(res.message)
+      // console.log(res.message)
       return Promise.reject(new Error(res.message || 'Error'))
     } else if (res.status.indexOf('W') >= 0) {
       Message({
@@ -111,17 +112,17 @@ service.interceptors.response.use(
     //   return res
     // }
     // return res
-  }
+  },
   // 20000范围外的状态码就会触发这个
-  // error => {
-  //   console.log('err' + error) // for debug
-  //   Message({
-  //     message: error.message,
-  //     type: 'error',
-  //     duration: 5 * 1000
-  //   })
-  //   return Promise.reject(error)
-  // }
+  error => {
+    console.log('err' + error) // for debug
+    Message({
+      message: '请联系信息科,错误信息:' + error.message,
+      type: 'error',
+      duration: 6 * 1000
+    })
+    return Promise.reject(error)
+  }
 )
 
 export default service

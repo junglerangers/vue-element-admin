@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
     <div style="margin-top: 15px;">
-      <el-input v-model="searchContent" placeholder="请输入内容" class="input-with-select">
+      <el-input v-model="searchContent" placeholder="请输入内容" class="input-with-select" @keyup.enter.native="searchHandler">
         <el-dropdown slot="prepend" @command="handleCommand">
           <span class="el-dropdown-link">
             {{ searchtype }}<i class="el-icon-arrow-down el-icon--right" />
@@ -12,7 +12,7 @@
           </el-dropdown-menu>
         </el-dropdown>
         <template slot="append">
-          <el-button type="primary" icon="el-icon-search" @click="searchHandler">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="searchHandler">搜索(Enter)</el-button>
         </template>
       </el-input>
     </div>

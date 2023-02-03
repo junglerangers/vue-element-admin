@@ -75,9 +75,9 @@
           {{ scope.row.扣款合计 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="工资实发合计" width="100">
+      <el-table-column align="center" label="实发合计" width="100">
         <template slot-scope="scope">
-          {{ scope.row.工资实发合计===null?0:scope.row.工资实发合计 }}
+          {{ scope.row.实发合计===null?0:scope.row.实发合计 }}
         </template>
       </el-table-column>
       <el-table-column align="center">
@@ -284,6 +284,7 @@ export default {
       this.dataList = res.data
       this.page_total = res.pageHandler.records
       this.loading = false
+      console.log(this.dataList)
     },
     async handleEdit(scope) { // 获取特定人员的薪资详情,并进行编辑
       this.loading = true

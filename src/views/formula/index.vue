@@ -37,12 +37,13 @@
       </el-table-column>
       <el-table-column align="center" label="父节点" width="100">
         <template slot-scope="scope">
-          {{ scope.row.SUPERCODE }}
+          {{ scope.row.SUPERNAME }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="锁定标志" width="100">
+      <el-table-column align="center" label="锁定状态" width="100">
         <template slot-scope="scope">
-          {{ scope.row.ISLOCK }}
+          <el-tag v-if="scope.row.ISLOCK === '0'" type="success">未锁定</el-tag>
+          <el-tag v-else type="info">锁定</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="生效日期" width="100">

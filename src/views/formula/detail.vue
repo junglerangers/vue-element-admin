@@ -12,6 +12,7 @@
       </el-descriptions-item>
       <el-descriptions-item label="类别名称">
         <el-input v-model="localFormula.TNAME" class="width220" />
+        <span class="must">*</span>
       </el-descriptions-item>
       <el-descriptions-item label="薪资编码">
         <el-input v-model="localFormula.DCODE" class="width220" disabled />
@@ -25,6 +26,7 @@
             :value="item.DNAME"
           />
         </el-select>
+        <span class="must">*</span>
       </el-descriptions-item>
       <el-descriptions-item label="生效时间">
         <el-date-picker
@@ -45,7 +47,7 @@
         />
       </el-descriptions-item>
       <el-descriptions-item label="父级节点">
-        <el-cascader v-model="localFormula.SUPERCODE" :options="salaryTypeTreeList" :props="props" filterable clearable>
+        <el-cascader :key="cascaderIndex" v-model="localFormula.SUPERCODE" :options="salaryTypeTreeListUpdate" :props="props" filterable clearable>
           <template slot-scope="{ node, data }">
             <span>{{ data.label }}</span>
             <span v-if="!node.isLeaf"> ({{ data.options.length }}) </span>
@@ -53,7 +55,8 @@
         </el-cascader>
       </el-descriptions-item>
       <el-descriptions-item label="是否锁定">
-        {{ localFormula.ISLOCK|lockFormat }}
+        <el-tag v-if="localFormula.ISLOCK !== '0'" type="info">锁定</el-tag>
+        <el-tag v-else type="success">未锁定</el-tag>
       </el-descriptions-item>
       <el-descriptions-item label="备注" span="2">
         <el-input v-model="localFormula.REMARK" type="textarea" :readonly="false" :style="{'width':'800px'}" />
@@ -144,13 +147,13 @@
         <el-form-item label="入职时间范围" :style="{'width':'400px'}">
           <el-col :span="11">
             <el-form-item prop="HOSTIMEBMONTH">
-              <el-date-picker v-model="currentSlvFormular.HOSTIMEBMONTH" type="month" placeholder="选择开始时间" style="width: 100%;" clearble />
+              <el-date-picker v-model="currentSlvFormular.HOSTIMEBMONTH" type="month" placeholder="开始时间" style="width: 100%;" clearble />
             </el-form-item>
           </el-col>
           <el-col class="line" :span="2">-</el-col>
           <el-col :span="11">
             <el-form-item prop="date2">
-              <el-date-picker v-model="currentSlvFormular.HOSTIMEEMONTH" type="month" placeholder="选择结束时间" style="width: 100%;" clearble />
+              <el-date-picker v-model="currentSlvFormular.HOSTIMEEMONTH" type="month" placeholder="结束时间" style="width: 100%;" clearble />
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -192,6 +195,7 @@ import { debounce } from '@/utils/index'
 import { getTreeList, getGridList, localAdd, localUpdate, getSalaryTypeList as getSalaryCateDict } from '@/api/salaryType'
 import { getGridList as getFormularSlv, localAdd as subAdd, localUpdate as subUpdate, localDelete as subDelete } from '@/api/formularSlv'
 import { getNatureList } from '@/api/enum'
+import { salaryTypeModel } from '@/dataModel/SalaryTypeModel'
 export default {
   name: 'FormularDetail',
   components: {
@@ -235,11 +239,13 @@ export default {
       subFormularContent: '',
       dialogType: '',
       rawID: '',
+      cascaderIndex: 0, // 用于解决级联选择器重新渲染时的报错问题
       salaryTypeDict: [], // 用于公式自动补全框中的输入提示
       slaryCateDict: [], // 存储工资类别,包括工资,奖金,福利,社保缴费等
       searchDebounce: debounce(this.querySearchRemote, 500),
       rawTemp: '',
       salaryTypeTreeList: [],
+      salaryTypeTreeListUpdate: [],
       props: {
         checkStrictly: true,
         children: 'options',
@@ -310,9 +316,10 @@ export default {
     pageInitial() {
       const type = this.$route.query.type
       this.localFormula = Object.assign({}, this.formula)
-      this.getSalaryTypeTreeList()
+      this.getSalaryCateDict().then(() => {
+        this.getSalaryTypeTreeList()
+      })
       this.getSalaryTypeList()
-      this.getSalaryCateDict()
       this.getNatureList().then(() => {
         if (type === 'edit') {
           this.getFormularSlv()
@@ -345,12 +352,18 @@ export default {
     save() {
       const type = this.$route.query.type
       this.localFormula.FORMULA = this.convertToUploadFormula(type, this.standFormula)
+      // console.log(this.localFormula)
+      if (this.localFormula.SUPERCODE !== null && this.localFormula.SUPERCODE.length > 0) {
+        this.localFormula.SUPERCODE = this.localFormula.SUPERCODE.at(-1)
+      }
       if (type === 'edit') {
         localUpdate(this.localFormula).then(res => {
           this.$message({
             message: '薪资更新成功!',
             type: 'success'
           })
+          this.$store.dispatch('tagsView/delView', this.$route)
+          this.$router.replace('/formula/index')
         })
       } else if (type === 'new') {
         var params = {
@@ -366,10 +379,10 @@ export default {
             message: '薪资新增成功',
             type: 'success'
           })
+          this.$store.dispatch('tagsView/delView', this.$route)
+          this.$router.replace('/formula/index')
         })
       }
-      this.$store.dispatch('tagsView/delView', this.$route)
-      this.$router.replace('/formula/index')
     },
     async getSalaryTypeTreeList() { // 获取树状薪酬类型,用于指定父级节点
       var param = {
@@ -377,6 +390,8 @@ export default {
       }
       await getTreeList(param).then(res => {
         this.salaryTypeTreeList = res.data
+        this.salaryTypeTreeListUpdate = res.data
+        this.updateDCODE(this.localFormula?.DNAME)
       })
     },
     async getSalaryCateDict() { // 获取最基础的四个薪酬类型,即获取dcode
@@ -426,8 +441,17 @@ export default {
       })
     },
     updateDCODE(value) { // 选择薪酬类别名称的时候,自动更新薪酬类别代码
-      var temp = this.slaryCateDict.find(element => element.DNAME === value)
-      this.localFormula.DCODE = temp.DCODE
+      this.cascaderIndex++ // 用于解决vue自身渲染的问题
+      if (value === null || value === undefined) {
+        this.salaryTypeTreeListUpdate = this.salaryTypeTreeList
+      } else {
+        var temp = this.slaryCateDict.find(element => element.DNAME === value)
+        this.localFormula.DCODE = temp.DCODE
+        this.localFormula.SUPERCODE = null
+        // console.log(this.salaryTypeTreeList)
+        var temp2 = this.salaryTypeTreeList.filter(el => el.Attribute.toString() === temp.DCODE.toString())
+        this.salaryTypeTreeListUpdate = temp2 ?? []
+      }
     },
     formulaInitial() { // 将数据库存储的字符串形式的公式转换为前端的形式
       if (this.localFormula.FORMULA) {
@@ -579,5 +603,8 @@ export default {
     text-align: right;
     margin-bottom: 20px;
     margin-right: 60px;
+  }
+  .must{
+    color: red;
   }
 </style>
