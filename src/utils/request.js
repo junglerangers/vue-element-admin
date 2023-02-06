@@ -63,6 +63,7 @@ service.interceptors.response.use(
   response => {
     // console.log(response)
     const res = response.data
+    // console.log(res)
     // console.log(response)
     // console.log('Here is response interceptor')
     if (res.status.indexOf('F') >= '0') {

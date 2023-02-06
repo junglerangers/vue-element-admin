@@ -167,6 +167,7 @@ export default {
         enum: '',
         ename: ''
       },
+      tempSalary: null,
       salaryTypeDict: [], // 薪酬类型字典
       timePicker: {
         YEARNO: '',
@@ -188,11 +189,33 @@ export default {
   },
   created() {
     if (this.salary) { // 如果已经选中了一个薪资单
-      this.getDataList()
-      this.getSalaryType()
-      this.timePicker.YEARNO = this.salary.YEARNO
-      this.timePicker.MONTHNO = this.salary.MONTHNO
-      this.timePicker.NUM = this.salary.NUM
+      if (this.salary !== this.tempSalary) {
+        this.tempSalary = this.salary
+        this.getDataList()
+        this.getSalaryType()
+        this.timePicker.YEARNO = this.salary.YEARNO
+        this.timePicker.MONTHNO = this.salary.MONTHNO
+        this.timePicker.NUM = this.salary.NUM
+      }
+    } else {
+      this.$message({
+        message: '请优先选择一张工资单主表!',
+        type: 'warning'
+      })
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.replace('/salary/index')
+    }
+  },
+  activated: function() {
+    if (this.salary) { // 如果已经选中了一个薪资单
+      if (this.salary !== this.tempSalary) {
+        this.tempSalary = this.salary
+        this.getDataList()
+        this.getSalaryType()
+        this.timePicker.YEARNO = this.salary.YEARNO
+        this.timePicker.MONTHNO = this.salary.MONTHNO
+        this.timePicker.NUM = this.salary.NUM
+      }
     } else {
       this.$message({
         message: '请优先选择一张工资单主表!',
@@ -211,6 +234,7 @@ export default {
       var params = {
         monthNo: this.monthNo
       }
+      // console.log(params)
       var res = await getGridList(params)
       this.salaryTypeDict = res.data
     },
@@ -285,7 +309,6 @@ export default {
       this.dataList = res.data
       this.page_total = res.pageHandler.records
       this.loading = false
-      console.log(this.dataList)
     },
     async handleEdit(scope) { // 获取特定人员的薪资详情,并进行编辑
       this.loading = true
