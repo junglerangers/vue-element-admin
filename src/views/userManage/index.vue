@@ -225,13 +225,14 @@ export default {
      * 人员信息通过excel上传
      */
     async employeeUpload(e) {
-      var sign = await this.beforeRmoeteTest(isEmployeeExist, this.monthTime)
+      console.log(this.monthNo)
+      var sign = await this.beforeRmoeteTest(isEmployeeExist, this.monthNo)
       if (!sign) {
         return
       } else {
         var task = {
           taskID: Math.floor(Math.random() * 100),
-          taskName: this.monthTime + '人员信息Excel导入',
+          taskName: this.monthNo + '人员信息Excel导入',
           startTime: getCurrentTime(),
           endTime: '',
           taskState: '运行中',
@@ -240,13 +241,13 @@ export default {
         this.addEvent(task)
         this.loading = true
         await Excelupload('', e.file, this.EmployeeTypeDict).then(async params => {
-          params.monthNo = this.monthTime
+          params.monthNo = this.monthNo
           await employeeImport(params)
         }).then(res => {
           task.taskState = '完成'
           task.endTime = getCurrentTime()
           this.$message({
-            message: this.monthTime + '员工信息导入成功!',
+            message: this.monthNo + '员工信息导入成功!',
             type: 'success'
           })
           this.getDataList()
@@ -266,14 +267,14 @@ export default {
       }
     },
     async employeeInfoCopy() {
-      var sign = await this.beforeRmoeteTest(isEmployeeExist, this.monthTime)
+      var sign = await this.beforeRmoeteTest(isEmployeeExist, this.monthNo)
       if (!sign) {
         this.dialogVisibleEmployeeCopy = false
       } else {
         var start = this.startCopyMonth
         start = start.getFullYear() + '-' + (start.getMonth() + 1).toString().padStart('2', '0')
         var params = {
-          'monthNo': this.monthTime,
+          'monthNo': this.monthNo,
           'copyFromMonthNo': start
         }
         // console.log(params)
@@ -299,7 +300,7 @@ export default {
       // var sign = await this.beforeRmoeteTest(isEmployeeExist)
       var task = {
         taskID: Math.floor(Math.random() * 100),
-        taskName: this.monthTime + '人员信息Excel追加导入',
+        taskName: this.monthNo + '人员信息Excel追加导入',
         startTime: getCurrentTime(),
         endTime: '',
         taskState: '运行中',
@@ -308,13 +309,13 @@ export default {
       this.addEvent(task)
       this.loading = true
       await Excelupload('', e.file, this.EmployeeTypeDict).then(async params => {
-        params.monthNo = this.monthTime
+        params.monthNo = this.monthNo
         await employeeAdd(params)
       }).then(res => {
         task.taskState = '完成'
         task.endTime = getCurrentTime()
         this.$message({
-          message: this.monthTime + '员工信息追加导入成功!',
+          message: this.monthNo + '员工信息追加导入成功!',
           type: 'success'
         })
         this.getDataList()
