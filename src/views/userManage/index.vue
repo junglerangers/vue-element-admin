@@ -163,11 +163,12 @@ export default {
        * 员工表单属性字典
        */
       EmployeeTypeDict: [
-        { TNAME: '人员编码', TCODE: 'EMP_CODE' },
+        { TNAME: '人员编号', TCODE: 'EMP_CODE' },
         { TNAME: '姓名', TCODE: 'EMP_NAME' },
-        { TNAME: '人员性质', TCODE: 'KIND_NAME' },
-        { TNAME: '人员性质2', TCODE: 'KIND_CODE2' },
-        { TNAME: '人员分类', TCODE: 'EMP_CLASSNAME' }
+        { TNAME: '科室', TCODE: 'DEPT_NAME' },
+        { TNAME: '人员性质', TCODE: 'KIND_CODE_NAME' },
+        { TNAME: '实际岗位', TCODE: 'C01RY_NAME' },
+        { TNAME: '聘任资格', TCODE: 'QUALIFICATION' }
       ]
     }
   },

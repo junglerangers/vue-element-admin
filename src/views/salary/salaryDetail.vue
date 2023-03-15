@@ -37,22 +37,23 @@
       element-loading-background="rgba(0, 0, 0, 0.8)"
       :data="dataList"
       class="table"
+      max-height="450"
       border
     >
-      <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="center" label="科室名称" width="200">
-        <template slot-scope="scope">
-          {{ scope.row.部门名称 }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="员工姓名" width="100">
+      <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" fixed />
+      <el-table-column align="center" label="员工姓名" width="100" fixed>
         <template slot-scope="scope">
           {{ scope.row.员工姓名 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="员工工号" width="100">
+      <el-table-column align="center" label="员工工号" width="100" fixed>
         <template slot-scope="scope">
           {{ scope.row.员工工号 }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="科室名称" width="100">
+        <template slot-scope="scope">
+          {{ scope.row.部门名称 }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="人员性质" width="100">
@@ -65,22 +66,12 @@
           {{ scope.row.人员分类 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="应发合计" width="100">
+      <el-table-column v-for="item in showSalayTypeArray" :key="item" :label="item" width="100">
         <template slot-scope="scope">
-          {{ scope.row.应发合计 }}
+          {{ scope.row[item] }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="扣款合计" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.扣款合计 }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="实发合计" width="100">
-        <template slot-scope="scope">
-          {{ scope.row.实发合计===null?0:scope.row.实发合计 }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center">
+      <el-table-column align="center" fixed="right" width="100">
         <template slot="header">
           <el-button-group>
             <el-upload
@@ -88,7 +79,6 @@
               :show-file-list="false"
               accept="xlsx,xls"
               :http-request="salaryUpload"
-              :style="{'margin-left':'50px'}"
             >
               <el-button
                 size="small"
@@ -173,7 +163,9 @@ export default {
         YEARNO: '',
         MONTHNO: '',
         NUM: ''
-      }
+      },
+      sumObject: {},
+      showSalayTypeArray: []
     }
   },
   computed: {
@@ -187,11 +179,11 @@ export default {
       return this.salary.YEARNO + '-' + this.salary.MONTHNO
     }
   },
-  created() {
+  async created() {
     if (this.salary) { // 如果已经选中了一个薪资单
       if (this.salary !== this.tempSalary) {
         this.tempSalary = this.salary
-        this.getDataList()
+        await this.getDataList()
         this.getSalaryType()
         this.timePicker.YEARNO = this.salary.YEARNO
         this.timePicker.MONTHNO = this.salary.MONTHNO
@@ -308,6 +300,12 @@ export default {
       const res = await getSlvPageQuery(params)
       this.dataList = res.data
       this.page_total = res.pageHandler.records
+      res.slvSumList.forEach(element => {
+        this.sumObject[element.TNAME] = element.AMOUNT
+        this.showSalayTypeArray.push(element.TNAME)
+      })
+      this.sumObject.员工姓名 = '合计'
+      console.log(this.showSalayTypeArray)
       this.loading = false
     },
     async handleEdit(scope) { // 获取特定人员的薪资详情,并进行编辑
@@ -334,6 +332,8 @@ export default {
 .table{
   margin-bottom: 30px;
   margin-top: 30px;
+  width: 100%;
+  font-size: x-small;
 }
 .myinput{
   position:absolute;
