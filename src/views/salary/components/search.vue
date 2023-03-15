@@ -1,14 +1,13 @@
 <template>
-  <div class="search-container">
-    <div style="margin-top: 15px;">
-      <el-input v-model="searchContent" placeholder="请输入内容" class="input-with-select" @keyup.enter.native="searchHandler">
+  <div>
+    <div class="search_top_margin">
+      <el-input v-model="searchContent" placeholder="请输入内容" @keyup.enter.native="searchHandler">
         <el-dropdown slot="prepend" @command="handleCommand">
-          <span class="el-dropdown-link">
+          <span>
             {{ searchtype }}<i class="el-icon-arrow-down el-icon--right" />
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="姓名">姓名</el-dropdown-item>
-            <el-dropdown-item command="工号">工号</el-dropdown-item>
+            <el-dropdown-item v-for="(value,key) in mapDict" :key="key" :command="key">{{ key }}</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <template slot="append">
@@ -21,13 +20,14 @@
 </template>
 
 <script>
+import { searchTypeDict } from '../dict/searchTypeDict'
 
 export default {
   data: function() {
     return {
       depList: [], // 科室列表
       typeList: [], // 人员类型列表
-      searchtype: '工号',
+      searchtype: Object.keys(searchTypeDict)[0],
       searchContent: '',
       /** 搜索模型 */
       searchModel: {
@@ -36,10 +36,7 @@ export default {
       },
       test: '',
       visible: false,
-      mapDict: {
-        '姓名': 'ename',
-        '工号': 'enum'
-      }
+      mapDict: searchTypeDict
     }
   },
   computed: {
@@ -79,22 +76,5 @@ export default {
 </script>
 
 <style scoped>
-.el-select .el-input{
-  width: 180px;
-}
-.search-form{
-  margin-top:20px;
-}
-.none{
-  display: none;
-}
-.advancesearchshow-enter-active, .advancesearchshow-leave-active{
-  transition: opacity .5s;
-}
-.advancesearchshow-enter,.advancesearchshow-leave-to{
-  opacity: 0;
-}
-.search-form .el-form-item{
-  width: 23%;
-}
+
 </style>

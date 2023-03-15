@@ -1,33 +1,34 @@
 <template>
   <div class="app-container">
-    <div class="inline220">
+    <div class="sub_inline">
       <el-date-picker
         v-model="timePicker.YEARNO"
         type="year"
         value-format="yyyy"
-        placeholder="请选择相应年份"
         :disabled="true"
+        size="mini"
       />
     </div>
-    年-
-    <div class="inline220">
+    <span>年</span>
+    <div class="sub_inline">
       <el-date-picker
         v-model="timePicker.MONTHNO"
         format="MM"
         type="month"
         value-format="MM"
-        placeholder="请选择相应月份"
         :disabled="true"
+        size="mini"
       />
     </div>
-    月-
-    <div class="inline240">
+    <span>月</span>
+    <div class="sub_inline">
       <el-input
         v-model="timePicker.NUM"
-        placeholder="请选择相应期数"
         :disabled="true"
+        size="mini"
       />
-    </div>期
+    </div>
+    <span>期</span>
     <search @search="searchHandler" />
     <el-table
       id="mytable"
@@ -38,6 +39,8 @@
       :data="dataList"
       class="table"
       max-height="450"
+      :summary-method="getSummaries"
+      show-summary
       border
     >
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" fixed />
@@ -66,7 +69,7 @@
           {{ scope.row.人员分类 }}
         </template>
       </el-table-column>
-      <el-table-column v-for="item in showSalayTypeArray" :key="item" :label="item" width="100">
+      <el-table-column v-for="item in showSalayTypeArray" :key="item" align="center" :label="item" width="100">
         <template slot-scope="scope">
           {{ scope.row[item] }}
         </template>
@@ -230,6 +233,22 @@ export default {
       var res = await getGridList(params)
       this.salaryTypeDict = res.data
     },
+    getSummaries(param) {
+      const { columns, data } = param
+      const sum = []
+      console.log(columns)
+      console.log(data)
+      columns.forEach((element, index) => {
+        if (Object.prototype.hasOwnProperty.call(this.sumObject, element.label)) {
+          sum[index] = this.sumObject[element.label]
+        } else {
+          sum[index] = 'N/A'
+        }
+      })
+      sum[0] = ''
+      sum[1] = '所有人员合计'
+      return sum
+    },
     async salaryUpload(e) {
       var sign = await this.confirm(isSalaryExist)
       if (!sign) {
@@ -300,12 +319,11 @@ export default {
       const res = await getSlvPageQuery(params)
       this.dataList = res.data
       this.page_total = res.pageHandler.records
+      this.showSalayTypeArray = []
       res.slvSumList.forEach(element => {
         this.sumObject[element.TNAME] = element.AMOUNT
         this.showSalayTypeArray.push(element.TNAME)
       })
-      this.sumObject.员工姓名 = '合计'
-      console.log(this.showSalayTypeArray)
       this.loading = false
     },
     async handleEdit(scope) { // 获取特定人员的薪资详情,并进行编辑
@@ -362,12 +380,7 @@ export default {
   flex:1;
   overflow:auto;
 }
-.inline220{
-  width:220px;
-  display: inline-block;
-}
-.inline240{
-  width:240px;
+.sub_inline{
   display: inline-block;
 }
 </style>
