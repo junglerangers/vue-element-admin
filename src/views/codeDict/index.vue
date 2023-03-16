@@ -55,7 +55,7 @@
       </el-table-column>
     </el-table>
     <localDialog :raw-model="currentModel" :type="dialogType" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @update="getDataList" />
-    <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
+    <div class="block footer pagination_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
         :page-sizes="page_sizes"
@@ -204,17 +204,7 @@ export default {
   margin-bottom: 30px;
   margin-top: 30px;
 }
-.myinput{
-  position:absolute;
-  opacity: 0;
-  top:0;
-  left: 0;
-  height: 100%;
-  width:100%;
-}
-.margin20{
-  margin: 0 20px;
-}
+
 .el-dialog{
   display: flex;
   flex-direction: column;

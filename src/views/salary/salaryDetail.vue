@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="sub_inline">
+    <div class="subinline">
       <el-date-picker
         v-model="timePicker.YEARNO"
         type="year"
@@ -10,7 +10,7 @@
       />
     </div>
     <span>年</span>
-    <div class="sub_inline">
+    <div class="subinline">
       <el-date-picker
         v-model="timePicker.MONTHNO"
         format="MM"
@@ -21,7 +21,7 @@
       />
     </div>
     <span>月</span>
-    <div class="sub_inline">
+    <div class="subinline">
       <el-input
         v-model="timePicker.NUM"
         :disabled="true"
@@ -31,13 +31,12 @@
     <span>期</span>
     <search @search="searchHandler" />
     <el-table
-      id="mytable"
       v-loading="loading"
       element-loading-text="数据拼命加载中"
       element-loading-spinner="el-icon-loading"
       element-loading-background="rgba(0, 0, 0, 0.8)"
       :data="dataList"
-      class="table"
+      class="subtable"
       max-height="450"
       :summary-method="getSummaries"
       show-summary
@@ -69,7 +68,7 @@
           {{ scope.row.人员分类 }}
         </template>
       </el-table-column>
-      <el-table-column v-for="item in showSalayTypeArray" :key="item" align="center" :label="item" width="100">
+      <el-table-column v-for="item in tableHeaders" :key="item" align="center" :label="item" width="100">
         <template slot-scope="scope">
           {{ scope.row[item] }}
         </template>
@@ -100,7 +99,7 @@
 
     <detailDialog :current-user="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @update="getDataList" />
 
-    <div class="block footer trt_fixed_footer" :style="{width:footerWidth}">
+    <div class="block footer pagination_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
         :page-sizes="page_sizes"
@@ -160,7 +159,7 @@ export default {
         enum: '',
         ename: ''
       },
-      tempSalary: null,
+      originalSalary: null,
       salaryTypeDict: [], // 薪酬类型字典
       timePicker: {
         YEARNO: '',
@@ -168,7 +167,7 @@ export default {
         NUM: ''
       },
       sumObject: {},
-      showSalayTypeArray: []
+      tableHeaders: []
     }
   },
   computed: {
@@ -183,61 +182,51 @@ export default {
     }
   },
   async created() {
-    if (this.salary) { // 如果已经选中了一个薪资单
-      if (this.salary !== this.tempSalary) {
-        this.tempSalary = this.salary
-        await this.getDataList()
-        this.getSalaryType()
-        this.timePicker.YEARNO = this.salary.YEARNO
-        this.timePicker.MONTHNO = this.salary.MONTHNO
-        this.timePicker.NUM = this.salary.NUM
-      }
-    } else {
-      this.$message({
-        message: '请优先选择一张工资单主表!',
-        type: 'warning'
-      })
-      this.$store.dispatch('tagsView/delView', this.$route)
-      this.$router.replace('/salary/index')
-    }
+    await this.pageInitial()
   },
-  activated: function() {
-    if (this.salary) { // 如果已经选中了一个薪资单
-      if (this.salary !== this.tempSalary) {
-        this.tempSalary = this.salary
-        this.getDataList()
-        this.getSalaryType()
-        this.timePicker.YEARNO = this.salary.YEARNO
-        this.timePicker.MONTHNO = this.salary.MONTHNO
-        this.timePicker.NUM = this.salary.NUM
-      }
-    } else {
-      this.$message({
-        message: '请优先选择一张工资单主表!',
-        type: 'warning'
-      })
-      this.$store.dispatch('tagsView/delView', this.$route)
-      this.$router.replace('/salary/index')
-    }
+  async activated() {
+    await this.pageInitial()
   },
   methods: {
     ...mapActions({
       addEvent: 'app/addEvent',
       changeEventState: 'app/changeEventState'
     }),
-    async getSalaryType() {
-      var params = {
-        monthNo: this.monthNo
+    /**
+     * 页面初始化操作
+     */
+    async pageInitial() {
+      if (this.salary) { // 如果与原页面数据相同,则无需重复加载
+        if (this.salary !== this.originalSalary) {
+          this.originalSalary = this.salary
+          await this.getDataList()
+          this.getSalaryType()
+          this.timePicker.YEARNO = this.salary.YEARNO
+          this.timePicker.MONTHNO = this.salary.MONTHNO
+          this.timePicker.NUM = this.salary.NUM
+        }
+      } else {
+        this.$message({
+          message: '请优先选择一张工资单主表!',
+          type: 'warning'
+        })
+        this.$store.dispatch('tagsView/delView', this.$route)
+        this.$router.replace('/salary/index')
       }
-      // console.log(params)
-      var res = await getGridList(params)
+    },
+    /**
+     * 获取薪资类别
+     */
+    async getSalaryType() {
+      var res = await getGridList({ monthNo: this.monthNo })
       this.salaryTypeDict = res.data
     },
+    /**
+     * 表格数据汇总展示
+     */
     getSummaries(param) {
-      const { columns, data } = param
+      const { columns } = param
       const sum = []
-      console.log(columns)
-      console.log(data)
       columns.forEach((element, index) => {
         if (Object.prototype.hasOwnProperty.call(this.sumObject, element.label)) {
           sum[index] = this.sumObject[element.label]
@@ -249,8 +238,11 @@ export default {
       sum[1] = '所有人员合计'
       return sum
     },
+    /**
+     * 薪资明细上传
+     */
     async salaryUpload(e) {
-      var sign = await this.confirm(isSalaryExist)
+      var sign = await this.confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', isSalaryExist, this.mstid)
       if (!sign) {
         return
       }
@@ -280,11 +272,14 @@ export default {
         })
       })
     },
-    async confirm(fn) {
+    /**
+     * 重要操作前的确认步骤
+     */
+    async confirm(tips = '已存在相应数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', fn, param) { // fn是自定义的验证函数,tips是自定义的说明信息
       var vue = this
       async function confirmBox() {
         var result = false
-        await vue.$confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', '提示', {
+        await vue.$confirm(tips, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -295,7 +290,12 @@ export default {
         })
         return result
       }
-      var sign1 = await fn(this.mstid)
+      var sign1
+      if (typeof fn === 'function') {
+        sign1 = await fn(param)
+      } else {
+        sign1 = true
+      }
       var sign2 = true
       if (sign1) {
         sign2 = await confirmBox()
@@ -306,7 +306,10 @@ export default {
       }
       return true
     },
-    async getDataList() { // 获取所有人员的薪资信息
+    /**
+     * 获取选中条件下所有人员的薪资信息
+     */
+    async getDataList() {
       this.loading = true
       this.searchModel.mstid = this.mstid
       var params = {
@@ -319,21 +322,23 @@ export default {
       const res = await getSlvPageQuery(params)
       this.dataList = res.data
       this.page_total = res.pageHandler.records
-      this.showSalayTypeArray = []
+      this.tableHeaders = []
       res.slvSumList.forEach(element => {
-        this.sumObject[element.TNAME] = element.AMOUNT
-        this.showSalayTypeArray.push(element.TNAME)
+        this.sumObject[element.TNAME] = element.AMOUNT// 展示所有的合计项
+        this.tableHeaders.push(element.TNAME)// 获得相应的表头信息
       })
       this.loading = false
     },
-    async handleEdit(scope) { // 获取特定人员的薪资详情,并进行编辑
+    /**
+     * 获取特定人员的薪资详情,并进行编辑
+     */
+    async handleEdit(scope) {
       this.loading = true
-      var params = {
+      GetSlvFormModel({
         mstid: this.mstid,
         enum: scope.row.员工工号,
         ename: scope.row.员工姓名
-      }
-      GetSlvFormModel(params)
+      })
         .then(res => {
           this.currentModel = res.data
           this.dialogVisible = true
@@ -347,23 +352,13 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-.table{
+.subtable{
   margin-bottom: 30px;
   margin-top: 30px;
   width: 100%;
   font-size: x-small;
 }
-.myinput{
-  position:absolute;
-  opacity: 0;
-  top:0;
-  left: 0;
-  height: 100%;
-  width:100%;
-}
-.margin20{
-  margin: 0 20px;
-}
+
 .el-dialog{
   display: flex;
   flex-direction: column;
@@ -380,7 +375,7 @@ export default {
   flex:1;
   overflow:auto;
 }
-.sub_inline{
+.subinline{
   display: inline-block;
 }
 </style>

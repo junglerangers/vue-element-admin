@@ -4,12 +4,12 @@
     :visible.sync="localDialogVisible"
     :before-close="handleClose"
     width="1200px"
+    class="subdialog"
     element-loading-text="数据拼命加载中"
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)"
   >
     <el-descriptions
-      class="margin-top"
       title="人员详细信息"
       :column="4"
       size="mini"
@@ -17,23 +17,23 @@
     >
       <el-descriptions-item label="工号">{{ currentUser.mst.ENUM }}</el-descriptions-item>
       <el-descriptions-item label="姓名">{{ currentUser.mst.ENAME }}</el-descriptions-item>
-      <el-descriptions-item label="科室编码">{{ currentUser.mst.DEPT_CODE }}</el-descriptions-item>
       <el-descriptions-item label="科室名称">{{ currentUser.mst.DEPT_NAME }}</el-descriptions-item>
+      <el-descriptions-item />
       <el-descriptions-item label="性别">{{ currentUser.mst.SEX_NAME }}</el-descriptions-item>
       <el-descriptions-item label="身份证号" span="2">{{ currentUser.mst.ID_CARD }}</el-descriptions-item>
-      <el-descriptions-item label="院区"><el-tag>{{ currentUser.mst.HOSAREANAME }}</el-tag></el-descriptions-item>
+      <el-descriptions-item label="院区">{{ currentUser.mst.HOSAREANAME }}</el-descriptions-item>
       <el-descriptions-item label="人员性质">{{ currentUser.mst.KIND_NAME }}</el-descriptions-item>
       <el-descriptions-item label="人员类型">{{ currentUser.mst.EMP_CLASSNAME }}</el-descriptions-item>
       <el-descriptions-item span="2" />
     </el-descriptions>
     <div class="title">
       金额详细信息
-      <span slot="footer" class="right">
+      <span slot="footer" class="btn--close">
         <el-button type="primary" @click="save">保 存</el-button>
         <el-button @click="toggleDialogVisible">关 闭</el-button>
       </span>
     </div>
-    <el-form class="flex">
+    <el-form class="form--detail">
       <form-item :form-list="slvList" :level="0" @update="updateSlv" />
     </el-form>
   </el-dialog>
@@ -43,7 +43,6 @@
 import { UpdateSlv } from '@/api/salary'
 import { initialDict } from '@/utils/stringAdvanced'
 import FormItem from './formItem.vue'
-// import Decimal from 'decimal.js'
 
 export default {
   name: 'DetailDialog',
@@ -174,11 +173,7 @@ export default {
 }
 </script>
 
-<style style="scss" scoped>
-.dynamic-salary{
-  display: flex;
-  flex-direction: row;
-}
+// <style style="scss" scoped>
 .column{
   display: flex;
   flex-direction: column;
@@ -192,11 +187,11 @@ export default {
   color: #303133;
   margin: 20px 0 20px 0;
 }
-.right{
+.btn--close{
   position: absolute;
   right: 20px;
 }
-.flex{
+.form--detail{
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
