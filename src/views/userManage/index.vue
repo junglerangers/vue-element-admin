@@ -1,5 +1,5 @@
 <template>
-  <div ref="main" class="app-container">
+  <div class="app-container">
     <div class="block">
       <el-date-picker
         v-model="monthTime"
@@ -11,7 +11,6 @@
     </div>
     <search @search="searchHandler" />
     <el-table
-      id="mytable"
       v-loading="loading"
       element-loading-text="数据拼命加载中"
       element-loading-spinner="el-icon-loading"
@@ -19,7 +18,12 @@
       :data="dataList"
       class="table"
       border
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column
+        type="selection"
+        width="55"
+      />
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
       <el-table-column align="center" label="工号" width="100">
         <template slot-scope="scope">
@@ -51,9 +55,30 @@
           {{ scope.row.EMP_CLASSNAME }}
         </template>
       </el-table-column>
+      <el-table-column align="center" label="发放状态" width="100">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.STATUS === '0'" type="success">正常</el-tag>
+          <el-tag v-else type="info">停发</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot="header">
-          <el-button-group>
+          <el-button-group class="sub-btngroup">
+            <el-dropdown @command="changeCheckedMembers">
+              <el-button class="sub-btn" type="primary" size="small">
+                <div style="display:inline-block">
+                  状态修改
+                  <p class="sub-btn-destext">
+                    (选中{{ checkedPeopleNums }}条)
+                  </p>
+                </div>
+                <div style="display:inline-block"><i class="el-icon-arrow-down el-icon--right" /></div>
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="1">全部停用</el-dropdown-item>
+                <el-dropdown-item command="0">全部启用</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
             <el-button type="primary" size="small" icon="el-icon-document-add" title="从上月复制数据" @click="dialogVisibleEmployeeCopy=true" />
             <el-upload
               action="blank"
@@ -77,6 +102,8 @@
         </template>
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-view" title="编辑" @click="handleViewUser(scope)">查看</el-button>
+          <el-button v-if="scope.row.STATUS==='0'" type="text" size="small" icon="el-icon-remove-outline" title="停发" @click="handleChangeUserStatus(scope)">停发</el-button>
+          <el-button v-else type="text" size="small" icon="el-icon-circle-check" title="启用" @click="handleChangeUserStatus(scope)">启用</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -129,6 +156,7 @@ import * as defaultModel from '@/dataModel/EmployeeModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 import searchMethod from '@/mixins/search'
+import confirm from '@/mixins/confirm'
 import { pageQuery, isExist as isEmployeeExist, copyEmployee } from '@/api/employee'
 import { getCurrentTime } from '@/utils/time'
 import { upload as Excelupload } from '@/utils/excel'
@@ -142,23 +170,19 @@ export default {
     search,
     userDialog
   },
-  mixins: [resize, tablePage, searchMethod],
+  mixins: [resize, tablePage, searchMethod, confirm],
   data: function() {
     return {
       loading: false,
       dialogVisibleEmployeeCopy: false,
-      searchString: '',
       startCopyMonth: '',
       CurrentModel: Object.assign({}, defaultModel), // 当前选中的用户
       dialogVisible: false, // 对话框是否可见
-      dialogVisible2: false,
-      dialogType: 'new', // 对话框属性
       monthTime: new Date().getFullYear() + '-' + (1 + new Date().getMonth()).toString().padStart(2, '0'),
       dataList: [], // 所有用户列表
       searchModel: {
         monthNo: ''
       },
-      test: '',
       /**
        * 员工表单属性字典
        */
@@ -169,7 +193,9 @@ export default {
         { TNAME: '人员性质', TCODE: 'KIND_CODE_NAME' },
         { TNAME: '实际岗位', TCODE: 'C01RY_NAME' },
         { TNAME: '聘任资格', TCODE: 'QUALIFICATION' }
-      ]
+      ],
+      checkedPeopleNums: 0,
+      checkedPeople: []
     }
   },
   computed: {
@@ -181,7 +207,7 @@ export default {
     this.monthTime = this.monthNo
     this.getDataList()
   },
-  activated: function() {
+  activated() {
     if (this.monthTime !== this.monthNo) {
       this.monthTime = this.monthNo
       this.getDataList()
@@ -197,37 +223,29 @@ export default {
     }),
     async getDataList() {
       this.searchModel.monthNo = this.monthNo
-      var temp = {
+      this.loading = true
+      const res = await pageQuery({
         queryModel: this.searchModel,
         pageHandler: {
           currentPage: this.page_currentPage,
           size: this.page_size
-        }
-      }
-      this.loading = true
-      const res = await pageQuery(temp)
+        }})
       this.dataList = res.data
       this.page_total = res.pageHandler.records
       this.loading = false
     },
     handleViewUser(scope) {
-      this.dialogType = 'view'
       this.CurrentModel = scope.row
       this.dialogVisible = true
     },
-    emptySearch() {
-      this.searchString = ''
-      this.searchModel = {}
-    },
     decorateMonthChange(value) {
-      return this.monthChange(value, this.emptySearch)
+      return this.monthChange(value, this.searchHandler)
     },
     /**
      * 人员信息通过excel上传
      */
     async employeeUpload(e) {
-      console.log(this.monthNo)
-      var sign = await this.beforeRmoeteTest(isEmployeeExist, this.monthNo)
+      var sign = await this.confirm('已经存在相应数据,是否需要重新导入', isEmployeeExist, this.monthNo)
       if (!sign) {
         return
       } else {
@@ -267,8 +285,11 @@ export default {
         })
       }
     },
+    /**
+     * 人员信息从特定月份进行复制
+     */
     async employeeInfoCopy() {
-      var sign = await this.beforeRmoeteTest(isEmployeeExist, this.monthNo)
+      var sign = await this.confirm('已经存在相应的数据,是否需要重复导入', isEmployeeExist, this.monthNo)
       if (!sign) {
         this.dialogVisibleEmployeeCopy = false
       } else {
@@ -298,7 +319,6 @@ export default {
      * 人员信息通过excel补充上传
      */
     async employeeAddUpload(e) {
-      // var sign = await this.beforeRmoeteTest(isEmployeeExist)
       var task = {
         taskID: Math.floor(Math.random() * 100),
         taskName: this.monthNo + '人员信息Excel追加导入',
@@ -335,35 +355,38 @@ export default {
       })
     },
     /**
-     * 指定特定的函数进行检测,以及是否覆盖重传的确认
+     * 暂停发放所有选中人员工资发放
      */
-    async beforeRmoeteTest(fun, params) {
-      var temp = params || this.params
-      var sign1 = await fun(temp)
-      var sign2 = true
-      if (sign1) {
-        sign2 = await this.confirm()
+    async changeCheckedMembers(state) {
+      let tips = ''
+      if (state === '1') {
+        tips = '二次确认!是否确认停发选中员工'
+      } else {
+        tips = '二次确认!是否确认启用选中员工'
       }
-      if (sign1 && !sign2) {
-        return false
+      var result = await this.confirm(`${tips}${this.checkedPeopleNums}`)
+      if (!result) {
+        return
       }
-      return true
+      var params = this.checkedPeople.map(item => ({
+        emp_code: item,
+        status: state
+      }))
+      console.log(params)
+      // 调用相应的批量更新接口
     },
     /**
-     * 重传确认弹窗
+     * 控制所有选中人员
      */
-    async confirm() {
-      var result = false
-      await this.$confirm('已经存在相应月份的数据,是否需要重新导入?(重新导入会覆盖原本的数据!)', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        result = true
-      }).catch(() => {
-        result = false
-      })
-      return result
+    handleSelectionChange(val) {
+      this.checkedPeopleNums = val.length
+      this.checkedPeople = val.map(item => item.EMP_CODE)
+    },
+    /**
+     * 修改特定人员的停发/启用状态
+     */
+    handleChangeUserStatus(scope) {
+      console.log(scope)
     }
   }
 }
@@ -401,5 +424,27 @@ export default {
 .month-class{
   width:180px;
   display: inline-block;
+}
+.sub-btngroups{
+  display: flex;
+  flex-direction: row-reverse;
+  margin-top: 30px;
+}
+.sub-btn-destext{
+  font-size: 9px;
+  margin-top: 5px;
+  margin-bottom: 0px;
+  font-weight: bold;
+}
+.sub-btn{
+  font-size: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.sub-btngroup{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
 }
 </style>

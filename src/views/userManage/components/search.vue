@@ -1,5 +1,5 @@
 <template>
-  <div class="search-container">
+  <div>
     <div style="margin-top: 15px;">
       <el-input v-model="searchContent" placeholder="请输入内容" class="input-with-select" :disabled="advanceSearchSign" @keyup.enter.native="searchHandler">
         <el-dropdown slot="prepend" @command="handleCommand">
@@ -19,7 +19,7 @@
       </el-input>
     </div>
     <transition name="advancesearchshow">
-      <el-form v-if="advanceSearchSign" v-model="test" :inline="true" class="search-form">
+      <el-form v-if="advanceSearchSign" :inline="true" class="search-form">
         <el-form-item label="人员编号">
           <el-input v-model="searchModel.EMP_CODE" placeholder="人员编号" />
         </el-form-item>
@@ -37,15 +37,6 @@
             <el-option label="女" value="女" />
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="参加工作时间" class="timePicker">
-          <el-date-picker
-            v-model="value1"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          />
-        </el-form-item> -->
         <el-form-item label="人员性质">
           <el-select v-model="searchModel.KIND_CODE" placeholder="人员性质" clearable filterable>
             <el-option v-for="item in natureList" :key="item.Code" :label="item.Label" :value="item.Code" />
@@ -106,9 +97,7 @@ export default {
         KIND_CODE: '', // 人员性质
         EMP_CLASS: '', // 人员分类
         HOSAREA: '' // 院区名称
-
-      },
-      test: ''
+      }
     }
   },
   computed: {
@@ -178,9 +167,6 @@ export default {
 }
 .search-form{
   margin-top:20px;
-}
-.none{
-  display: none;
 }
 .advancesearchshow-enter-active, .advancesearchshow-leave-active{
   transition: opacity .5s;

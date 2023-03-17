@@ -1,6 +1,6 @@
 export default {
   methods: {
-    searchHandler(searchModel) {
+    searchHandler(searchModel = {}) {
       this.searchModel = Object.assign(this.searchModel, searchModel)
       this.initialPage()
       this.getDataList()
