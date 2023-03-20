@@ -17,36 +17,36 @@
       </el-input>
     </div>
     <transition name="advancesearchshow">
-      <el-form v-if="advanceSearchSign" v-model="test" :inline="true" class="search-form">
+      <el-form v-if="advanceSearchSign" :inline="true" class="search-form">
         <el-form-item label="人员编号">
-          <el-input v-model="searchModel.EMP_CODE" placeholder="人员编号" />
+          <el-input v-model="searchModel.EMP_CODE" placeholder="人员编号" class="sub-advance-input" />
         </el-form-item>
         <el-form-item label="人员姓名">
-          <el-input v-model="searchModel.EMP_NAME" placeholder="人员姓名" />
+          <el-input v-model="searchModel.EMP_NAME" placeholder="人员姓名" class="sub-advance-input" />
         </el-form-item>
         <el-form-item label="科室名称">
-          <el-select v-model="searchModel.DEPT_NAME" placeholder="科室名称" clearable filterable>
+          <el-select v-model="searchModel.DEPT_NAME" placeholder="科室名称" clearable filterable class="sub-advance-input">
             <el-option v-for="item in depList" :key="item.AUTOID" :label="item.DEPT_NAME" :value="item.DEPT_NAME" />
           </el-select>
         </el-form-item>
         <el-form-item label="性别">
-          <el-select v-model="searchModel.SEX_NAME" placeholder="性别" clearable>
+          <el-select v-model="searchModel.SEX_NAME" placeholder="性别" class="sub-advance-input" clearable>
             <el-option label="男" value="男" />
             <el-option label="女" value="女" />
           </el-select>
         </el-form-item>
         <el-form-item label="人员性质">
-          <el-select v-model="searchModel.KIND_CODE" placeholder="人员性质" clearable filterable>
+          <el-select v-model="searchModel.KIND_CODE" placeholder="人员性质" clearable filterable class="sub-advance-input">
             <el-option v-for="item in natureList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
         <el-form-item label="人员分类">
-          <el-select v-model="searchModel.EMP_CLASS" placeholder="人员分类" clearable filterable>
+          <el-select v-model="searchModel.EMP_CLASS" placeholder="人员分类" clearable filterable class="sub-advance-input">
             <el-option v-for="item in typeList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
         <el-form-item label="院区名称">
-          <el-select v-model="searchModel.HOSAREA" placeholder="院区名称">
+          <el-select v-model="searchModel.HOSAREA" placeholder="院区名称" class="sub-advance-input">
             <el-option v-for="item in hosAreaList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
@@ -76,6 +76,8 @@ export default {
     return {
       depList: [], // 科室列表
       typeList: [], // 人员类型列表
+      natureList: [], // 人员性质表
+      hosAreaList: [], // 院区表
       searchtype: Object.keys(searchTypeDict)[0],
       searchContent: '',
       /** 搜索模型 */
@@ -84,7 +86,7 @@ export default {
         ename: ''
       },
       test: '',
-      advanceSearchSign: false,
+      advanceSearchSign: true,
       mapDict: searchTypeDict
     }
   },
@@ -156,5 +158,8 @@ export default {
 }
 .advancesearchshow-enter,.advancesearchshow-leave-to{
   opacity: 0;
+}
+.sub-advance-input{
+  width: 200px;
 }
 </style>

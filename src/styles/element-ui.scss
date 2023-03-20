@@ -82,3 +82,9 @@
 .el-range-separator {
   box-sizing: content-box;
 }
+
+// 用于修复table中fixed-column和summary一起使用时导致fixed列下水平滑动条无法选中的问题
+.el-table--scrollable-y .el-table__body-wrapper {
+    overflow-y: auto;
+    z-index: 1;
+}

@@ -157,7 +157,7 @@ import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 import searchMethod from '@/mixins/search'
 import confirm from '@/mixins/confirm'
-import { pageQuery, isExist as isEmployeeExist, copyEmployee } from '@/api/employee'
+import { pageQuery, isExist as isEmployeeExist, copyEmployee, UpdSalaryStatus } from '@/api/employee'
 import { getCurrentTime } from '@/utils/time'
 import { upload as Excelupload } from '@/utils/excel'
 import { getEmployeeByExcel as employeeImport, AddEmployeeByExcel as employeeAdd } from '@/api/import'
@@ -224,6 +224,7 @@ export default {
     async getDataList() {
       this.searchModel.monthNo = this.monthNo
       this.loading = true
+      console.log(this.searchModel)
       const res = await pageQuery({
         queryModel: this.searchModel,
         pageHandler: {
@@ -364,7 +365,7 @@ export default {
       } else {
         tips = '二次确认!是否确认启用选中员工'
       }
-      var result = await this.confirm(`${tips}${this.checkedPeopleNums}`)
+      var result = await this.confirm(`${tips}(目前共选中${this.checkedPeopleNums})`)
       if (!result) {
         return
       }
@@ -373,6 +374,14 @@ export default {
         status: state
       }))
       console.log(params)
+      await UpdSalaryStatus(this.monthNo, params)
+        .then((res) => {
+          this.$message({
+            message: '员工工资发放状态更新成功!',
+            type: 'success'
+          })
+          this.getDataList()
+        })
       // 调用相应的批量更新接口
     },
     /**
@@ -385,8 +394,25 @@ export default {
     /**
      * 修改特定人员的停发/启用状态
      */
-    handleChangeUserStatus(scope) {
-      console.log(scope)
+    async handleChangeUserStatus(scope) {
+      var state
+      if (scope.row.STATUS === '0') {
+        state = '1'
+      } else {
+        state = '0'
+      }
+      var params = [{
+        emp_code: scope.row.EMP_CODE,
+        status: state
+      }]
+      await UpdSalaryStatus(this.monthNo, params)
+        .then((res) => {
+          this.$message({
+            message: '员工工资发放状态更新成功!',
+            type: 'success'
+          })
+          scope.row.STATUS = state
+        })
     }
   }
 }

@@ -30,6 +30,7 @@
     </div>
     <span>期</span>
     <search @search="searchHandler" />
+    <el-button type="primary" size="mini" style="{font-size:10px}" @click="updateAllMembersSpecSlv">工资全部更新(共计{{ page_total }}条)</el-button>
     <el-table
       v-loading="loading"
       element-loading-text="数据拼命加载中"
@@ -41,14 +42,19 @@
       :summary-method="getSummaries"
       show-summary
       border
+      @selection-change="handleSelectionChange"
     >
-      <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" fixed />
-      <el-table-column align="center" label="员工姓名" width="100" fixed>
+      <el-table-column
+        type="selection"
+        width="40"
+      />
+      <el-table-column type="index" :index="page_CurrentIndex" width="100" align="center" label="序号" fixed />
+      <el-table-column align="center" label="员工姓名" width="80" fixed>
         <template slot-scope="scope">
           {{ scope.row.员工姓名 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="员工工号" width="100" fixed>
+      <el-table-column align="center" label="员工工号" width="80">
         <template slot-scope="scope">
           {{ scope.row.员工工号 }}
         </template>
@@ -73,9 +79,25 @@
           {{ scope.row[item] }}
         </template>
       </el-table-column>
-      <el-table-column align="center" fixed="right" width="100">
+      <el-table-column align="center" fixed="right" width="200">
         <template slot="header">
-          <el-button-group>
+          <el-button-group class="sub-btngroup">
+            <el-button class="sub-btn" type="primary" size="small" @click="updateAllMembersSpecSlv">
+              <div style="display:inline-block">
+                选中更新
+                <p class="sub-btn-destext">
+                  (选中{{ checkedPeopleNums }}条)
+                </p>
+              </div>
+            </el-button>
+            <el-button class="sub-btn" type="primary" size="small" @click="changeCheckedMembers">
+              <div style="display:inline-block">
+                选中停用
+                <p class="sub-btn-destext">
+                  (选中{{ checkedPeopleNums }}条)
+                </p>
+              </div>
+            </el-button>
             <el-upload
               action="blank"
               :show-file-list="false"
@@ -93,12 +115,24 @@
         </template>
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-edit" title="编辑" @click="handleEdit(scope)">编辑</el-button>
+          <el-button type="text" size="small" icon="el-icon-remove-outline" title="停发" @click="handleChangeUserStatus(scope)">停发</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <detailDialog :current-user="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @update="getDataList" />
-
+    <el-dialog
+      title="Tips"
+      :visible.sync="membersUpdateDialogVisibel"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <span>This is a message</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
+      </span>
+    </el-dialog>
     <div class="block footer pagination_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -121,6 +155,7 @@ import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 import searchMethod from '@/mixins/search'
 import confirm from '@/mixins/confirm'
+import { UpdSalaryStatus } from '@/api/employee'
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
 import { getCurrentTime } from '@/utils/time'
@@ -154,6 +189,7 @@ export default {
         slvList: []
       }, // 当前选中的模型
       dialogVisible: false, // 对话框是否可见
+      membersUpdateDialogVisibel: false,
       dataList: [], // 所有数据列表
       searchModel: {
         mstid: '',
@@ -168,7 +204,8 @@ export default {
         NUM: ''
       },
       sumObject: {},
-      tableHeaders: []
+      tableHeaders: [],
+      checkedPeopleNums: 0
     }
   },
   computed: {
@@ -297,6 +334,30 @@ export default {
       this.loading = false
     },
     /**
+     * 暂停发放所有选中人员工资发放
+     */
+    async changeCheckedMembers() {
+      const tips = '二次确认!是否确认停发选中员工'
+      var result = await this.confirm(`${tips}(目前共选中${this.checkedPeopleNums})`)
+      if (!result) {
+        return
+      }
+      var params = this.checkedPeople.map(item => ({
+        emp_code: item,
+        status: '1'
+      }))
+      console.log(params)
+      await UpdSalaryStatus(this.monthNo, params)
+        .then((res) => {
+          this.$message({
+            message: '员工工资停发成功!',
+            type: 'success'
+          })
+          this.getDataList()
+        })
+      // 调用相应的批量更新接口
+    },
+    /**
      * 获取特定人员的薪资详情,并进行编辑
      */
     async handleEdit(scope) {
@@ -313,6 +374,36 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    /**
+     * 控制所有选中人员
+     */
+    handleSelectionChange(val) {
+      console.log(val)
+      this.checkedPeopleNums = val.length
+      this.checkedPeople = val.map(item => item.员工工号)
+    },
+    /**
+     * 修改特定人员的停发/启用状态
+     */
+    async handleChangeUserStatus(scope) {
+      var state = '1'
+      var params = [{
+        emp_code: scope.row.ENUM,
+        status: state
+      }]
+      await UpdSalaryStatus(this.monthNo, params)
+        .then((res) => {
+          this.$message({
+            message: '员工工资发放状态更新成功!',
+            type: 'success'
+          })
+          var index = this.dataList.indexOf(scope.row)
+          this.dataList.splice(index, 1)
+        })
+    },
+    async updateAllMembersSpecSlv() {
+      this.membersUpdateDialogVisibel = true
     }
   }
 }
@@ -344,5 +435,22 @@ export default {
 }
 .subinline{
   display: inline-block;
+}
+.sub-btn-destext{
+  font-size: 9px;
+  margin-top: 5px;
+  margin-bottom: 0px;
+  font-weight: bold;
+}
+.sub-btngroup{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+}
+.sub-btn{
+  font-size: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 </style>

@@ -61,7 +61,6 @@ export function updateChildren(params) {
  * @returns
  */
 export function copyEmployee(params) {
-  console.log(params)
   return request({
     url: 'http://10.88.88.193:5000/api/BasicManage/Employee/Copy',
     method: 'post',
@@ -93,4 +92,17 @@ export async function isExist(monthNo) {
   } else {
     return false
   }
+}
+
+/**
+ * 按月份更新员工薪资发放状态；status 0:正常；1：停用
+ * @param {*} params
+ * @returns
+ */
+export function UpdSalaryStatus(monthNo, params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/Employee/UpdSalaryStatus?MonthNo=2023-04',
+    method: 'post',
+    data: params
+  })
 }
