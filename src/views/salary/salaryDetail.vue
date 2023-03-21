@@ -30,7 +30,7 @@
     </div>
     <span>期</span>
     <search @search="searchHandler" />
-    <el-button type="primary" size="mini" style="{font-size:10px}" @click="updateAllMembersSpecSlv">工资全部更新(共计{{ page_total }}条)</el-button>
+    <el-button type="primary" size="mini" style="{font-size:10px}" @click="updateAllMembersSpecSlv">工资全部更新(筛选后结果,共计{{ page_total }}条)</el-button>
     <el-table
       v-loading="loading"
       element-loading-text="数据拼命加载中"
@@ -82,7 +82,7 @@
       <el-table-column align="center" fixed="right" width="200">
         <template slot="header">
           <el-button-group class="sub-btngroup">
-            <el-button class="sub-btn" type="primary" size="small" @click="updateAllMembersSpecSlv">
+            <el-button class="sub-btn" type="primary" size="small" @click="updateMembersSpecSlv">
               <div style="display:inline-block">
                 选中更新
                 <p class="sub-btn-destext">
@@ -122,15 +122,47 @@
 
     <detailDialog :current-user="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @update="getDataList" />
     <el-dialog
-      title="Tips"
+      :title="salaryEditTitle"
       :visible.sync="membersUpdateDialogVisibel"
-      width="30%"
-      :before-close="handleClose"
+      width="60%"
     >
-      <span>This is a message</span>
+      <div class="sub-flex-row">
+        <el-table
+          :data="salaryTypeDict.filter(data => !search || data.TNAME.toLowerCase().includes(search.toLowerCase()))"
+          :row-key="getRowKey"
+          style="width: 33%"
+          max-height="350"
+          class="sub-salary-choice"
+          @selection-change="salaryTypehandleSelectionChange"
+        >
+          <el-table-column
+            :reserve-selection="true"
+            type="selection"
+            width="50"
+          />
+          <el-table-column
+            width="120"
+            align="left"
+          >
+            <template slot="header">
+              <el-input
+                v-model="search"
+                size="mini"
+                placeholder="搜索"
+              />
+            </template>
+            <template slot-scope="scope">{{ scope.row.TNAME }}</template>
+          </el-table-column>
+        </el-table>
+        <div class="sub-salary-edit">
+          <el-input v-for="(item) in selectedSalaryType" :key="item.TCODE" v-model="item.value" placeholder="请输入金额" class="item">
+            <template slot="prepend">{{ item.TNAME }}</template>
+          </el-input>
+        </div>
+      </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">保存</el-button>
       </span>
     </el-dialog>
     <div class="block footer pagination_fixed_footer" :style="{width:footerWidth}">
@@ -155,7 +187,7 @@ import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 import searchMethod from '@/mixins/search'
 import confirm from '@/mixins/confirm'
-import { UpdSalaryStatus } from '@/api/employee'
+import { UpdSalaryStatus, getGridList as getMembersList } from '@/api/employee'
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
 import { getCurrentTime } from '@/utils/time'
@@ -198,6 +230,7 @@ export default {
       },
       originalSalary: null,
       salaryTypeDict: [], // 薪酬类型字典
+      selectedSalaryType: [],
       timePicker: {
         YEARNO: '',
         MONTHNO: '',
@@ -205,7 +238,9 @@ export default {
       },
       sumObject: {},
       tableHeaders: [],
-      checkedPeopleNums: 0
+      checkedPeople: [],
+      checkedPeopleNums: 0,
+      search: ''
     }
   },
   computed: {
@@ -217,6 +252,9 @@ export default {
     },
     monthNo: function() {
       return this.salary.YEARNO + '-' + this.salary.MONTHNO
+    },
+    salaryEditTitle: function() {
+      return `金额批量更新(目前选中${this.checkedPeopleNums}人)`
     }
   },
   async created() {
@@ -252,12 +290,16 @@ export default {
         this.$router.replace('/salary/index')
       }
     },
+    getRowKey(row) {
+      return row.TCODE
+    },
     /**
      * 获取薪资类别
      */
     async getSalaryType() {
       var res = await getGridList({ monthNo: this.monthNo })
       this.salaryTypeDict = res.data
+      console.log(this.salaryTypeDict)
     },
     /**
      * 表格数据汇总展示
@@ -379,9 +421,15 @@ export default {
      * 控制所有选中人员
      */
     handleSelectionChange(val) {
-      console.log(val)
       this.checkedPeopleNums = val.length
       this.checkedPeople = val.map(item => item.员工工号)
+    },
+    salaryTypehandleSelectionChange(val) {
+      this.selectedSalaryType = val.map((item) => ({
+        TCODE: item.TCODE,
+        TNAME: item.TNAME,
+        value: ''
+      }))
     },
     /**
      * 修改特定人员的停发/启用状态
@@ -404,6 +452,16 @@ export default {
     },
     async updateAllMembersSpecSlv() {
       this.membersUpdateDialogVisibel = true
+      this.checkedPeopleNums = this.page_total
+      var params = {}
+      // 获取当月所有人员的数据信息
+      this.checkedPeople = await getMembersList(params).then(() => {
+        console.log('hello')
+      })
+    },
+    async updateMembersSpecSlv() {
+      this.membersUpdateDialogVisibel = true
+      this.checkedPeopleNums = this.checkedPeople.length
     }
   }
 }
@@ -452,5 +510,22 @@ export default {
   font-size: 10px;
   padding-top: 3px;
   padding-bottom: 3px;
+}
+.sub-flex-row{
+  display: flex;
+  flex-direction: row;
+}
+.sub-salary-edit{
+  width: 67%;
+  flex-wrap: wrap;
+  display: flex;
+  height: fit-content;
+  justify-content: flex-start;
+}
+.sub-salary-choice{
+}
+.sub-salary-edit .item{
+  width:45%;
+  margin: 10px;
 }
 </style>

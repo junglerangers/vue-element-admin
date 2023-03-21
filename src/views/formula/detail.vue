@@ -47,7 +47,7 @@
         />
       </el-descriptions-item>
       <el-descriptions-item label="父级节点">
-        <el-cascader :key="cascaderIndex" v-model="localFormula.SUPERCODE" :options="salaryTypeTreeListUpdate" :props="props" filterable clearable>
+        <el-cascader :key="cascaderIndex" v-model="localFormula.SUPERCODE" :options="salaryTypeTreeListUpdate" :props="props" filterable clearable :disabled="windowType==='edit'">
           <template slot-scope="{ node, data }">
             <span>{{ data.label }}</span>
             <span v-if="!node.isLeaf"> ({{ data.options.length }}) </span>
@@ -237,6 +237,7 @@ export default {
       naturalChoice: [],
       subFormularContent: '',
       dialogType: '',
+      windowType: '',
       rawID: '',
       cascaderIndex: 0, // 用于解决级联选择器重新渲染时的报错问题
       salaryTypeDict: [], // 用于公式自动补全框中的输入提示
@@ -314,6 +315,7 @@ export default {
   methods: {
     pageInitial() {
       const type = this.$route.query.type
+      this.windowType = type
       this.localFormula = Object.assign({}, this.formula)
       this.getSalaryCateDict().then(() => {
         this.getSalaryTypeTreeList(this.localFormula.DCODE)
