@@ -19,10 +19,10 @@
     <transition name="advancesearchshow">
       <el-form v-if="advanceSearchSign" :inline="true" class="search-form">
         <el-form-item label="人员编号">
-          <el-input v-model="searchModel.EMP_CODE" placeholder="人员编号" class="sub-advance-input" />
+          <el-input v-model="searchModel.enum" placeholder="人员编号" class="sub-advance-input" />
         </el-form-item>
         <el-form-item label="人员姓名">
-          <el-input v-model="searchModel.EMP_NAME" placeholder="人员姓名" class="sub-advance-input" />
+          <el-input v-model="searchModel.ename" placeholder="人员姓名" class="sub-advance-input" />
         </el-form-item>
         <el-form-item label="科室名称">
           <el-select v-model="searchModel.DEPT_NAME" placeholder="科室名称" clearable filterable class="sub-advance-input">

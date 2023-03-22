@@ -122,6 +122,7 @@
 
     <detailDialog :current-user="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @update="getDataList" />
     <el-dialog
+      v-loading="salaryTypeLoading"
       :title="salaryEditTitle"
       :visible.sync="membersUpdateDialogVisibel"
       width="60%"
@@ -155,14 +156,14 @@
           </el-table-column>
         </el-table>
         <div class="sub-salary-edit">
-          <el-input v-for="(item) in selectedSalaryType" :key="item.TCODE" v-model="item.value" placeholder="请输入金额" class="item">
+          <el-input v-for="(item) in selectedSalaryType" :key="item.TCODE" v-model="item.amount" placeholder="请输入金额" class="item">
             <template slot="prepend">{{ item.TNAME }}</template>
           </el-input>
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">保存</el-button>
+        <el-button @click="cancelSlvChange">取消</el-button>
+        <el-button type="primary" @click="saveSlvChange">保存</el-button>
       </span>
     </el-dialog>
     <div class="block footer pagination_fixed_footer" :style="{width:footerWidth}">
@@ -180,7 +181,7 @@
 </template>
 
 <script>
-import { getSlvPageQuery, localImport as salaryImport, isExist as isSalaryExist, GetSlvFormModel } from '@/api/salary'
+import { getSlvPageQuery, localImport as salaryImport, isExist as isSalaryExist, GetSlvFormModel, AmountReplace } from '@/api/salary'
 import { getGridList } from '@/api/salaryType'
 import { search, detailDialog } from './components'
 import resize from '@/mixins/resize'
@@ -191,6 +192,7 @@ import { UpdSalaryStatus, getGridList as getMembersList } from '@/api/employee'
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
 import { getCurrentTime } from '@/utils/time'
+import { param } from '@/utils'
 
 export default {
   name: 'SalaryDetail',
@@ -202,6 +204,7 @@ export default {
   data: function() {
     return {
       loading: false,
+      salaryTypeLoading: false,
       currentModel: {
         mst: {
           'MSTID': '',
@@ -240,6 +243,7 @@ export default {
       tableHeaders: [],
       checkedPeople: [],
       checkedPeopleNums: 0,
+      slvEditPeopel: [],
       search: ''
     }
   },
@@ -299,7 +303,7 @@ export default {
     async getSalaryType() {
       var res = await getGridList({ monthNo: this.monthNo })
       this.salaryTypeDict = res.data
-      console.log(this.salaryTypeDict)
+      // console.log(this.salaryTypeDict)
     },
     /**
      * 表格数据汇总展示
@@ -365,6 +369,7 @@ export default {
           'currentPage': this.page_currentPage
         }
       }
+      console.log(params)
       const res = await getSlvPageQuery(params)
       this.dataList = res.data
       this.page_total = res.pageHandler.records
@@ -428,8 +433,9 @@ export default {
       this.selectedSalaryType = val.map((item) => ({
         TCODE: item.TCODE,
         TNAME: item.TNAME,
-        value: ''
+        amount: ''
       }))
+      console.log(this.selectedSalaryType)
     },
     /**
      * 修改特定人员的停发/启用状态
@@ -453,15 +459,45 @@ export default {
     async updateAllMembersSpecSlv() {
       this.membersUpdateDialogVisibel = true
       this.checkedPeopleNums = this.page_total
-      var params = {}
+      var params = { ...this.searchModel }
+      params.monthNo = this.monthNo
+      params.EMP_CODE = params.enum
+      params.EMP_NAME = params.ename
+      params.mstid = ''
       // 获取当月所有人员的数据信息
-      this.checkedPeople = await getMembersList(params).then(() => {
-        console.log('hello')
+      await getMembersList(params).then((res) => {
+        this.slvEditPeopel = res.data.map((item) => ({ emP_CODE: item.EMP_CODE }))
+        console.log(params)
+        console.log(res)
       })
     },
     async updateMembersSpecSlv() {
       this.membersUpdateDialogVisibel = true
       this.checkedPeopleNums = this.checkedPeople.length
+      this.slvEditPeopel = this.checkedPeople
+    },
+    cancelSlvChange() {
+      this.membersUpdateDialogVisibel = false
+      this.selectedSalaryType = []
+    },
+    async saveSlvChange() {
+      this.salaryTypeLoading = true
+      var params2 = {
+        mstid: this.mstid,
+        slvList: this.selectedSalaryType,
+        empList: this.slvEditPeopel
+      }
+      console.log(params2)
+      await AmountReplace(params2).then((res) => {
+        console.log(res)
+        this.$message({
+          message: '工资批量更新成功!',
+          type: 'success'
+        })
+        this.membersUpdateDialogVisibel = false
+      }).finally(
+        this.salaryTypeLoading = false
+      )
     }
   }
 }
@@ -521,8 +557,6 @@ export default {
   display: flex;
   height: fit-content;
   justify-content: flex-start;
-}
-.sub-salary-choice{
 }
 .sub-salary-edit .item{
   width:45%;

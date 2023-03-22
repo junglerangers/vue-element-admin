@@ -149,3 +149,13 @@ export function UpdateMst(params) {
     }
   })
 }
+
+export function AmountReplace(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BusiManage/Salary/AmountReplace',
+    method: 'post',
+    data: {
+      ...params
+    }
+  })
+}
