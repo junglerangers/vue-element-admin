@@ -65,10 +65,7 @@
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==0" @click="setTime">下一步</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[1].index+'.'+opOrder[1].info" name="2">
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="getSalaryandBank">获取工资与银行卡信息</el-button>
-      </el-collapse-item>
-      <el-collapse-item :title="opOrder[2].index+'.'+opOrder[2].info" name="3">
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="dialogVisibleEmployeeCopy=true">导入员工数据(从上月复制)</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="dialogVisibleEmployeeCopy=true">导入员工数据(从上月复制)</el-button>
         <el-upload
           action="blank"
           :show-file-list="false"
@@ -77,7 +74,7 @@
           :style="{'display':'inline-block'}"
           :disabled="active!==2"
         >
-          <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2">从Excel中手工获取</el-button>
+          <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1">从Excel中手工获取</el-button>
         </el-upload>
         <el-upload
           action="blank"
@@ -87,31 +84,33 @@
           :style="{'display':'inline-block'}"
           :disabled="active!==2"
         >
-          <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2">员工数据追加(Excel)</el-button>
+          <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1">员工数据追加(Excel)</el-button>
         </el-upload>
         <el-divider content-position="center">
           请先获取数据(上述三种方式任选其一)
           <i class="el-icon-s-custom" />
           再进行数据追加操作,最后点击下一步
         </el-divider>
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="()=>active=3">下一步</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="()=>active=2">下一步</el-button>
+      </el-collapse-item>
+      <el-collapse-item :title="opOrder[2].index+'.'+opOrder[2].info" name="3">
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="dialogVisible = true">薪酬类别复制</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="showSalaryType">薪酬类别管理</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="getSalaryDetailType">下一步(会自动复制工资明细)</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[3].index+'.'+opOrder[3].info" name="4">
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==3" @click="dialogVisible = true">薪酬类别复制</el-button>
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==3" @click="showSalaryType">薪酬类别管理</el-button>
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==3" @click="getSalaryDetailType">下一步</el-button>
-      </el-collapse-item>
-      <el-collapse-item :title="opOrder[4].index+'.'+opOrder[4].info" name="5">
         <el-upload
           action="blank"
           :show-file-list="false"
           accept="xlsx,xls"
           :http-request="salaryUpload"
+          class="upload-btn"
           :style="{'margin-left':'50px'}"
-          :disabled="active!==4"
+          :disabled="active!==3"
         >
-          <el-button size="small" type="primary" plain :disabled="active!==4">工资明细Excel文件上传</el-button>
+          <el-button size="small" type="primary" plain :disabled="active!==3">工资明细Excel文件覆盖上传</el-button>
         </el-upload>
+        <el-button size="small" type="primary" plain :disabled="active!==3" @click="directlyFinish">完成</el-button>
         <p>因为工资明细表文件过大,上传时可能发生卡顿现象,请耐心等待.</p>
       </el-collapse-item>
     </el-collapse>
@@ -221,8 +220,8 @@ export default {
        * 工资单主表信息
        */
       MST: {
-        'DCODE': '',
-        'DNAME': '',
+        'DCODE': '1101',
+        'DNAME': '工资',
         'YEARNO': '',
         'MONTHNO': '',
         'NUM': '',
@@ -241,20 +240,17 @@ export default {
         {
           index: 1,
           info: '工资单新增'
-        }, {
-          index: 2,
-          info: '获取工资与银行卡信息'
         },
         {
-          index: 3,
+          index: 2,
           info: '获取员工数据'
         },
         {
-          index: 4,
+          index: 3,
           info: '获取薪酬类别'
         },
         {
-          index: 5,
+          index: 4,
           info: '导入工资明细'
         }
       ],
@@ -298,6 +294,7 @@ export default {
     },
     activeName: {
       get() {
+        // console.log((this.active + 1).toString())
         return (this.active + 1).toString()
       },
       set(newValue) {
@@ -376,10 +373,45 @@ export default {
      */
     async getSalaryDetailType() {
       this.loading = true
-      getGridList({ monthNo: this.params }).then(res => {
+      var params = {
+        mst: this.MST,
+        slvList: []
+      }
+      await getGridList({ monthNo: this.params }).then(res => {
         this.salaryDetailTypeDict = res.data
+      })
+      // console.log(params)
+      await localAdd(params).then(async(res) => {
+        if (res.status === 'W09') {
+          this.mstID = res.data.autoid
+          await this.$confirm('已经存在相应月份的工资单,继续操作会覆盖原有数据,是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(async() => {
+            var params = Object.assign(this.MST)
+            params.autoid = this.mstID
+            await UpdateMst(params)
+          }).then(() => {
+            this.$message({
+              message: '工资单更新成功!',
+              type: 'success'
+            })
+            this.active = 3
+          }).catch(() => {
+          })
+        } else {
+          this.mstID = res.data.autoid
+          this.$message({
+            message: '工资单创建成功!',
+            type: 'success'
+          })
+          this.active = 3
+        }
+      }).catch(res => {
+        // console.log(res)
+      }).finally(() => {
         this.loading = false
-        this.active = 4
       })
     },
     /**
@@ -404,6 +436,7 @@ export default {
     async getSalaryTypeList() {
       getSalaryTypeList().then(res => {
         this.salaryTypeDict = res.data
+        console.log(this.salaryTypeDict)
       })
     },
     /**
@@ -567,6 +600,23 @@ export default {
         })
       }
     },
+    async directlyFinish() {
+      this.active = 5
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: this.params + '薪资明细上传',
+        startTime: getCurrentTime(),
+        endTime: getCurrentTime(),
+        taskState: '完成',
+        info: ''
+      }
+      const h = this.$createElement
+      this.$notify({
+        title: '通知',
+        message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+        duration: 0
+      })
+    },
     /**
      * 先检查是否已经选择了相应的时间
      */
@@ -606,40 +656,7 @@ export default {
       this.MST.YEARNO = this.time.yearNo
       this.MST.MONTHNO = this.time.monthNo
       this.MST.NUM = this.time.num
-      var params = {
-        mst: this.MST,
-        slvList: []
-      }
-      localAdd(params).then(async(res) => {
-        if (res.status === 'W09') {
-          this.mstID = res.data.autoid
-          await this.$confirm('已经存在相应月份的工资单,继续操作会覆盖原有数据,是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(async() => {
-            var params = Object.assign(this.MST)
-            params.autoid = this.mstID
-            await UpdateMst(params)
-          }).then(() => {
-            this.active = 1
-            this.$message({
-              message: '工资单更新成功!',
-              type: 'success'
-            })
-          }).catch(() => {
-          })
-        } else {
-          this.mstID = res.data.autoid
-          this.active = 1
-          this.$message({
-            message: '工资单创建成功!',
-            type: 'success'
-          })
-        }
-      }).catch(res => {
-        // console.log(res)
-      })
+      this.active = 1
     },
     /**
      * 薪酬类型复制,从指定月份复制到当前月份
@@ -759,5 +776,10 @@ export default {
 }
 .must{
   color: red;
+}
+.upload-btn{
+  margin-left: 50px;
+  margin-right: 20px;
+  display: inline-block;
 }
 </style>

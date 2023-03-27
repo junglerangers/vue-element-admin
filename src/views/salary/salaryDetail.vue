@@ -192,7 +192,6 @@ import { UpdSalaryStatus, getGridList as getMembersList } from '@/api/employee'
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
 import { getCurrentTime } from '@/utils/time'
-import { param } from '@/utils'
 
 export default {
   name: 'SalaryDetail',
@@ -315,7 +314,7 @@ export default {
         if (Object.prototype.hasOwnProperty.call(this.sumObject, element.label)) {
           sum[index] = this.sumObject[element.label]
         } else {
-          sum[index] = 'N/A'
+          sum[index] = ' '
         }
       })
       sum[0] = ''
@@ -369,7 +368,7 @@ export default {
           'currentPage': this.page_currentPage
         }
       }
-      console.log(params)
+      // console.log(params)
       const res = await getSlvPageQuery(params)
       this.dataList = res.data
       this.page_total = res.pageHandler.records
@@ -435,7 +434,7 @@ export default {
         TNAME: item.TNAME,
         amount: ''
       }))
-      console.log(this.selectedSalaryType)
+      // console.log(this.selectedSalaryType)
     },
     /**
      * 修改特定人员的停发/启用状态
@@ -474,7 +473,7 @@ export default {
     async updateMembersSpecSlv() {
       this.membersUpdateDialogVisibel = true
       this.checkedPeopleNums = this.checkedPeople.length
-      this.slvEditPeopel = this.checkedPeople
+      this.slvEditPeopel = this.checkedPeople.map(item => ({ emp_code: item }))
     },
     cancelSlvChange() {
       this.membersUpdateDialogVisibel = false
@@ -489,12 +488,14 @@ export default {
       }
       console.log(params2)
       await AmountReplace(params2).then((res) => {
-        console.log(res)
+        // console.log(res)
         this.$message({
           message: '工资批量更新成功!',
           type: 'success'
         })
         this.membersUpdateDialogVisibel = false
+        this.getDataList()
+        this.selectedSalaryType = []
       }).finally(
         this.salaryTypeLoading = false
       )
