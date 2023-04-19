@@ -48,18 +48,18 @@
         type="selection"
         width="40"
       />
-      <el-table-column type="index" :index="page_CurrentIndex" width="100" align="center" label="序号" fixed />
+      <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" fixed />
+      <el-table-column align="center" label="员工工号" width="80" fixed>
+        <template slot-scope="scope">
+          {{ scope.row.员工工号 }}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="员工姓名" width="80" fixed>
         <template slot-scope="scope">
           {{ scope.row.员工姓名 }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="员工工号" width="80">
-        <template slot-scope="scope">
-          {{ scope.row.员工工号 }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="科室名称" width="100">
+      <el-table-column align="center" label="科室名称" width="200">
         <template slot-scope="scope">
           {{ scope.row.部门名称 }}
         </template>
@@ -79,7 +79,7 @@
           {{ scope.row[item] }}
         </template>
       </el-table-column>
-      <el-table-column align="center" fixed="right" width="200">
+      <el-table-column align="center" fixed="right" width="250">
         <template slot="header">
           <el-button-group class="sub-btngroup">
             <el-button class="sub-btn" type="primary" size="small" @click="updateMembersSpecSlv">
@@ -108,7 +108,20 @@
                 size="small"
                 type="primary"
                 title="上传"
-                icon="el-icon-upload2"
+                icon="el-icon-download"
+              />
+            </el-upload>
+            <el-upload
+              action="blank"
+              :show-file-list="false"
+              accept="xlsx,xls"
+              :http-request="salaryPartUpload"
+            >
+              <el-button
+                size="small"
+                type="primary"
+                title="部分上传"
+                icon="el-icon-sort-down"
               />
             </el-upload>
           </el-button-group>
@@ -122,13 +135,14 @@
 
     <detailDialog :current-user="currentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" @update="getDataList" />
     <el-dialog
-      v-loading="salaryTypeLoading"
+      v-loading="typeloading"
       :title="salaryEditTitle"
       :visible.sync="membersUpdateDialogVisibel"
       width="60%"
     >
       <div class="sub-flex-row">
         <el-table
+
           :data="salaryTypeDict.filter(data => !search || data.TNAME.toLowerCase().includes(search.toLowerCase()))"
           :row-key="getRowKey"
           style="width: 33%"
@@ -181,7 +195,7 @@
 </template>
 
 <script>
-import { getSlvPageQuery, localImport as salaryImport, isExist as isSalaryExist, GetSlvFormModel, AmountReplace } from '@/api/salary'
+import { getSlvPageQuery, localImport as salaryImport, isExist as isSalaryExist, GetSlvFormModel, AmountReplace, localPartImport } from '@/api/salary'
 import { getGridList } from '@/api/salaryType'
 import { search, detailDialog } from './components'
 import resize from '@/mixins/resize'
@@ -203,7 +217,7 @@ export default {
   data: function() {
     return {
       loading: false,
-      salaryTypeLoading: false,
+      typeloading: false,
       currentModel: {
         mst: {
           'MSTID': '',
@@ -317,8 +331,9 @@ export default {
           sum[index] = ' '
         }
       })
-      sum[0] = ''
-      sum[1] = '所有人员合计'
+
+      sum[3] = this.page_total + '人'
+      sum[2] = '合计'
       return sum
     },
     /**
@@ -340,6 +355,40 @@ export default {
       this.addEvent(task)
       await Excelupload(this.mstid, e.file, this.salaryTypeDict).then(async params => {
         await salaryImport(params)
+      }).then(res => {
+        task.endTime = getCurrentTime()
+        task.taskState = '完成'
+      }).catch(err => {
+        task.taskState = '错误'
+        task.endTime = getCurrentTime()
+        task.info = err
+      }).finally(() => {
+        const h = this.$createElement
+        this.$notify({
+          title: '通知',
+          message: h('i', { style: 'color: teal' }, task.taskName + task.taskState)
+        })
+      })
+    },
+    /**
+     * 薪资部分上传
+     */
+    async salaryPartUpload(e) {
+      var sign = await this.confirm('已经存在相应月份的数据,是否需要导入?(导入会更新原本的数据!)', isSalaryExist, this.mstid)
+      if (!sign) {
+        return
+      }
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: this.monthNo + '薪资明细更新上传',
+        startTime: getCurrentTime(),
+        endTime: '',
+        taskState: '运行中',
+        info: ''
+      }
+      this.addEvent(task)
+      await Excelupload(this.mstid, e.file, this.salaryTypeDict).then(async params => {
+        await localPartImport(params)
       }).then(res => {
         task.endTime = getCurrentTime()
         task.taskState = '完成'
@@ -392,7 +441,7 @@ export default {
         emp_code: item,
         status: '1'
       }))
-      console.log(params)
+      // console.log(params)
       await UpdSalaryStatus(this.monthNo, params)
         .then((res) => {
           this.$message({
@@ -463,11 +512,12 @@ export default {
       params.EMP_CODE = params.enum
       params.EMP_NAME = params.ename
       params.mstid = ''
+      params.status = '0'
       // 获取当月所有人员的数据信息
       await getMembersList(params).then((res) => {
         this.slvEditPeopel = res.data.map((item) => ({ emP_CODE: item.EMP_CODE }))
-        console.log(params)
-        console.log(res)
+        // console.log(params)
+        // console.log(res)
       })
     },
     async updateMembersSpecSlv() {
@@ -480,13 +530,14 @@ export default {
       this.selectedSalaryType = []
     },
     async saveSlvChange() {
-      this.salaryTypeLoading = true
+      this.typeloading = true
+      // console.log(this.typeloading)
       var params2 = {
         mstid: this.mstid,
         slvList: this.selectedSalaryType,
         empList: this.slvEditPeopel
       }
-      console.log(params2)
+      // console.log(params2)
       await AmountReplace(params2).then((res) => {
         // console.log(res)
         this.$message({
@@ -496,8 +547,9 @@ export default {
         this.membersUpdateDialogVisibel = false
         this.getDataList()
         this.selectedSalaryType = []
+        this.checkedPeopleNums = 0
       }).finally(
-        this.salaryTypeLoading = false
+        this.typeloading = false
       )
     }
   }

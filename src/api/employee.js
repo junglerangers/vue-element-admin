@@ -85,7 +85,7 @@ export async function isExist(monthNo) {
       currentPage: 1
     }
   }
-  console.log(params)
+  // console.log(params)
   var res = await pageQuery(params)
   if (res.data.length > 0) {
     return true
@@ -101,7 +101,7 @@ export async function isExist(monthNo) {
  */
 export function UpdSalaryStatus(monthNo, params) {
   return request({
-    url: 'http://10.88.88.193:5000/api/BasicManage/Employee/UpdSalaryStatus?MonthNo=2023-04',
+    url: 'http://10.88.88.193:5000/api/BasicManage/Employee/UpdSalaryStatus?MonthNo=' + monthNo,
     method: 'post',
     data: params
   })

@@ -155,6 +155,18 @@ export function AmountReplace(params) {
   return request({
     url: 'http://10.88.88.193:5000/api/BusiManage/Salary/AmountReplace',
     method: 'post',
+    timeout: 1000 * 500,
+    data: {
+      ...params
+    }
+  })
+}
+
+export function localPartImport(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BusiManage/Salary/ImportAndUpd',
+    method: 'post',
+    timeout: 1000 * 500,
     data: {
       ...params
     }

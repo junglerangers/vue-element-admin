@@ -65,6 +65,7 @@
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==0" @click="setTime">下一步</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[1].index+'.'+opOrder[1].info" name="2">
+        <p v-if="hasEmployeeInfo">本月已经有员工信息数据</p>
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="dialogVisibleEmployeeCopy=true">导入员工数据(从上月复制)</el-button>
         <el-upload
           action="blank"
@@ -94,9 +95,10 @@
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="()=>active=2">下一步</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[2].index+'.'+opOrder[2].info" name="3">
+        <p v-if="hasSalaryType">本月已经有员工信息数据</p>
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="dialogVisible = true">薪酬类别复制</el-button>
         <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="showSalaryType">薪酬类别管理</el-button>
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="getSalaryDetailType">下一步(会自动复制工资明细)</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==2" @click="getSalaryDetailType">下一步(会自动复制上月工资明细)</el-button>
       </el-collapse-item>
       <el-collapse-item :title="opOrder[3].index+'.'+opOrder[3].info" name="4">
         <el-upload
@@ -276,7 +278,9 @@ export default {
         { TNAME: '人员性质', TCODE: 'KIND_CODE_NAME' },
         { TNAME: '实际岗位', TCODE: 'C01RY_NAME' },
         { TNAME: '聘任资格', TCODE: 'QUALIFICATION' }
-      ]
+      ],
+      hasSalaryType: false,
+      hasEmployeeInfo: false
     }
   },
   computed: {
@@ -328,6 +332,11 @@ export default {
         return false
       }
       return true
+    },
+    async beforeRmoeteTestV2(fun, params) {
+      var temp = params || this.params
+      var sign1 = await fun(temp)
+      return sign1
     },
     /**
      * 获取部门列表
@@ -436,7 +445,7 @@ export default {
     async getSalaryTypeList() {
       getSalaryTypeList().then(res => {
         this.salaryTypeDict = res.data
-        console.log(this.salaryTypeDict)
+        // console.log(this.salaryTypeDict)
       })
     },
     /**
@@ -647,7 +656,7 @@ export default {
     /**
      * 工资单新增操作
      */
-    setTime() {
+    async setTime() {
       if (!this.timeTest()) {
         return false
       }
@@ -657,6 +666,8 @@ export default {
       this.MST.MONTHNO = this.time.monthNo
       this.MST.NUM = this.time.num
       this.active = 1
+      this.hasEmployeeInfo = await this.beforeRmoeteTestV2(isEmployeeExist)
+      this.hasSalaryType = await this.beforeRmoeteTestV2(salaryTypeIsExist)
     },
     /**
      * 薪酬类型复制,从指定月份复制到当前月份

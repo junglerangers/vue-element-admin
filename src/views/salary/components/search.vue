@@ -63,8 +63,8 @@ import { getNatureList, getHosAreaList, getEmpClassList } from '@/api/enum'
 
 const defaultSearchModel = {
   DEPT_NAME: '', // 科室名称
-  EMP_CODE: '', // 人员编号
-  EMP_NAME: '', // 人员姓名
+  enum: '', // 人员编号
+  ename: '', // 人员姓名
   SEX_NAME: '', // 人员性别
   KIND_CODE: '', // 人员性质
   EMP_CLASS: '', // 人员分类
@@ -121,8 +121,13 @@ export default {
   },
   methods: {
     searchHandler() {
-      this.searchModel[this.mapDict[this.searchtype]] = this.searchContent
-      this.$emit('search', this.searchModel)
+      if (this.advanceSearchSign === false) {
+        this.searchModel = {}
+        this.searchModel[this.mapDict[this.searchtype]] = this.searchContent
+      } else {
+        // console.log(this.searchModel)
+        this.$emit('search', this.searchModel)
+      }
     },
     initialSearchHandler() {
       this.emptySearch()
@@ -134,6 +139,7 @@ export default {
     },
     showAdvanceSearch() {
       this.advanceSearchSign = !this.advanceSearchSign
+      // this.searchModel = {}
     },
     emptySearch() {
       this.searchContent = ''

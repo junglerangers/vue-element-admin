@@ -1,106 +1,49 @@
 <template>
-  <div class="app-container">
-
-    <div>
-      <FilenameOption v-model="filename" />
-      <AutoWidthOption v-model="autoWidth" />
-      <BookTypeOption v-model="bookType" />
-      <el-button :loading="downloadLoading" style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="handleDownload">
-        Export Excel
-      </el-button>
-      <a href="https://panjiachen.github.io/vue-element-admin-site/feature/component/excel.html" target="_blank" style="margin-left:15px;">
-        <el-tag type="info">Documentation</el-tag>
-      </a>
-    </div>
-
-    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading..." border fit highlight-current-row>
-      <el-table-column align="center" label="Id" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
-        <template slot-scope="scope">
-          <el-tag>{{ scope.row.author }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Readings" width="115" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.pageviews }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Date" width="220">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
+  <el-button :loading="downloadLoading" size="small" type="primary" icon="el-icon-document" @click="handleDownload">
+    导出
+  </el-button>
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
-import { parseTime } from '@/utils'
 // options components
-import FilenameOption from './components/FilenameOption'
-import AutoWidthOption from './components/AutoWidthOption'
-import BookTypeOption from './components/BookTypeOption'
+import { getGridList } from '@/api/employee'
 
 export default {
   name: 'ExportExcel',
-  components: { FilenameOption, AutoWidthOption, BookTypeOption },
+  props: {
+    searchModel: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    }
+  },
   data() {
     return {
       list: null,
       listLoading: true,
       downloadLoading: false,
-      filename: '',
-      autoWidth: true,
-      bookType: 'xlsx'
+      filename: 'test',
+      data: []
     }
   },
-  created() {
-    this.fetchData()
-  },
   methods: {
-    fetchData() {
-      this.listLoading = true
-      fetchList().then(response => {
-        this.list = response.data.items
-        this.listLoading = false
-      })
-    },
-    handleDownload() {
+    async handleDownload() {
       this.downloadLoading = true
+      // console.log(this.searchModel)
+      await getGridList(this.searchModel).then(data => {
+        this.data = data.data
+      })
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['Id', 'Title', 'Author', 'Readings', 'Date']
-        const filterVal = ['id', 'title', 'author', 'pageviews', 'display_time']
-        const list = this.list
-        const data = this.formatJson(filterVal, list)
+        const tHeader = ['EMP_CODE', 'EMP_NAME', 'DEPT_NAME', 'PHONE', 'KIND_NAME', 'EMP_CLASSNAME', 'STATUS']
+        const data = this.data
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: this.filename,
-          autoWidth: this.autoWidth,
-          bookType: this.bookType
+          filename: this.searchModel.monthNo + '人员信息'
         })
         this.downloadLoading = false
       })
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
     }
   }
 }

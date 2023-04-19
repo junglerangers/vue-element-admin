@@ -98,6 +98,7 @@
             >
               <el-button type="primary" size="small" icon="el-icon-plus" title="Excel追加数据" />
             </el-upload>
+            <ExportExcel :search-model="searchModel" />
           </el-button-group>
         </template>
         <template slot-scope="scope">
@@ -162,13 +163,14 @@ import { getCurrentTime } from '@/utils/time'
 import { upload as Excelupload } from '@/utils/excel'
 import { getEmployeeByExcel as employeeImport, AddEmployeeByExcel as employeeAdd } from '@/api/import'
 import { mapActions } from 'vuex'
-// import xlsx from 'xlsx'
+import ExportExcel from '../excel/export-excel.vue'
 
 export default {
   name: 'UserManageIndex',
   components: {
     search,
-    userDialog
+    userDialog,
+    ExportExcel
   },
   mixins: [resize, tablePage, searchMethod, confirm],
   data: function() {
@@ -405,6 +407,7 @@ export default {
         emp_code: scope.row.EMP_CODE,
         status: state
       }]
+      // console.log(this.monthNo)
       await UpdSalaryStatus(this.monthNo, params)
         .then((res) => {
           this.$message({
@@ -413,6 +416,12 @@ export default {
           })
           scope.row.STATUS = state
         })
+    },
+    /**
+     * 导出EXCEL文件
+     */
+    async exportEmployeeExcel() {
+
     }
   }
 }
