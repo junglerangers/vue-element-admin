@@ -209,8 +209,17 @@ export const asyncRoutes = [
         component: () => import('@/views/formula/index'),
         name: 'FormularIndex',
         meta: {
-          title: '薪酬类别管理',
-          icon: 'formular'
+          title: '薪酬类别修改',
+          icon: 'formularmanage'
+        }
+      },
+      {
+        path: 'mapping',
+        component: () => import('@/views/formula/mapping'),
+        name: 'FormularMapping',
+        meta: {
+          title: '薪酬OA映射',
+          icon: 'mapping'
         }
       },
       {

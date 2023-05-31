@@ -101,3 +101,33 @@ export async function isExist(monthNo) {
     return false
   }
 }
+
+/**
+ * OA福利类别对照
+ * @param {*} params
+ * @returns
+ */
+export function Mapping(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/SalaryType/WelFare/Mapping',
+    method: 'post',
+    data: {
+      ...params
+    }
+  })
+}
+
+/**
+ * 获取福利类别映射列表
+ * @param {*} params
+ * @returns
+ */
+export function GetWelfareGridList(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/SalaryType/WelFareMapping/GetGridList',
+    method: 'post',
+    data: {
+      ...params
+    }
+  })
+}

@@ -30,7 +30,7 @@
     </div>
     <span>期</span>
     <search @search="searchHandler" />
-    <el-button type="primary" size="mini" style="{font-size:10px}" @click="updateAllMembersSpecSlv">工资全部更新(筛选后结果,共计{{ page_total }}条)</el-button>
+    <el-button type="primary" size="mini" style="font-size:10px;" @click="updateAllMembersSpecSlv">工资全部更新(筛选后结果,共计{{ page_total }}条)</el-button>
     <el-table
       v-loading="loading"
       element-loading-text="数据拼命加载中"
