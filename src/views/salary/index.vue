@@ -79,6 +79,7 @@
           <el-button v-if="scope.row.ISLOCK === '0'" type="text" size="small" icon="el-icon-lock" title="锁定" circle @click="handleClock(scope)">锁定</el-button>
           <el-button v-else type="text" size="small" icon="el-icon-unlock" title="解锁" circle @click="handleClock(scope)">解锁</el-button>
           <el-button type="text" size="small" icon="el-icon-delete" title="删除" circle @click="handleDelete(scope)">删除</el-button>
+          <el-button type="text" size="small" icon="el-icon-s-promotion" title="发送" circle @click="beforeSend(scope)">OA发送</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -94,6 +95,17 @@
       />
     </div>
     <!-- 用户界面创建/编辑框 -->
+    <el-dialog
+      title="备注信息"
+      :visible.sync="OASendDialogVisible"
+      width="40%"
+    >
+      <textarea v-model="OARemark" class="oaremark" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogClose">取消</el-button>
+        <el-button type="primary" @click="handleSend">发送OA</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -102,6 +114,9 @@ import { getMstPageQuery, lockData, localDelete } from '@/api/salary'
 import * as defaultModel from '@/dataModel/SalaryTypeModel'
 import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
+import { OAapplyForm } from '@/api/OA'
+import { getCurrentTime } from '@/utils/time'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'SalaryIndex',
@@ -111,10 +126,13 @@ export default {
   data: function() {
     return {
       loading: false,
+      OASendDialogVisible: false,
+      checkedSlv: {},
       currentModel: Object.assign({}, defaultModel), // 当前选中的模型
       dataList: [], // 所有数据列表
       timeYear: null,
       timeMonth: null,
+      OARemark: '',
       searchModel: {
         'autoid': '',
         'dcode': '',
@@ -126,12 +144,21 @@ export default {
       }
     }
   },
+  computed: {
+    userCode: function() {
+      return this.$store.state.user.userInfo.code
+    }
+  },
   created() {
     this.getDataList()
     // this.getDepList()
     // this.getTypeList()
   },
   methods: {
+    ...mapActions({
+      addEvent: 'app/addEvent',
+      changeEventState: 'app/changeEventState'
+    }),
     async getDataList() {
       //   var temp = {
       //     ...this.searchModel,
@@ -150,6 +177,57 @@ export default {
       this.dataList = res.data
       this.page_total = res.pageHandler.records
       this.loading = false
+    },
+    dialogClose() {
+      this.OASendDialogVisible = false
+      this.OARemark = ''
+    },
+    beforeSend(scope) {
+      console.log(scope.row)
+      this.OASendDialogVisible = true
+      this.checkedSlv = scope.row
+    },
+    async handleSend() {
+      if (this.OARemark.trim() === '' || this.OARemark == null) {
+        this.$message({
+          message: '备注信息不允许为空',
+          type: 'warning',
+          duration: '3000'
+        })
+        return
+      }
+      var params = {
+        mstId: this.checkedSlv.AUTOID,
+        remark: this.OARemark,
+        userCode: this.userCode
+      }
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: this.checkedSlv.YEARNO + '-' + this.checkedSlv.MONTHNO + 'OA流程发送',
+        startTime: getCurrentTime(),
+        endTime: '',
+        taskState: '运行中',
+        info: ''
+      }
+      this.addEvent(task)
+      console.log(params)
+      this.dialogClose()
+      OAapplyForm(params).then((res) => {
+        console.log(res)
+        task.taskState = '完成'
+        task.endTime = getCurrentTime()
+      }).catch(err => {
+        task.endTime = getCurrentTime()
+        task.taskState = '错误'
+        task.info = err
+      }).finally(() => {
+        const h = this.$createElement
+        this.$notify({
+          title: '通知',
+          message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+          duration: 0
+        })
+      })
     },
     handleEdit(scope) {
       this.currentModel = scope.row
@@ -224,7 +302,10 @@ export default {
   margin-bottom: 30px;
   margin-top: 30px;
 }
-
+.oaremark{
+  width:100%;
+  height: 80px;
+}
 .el-dialog{
   display: flex;
   flex-direction: column;
