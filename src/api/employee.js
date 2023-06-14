@@ -106,3 +106,17 @@ export function UpdSalaryStatus(monthNo, params) {
     data: params
   })
 }
+
+/**
+ * 更新员工信息
+ * @param {*} params
+ * @returns
+ */
+export function UpdateEmployee(params) {
+  console.log(params)
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/Employee/Update',
+    method: 'post',
+    data: params
+  })
+}

@@ -102,13 +102,13 @@
           </el-button-group>
         </template>
         <template slot-scope="scope">
-          <el-button type="text" size="small" icon="el-icon-view" title="编辑" @click="handleViewUser(scope)">查看</el-button>
+          <el-button type="text" size="small" icon="el-icon-view" title="编辑" @click="handleViewUser(scope)">编辑</el-button>
           <el-button v-if="scope.row.STATUS==='0'" type="text" size="small" icon="el-icon-remove-outline" title="停发" @click="handleChangeUserStatus(scope)">停发</el-button>
           <el-button v-else type="text" size="small" icon="el-icon-circle-check" title="启用" @click="handleChangeUserStatus(scope)">启用</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <user-dialog v-model="CurrentModel" :dialog-visible="dialogVisible" @toggleVisible="dialogVisible = !dialogVisible" />
+    <user-dialog :current-user="CurrentModel" :dialog-visible="dialogVisible" @toggleVisible="toggleDialogVisible" />
     <div class="block footer pagination_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -226,7 +226,7 @@ export default {
     async getDataList() {
       this.searchModel.monthNo = this.monthNo
       this.loading = true
-      console.log(this.searchModel)
+      // console.log(this.searchModel)
       const res = await pageQuery({
         queryModel: this.searchModel,
         pageHandler: {
@@ -236,6 +236,7 @@ export default {
       this.dataList = res.data
       this.page_total = res.pageHandler.records
       this.loading = false
+      console.log(res.data)
     },
     handleViewUser(scope) {
       this.CurrentModel = scope.row
@@ -422,6 +423,12 @@ export default {
      */
     async exportEmployeeExcel() {
 
+    },
+    toggleDialogVisible(val) {
+      this.dialogVisible = !this.dialogVisible
+      if (val === true) {
+        this.getDataList()
+      }
     }
   }
 }
