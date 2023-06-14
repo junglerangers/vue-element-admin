@@ -29,7 +29,8 @@ service.interceptors.request.use(
     //   // please modify it according to the actual situation
     //   config.headers['X-Token'] = getToken()
     // }
-    config.headers['UserCode'] = 'admin' // 请求用户类型
+    localStorage
+    config.headers['UserCode'] = localStorage.getItem('UserCode') // 请求用户类型
     config.headers['XTSB'] = 'SAMS' // 系统识别
     return config
   },

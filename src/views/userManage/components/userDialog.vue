@@ -182,7 +182,7 @@ export default {
       }
     },
     rawUser: function() {
-      return Object.assign({}, this.currentUser)
+      return this.currentUser
     }
   },
   created() {
@@ -219,9 +219,13 @@ export default {
         qualification: this.rawUser.QUALIFICATION
       }
       console.log(UpdateUser)
-      await UpdateEmployee(UpdateUser).then(
+      await UpdateEmployee(UpdateUser).then(res => {
+        this.$message({
+          message: '员工信息更新成功!',
+          type: 'success'
+        })
         this.$emit('toggleVisible', true)
-      )
+      })
     },
     toggleDialogVisible() {
       this.$emit('toggleVisible', false)

@@ -20,6 +20,7 @@ const state = {
 const mutations = {
   SET_USERINFO: (state, user) => {
     state.userInfo = user
+    localStorage.setItem('UserCode', user.code)
   },
   CLEAR_USERINFO: (state) => {
     state.userInfo = {

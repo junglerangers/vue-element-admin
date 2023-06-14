@@ -206,14 +206,14 @@ export default {
     }
   },
   created() {
-    this.monthTime = this.monthNo
+    this.monthTime = this.monthNo// 因为一个是类字符串格式,一个是时间格式
     this.getDataList()
   },
   activated() {
-    if (this.monthTime !== this.monthNo) {
-      this.monthTime = this.monthNo
-      this.getDataList()
-    }
+    // if (this.monthTime !== this.monthNo) {
+    //   this.monthTime = this.monthNo
+    //   this.getDataList()
+    // }
   },
   methods: {
     /**
@@ -234,16 +234,19 @@ export default {
           size: this.page_size
         }})
       this.dataList = res.data
+      // console.log(this.searchModel)
+      // console.log(this.page_currentPage)
+      // console.log(this.page_size)
+      // console.log(res.data)
       this.page_total = res.pageHandler.records
       this.loading = false
-      console.log(res.data)
     },
     handleViewUser(scope) {
-      this.CurrentModel = scope.row
+      this.CurrentModel = Object.assign({}, scope.row)
       this.dialogVisible = true
     },
     decorateMonthChange(value) {
-      return this.monthChange(value, this.searchHandler)
+      return this.monthChange(value)
     },
     /**
      * 人员信息通过excel上传
@@ -376,7 +379,7 @@ export default {
         emp_code: item,
         status: state
       }))
-      console.log(params)
+      // console.log(params)
       await UpdSalaryStatus(this.monthNo, params)
         .then((res) => {
           this.$message({
