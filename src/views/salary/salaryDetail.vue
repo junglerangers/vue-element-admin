@@ -142,7 +142,7 @@
     >
       <div class="sub-flex-row">
         <el-table
-
+          ref="salaryChangeTab"
           :data="salaryTypeDict.filter(data => !search || data.TNAME.toLowerCase().includes(search.toLowerCase()))"
           :row-key="getRowKey"
           style="width: 33%"
@@ -528,6 +528,7 @@ export default {
     cancelSlvChange() {
       this.membersUpdateDialogVisibel = false
       this.selectedSalaryType = []
+      this.$refs.salaryChangeTab.clearSelection()
     },
     async saveSlvChange() {
       this.typeloading = true
@@ -551,6 +552,7 @@ export default {
       }).finally(
         this.typeloading = false
       )
+      this.$refs.salaryChangeTab.clearSelection()
     }
   }
 }
