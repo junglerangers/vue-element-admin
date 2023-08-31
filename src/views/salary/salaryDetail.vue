@@ -32,6 +32,7 @@
     <search @search="searchHandler" />
     <el-button type="primary" size="mini" style="font-size:10px;" @click="updateAllMembersSpecSlv">工资全部更新(筛选后结果,共计{{ page_total }}条)</el-button>
     <el-table
+      ref="dataTable"
       v-loading="loading"
       element-loading-text="数据拼命加载中"
       element-loading-spinner="el-icon-loading"
@@ -425,6 +426,9 @@ export default {
       res.slvSumList.forEach(element => {
         this.sumObject[element.TNAME] = element.AMOUNT// 展示所有的合计项
         this.tableHeaders.push(element.TNAME)// 获得相应的表头信息
+      })
+      this.$nextTick(() => {
+        this.$refs.dataTable.doLayout()
       })
       this.loading = false
     },
