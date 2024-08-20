@@ -27,9 +27,7 @@
           <el-input v-model="searchModel.EMP_NAME" placeholder="人员姓名" class="sub-advance-input" />
         </el-form-item>
         <el-form-item label="科室名称">
-          <el-select v-model="searchModel.DEPT_NAME" placeholder="科室名称" clearable filterable class="sub-advance-input">
-            <el-option v-for="item in depList" :key="item.AUTOID" :label="item.DEPT_NAME" :value="item.DEPT_NAME" />
-          </el-select>
+          <el-input v-model="searchModel.DEPT_NAME" />
         </el-form-item>
         <el-form-item label="发放状态">
           <el-select v-model="searchModel.STATUS" placeholder="发放状态" class="sub-advance-input" clearable>

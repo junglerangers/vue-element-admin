@@ -25,16 +25,19 @@
           <el-input v-model="searchModel.ename" placeholder="人员姓名" class="sub-advance-input" />
         </el-form-item>
         <el-form-item label="科室名称">
+          <el-input v-model="searchModel.DEPT_NAME" placeholder="科室名称" class="sub-advance-input" />
+        </el-form-item>
+        <!-- <el-form-item label="科室名称">
           <el-select v-model="searchModel.DEPT_NAME" placeholder="科室名称" clearable filterable class="sub-advance-input">
             <el-option v-for="item in depList" :key="item.AUTOID" :label="item.DEPT_NAME" :value="item.DEPT_NAME" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="性别">
+        </el-form-item> -->
+        <!-- <el-form-item label="性别">
           <el-select v-model="searchModel.SEX_NAME" placeholder="性别" class="sub-advance-input" clearable>
             <el-option label="男" value="男" />
             <el-option label="女" value="女" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="人员性质">
           <el-select v-model="searchModel.KIND_CODE" placeholder="人员性质" clearable filterable class="sub-advance-input">
             <el-option v-for="item in natureList" :key="item.Code" :label="item.Label" :value="item.Code" />
@@ -50,6 +53,21 @@
             <el-option v-for="item in hosAreaList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
+        <el-form-item label="薪资金额筛选">
+          <el-select v-model="searchModel.op_TCode" placeholder="薪资类别" class="sub-advance-input" style="width: 120px;">
+            <el-option v-for="item in salaryTypeList" :key="item.TCODE" :label="item.TNAME" :value="item.TCODE" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="searchModel.op_Symbol" placeholder="运算符号" class="sub-advance-input" style="width: 60px;">
+            <el-option label=">" value=">" />
+            <el-option label="<" value="<" />
+            <el-option label="=" value="=" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="searchModel.op_Amount" placeholder="运算金额" class="sub-advance-input" style="width: 100px;" />
+        </el-form-item>
         <el-button class="primary" @click="searchEmpty">清空搜索</el-button>
       </el-form>
     </transition>
@@ -60,6 +78,7 @@
 import { searchTypeDict } from '../dict/searchTypeDict'
 import { getGridList } from '@/api/department'
 import { getNatureList, getHosAreaList, getEmpClassList } from '@/api/enum'
+import { getGridList as getSalaryGridList } from '@/api/salaryType'
 
 const defaultSearchModel = {
   DEPT_NAME: '', // 科室名称
@@ -77,6 +96,7 @@ export default {
       depList: [], // 科室列表
       typeList: [], // 人员类型列表
       natureList: [], // 人员性质表
+      salaryTypeList: [], // 薪资类别表
       hosAreaList: [], // 院区表
       searchtype: Object.keys(searchTypeDict)[0],
       searchContent: '',
@@ -106,6 +126,7 @@ export default {
     getNatureList().then(res => {
       this.natureList = res.data
     })
+    console.log(this.propMonthNO)
     getEmpClassList().then(res => {
       this.typeList = res.data
     })
@@ -117,6 +138,9 @@ export default {
     }
     getGridList(params).then(res => {
       this.depList = res.data
+    })
+    getSalaryGridList(params).then(res => {
+      this.salaryTypeList = res.data
     })
   },
   methods: {
@@ -149,6 +173,8 @@ export default {
       }
     },
     searchEmpty() {
+      console.log(this.propMonthNO)
+      console.log(this.monthNo)
       this.searchModel = Object.assign({}, defaultSearchModel)
     }
   }

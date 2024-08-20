@@ -120,3 +120,17 @@ export function UpdateEmployee(params) {
     data: params
   })
 }
+
+/**
+ * 员工信息手工插入
+ * @param {*} params
+ * @returns
+ */
+export function ManualAddEmployee(params) {
+  console.log(params)
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/Employee/Add',
+    method: 'post',
+    data: params
+  })
+}

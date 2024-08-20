@@ -1,0 +1,379 @@
+Date : 2023-09-06 11:26:00
+Directory : g:\MyVue\vue-element-admin\src
+Total : 253 files,  19297 codes, 1495 comments, 1150 blanks, all 21942 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| Vue        |        100 |     14,650 |        574 |        616 |     15,840 |
+| JavaScript |         78 |      3,615 |        860 |        381 |      4,856 |
+| SCSS       |          9 |        946 |         48 |        148 |      1,142 |
+| XML        |         64 |         80 |          0 |          0 |         80 |
+| YAML       |          1 |          5 |         13 |          5 |         23 |
+| CSS        |          1 |          1 |          0 |          0 |          1 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                 | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                    |        253 |     19,297 |      1,495 |      1,150 |     21,942 |
+| . (Files)                                                                            |          4 |        151 |         65 |         29 |        245 |
+| api                                                                                  |         17 |        727 |        131 |         91 |        949 |
+| assets                                                                               |          1 |          1 |          0 |          0 |          1 |
+| assets\custom-theme                                                                  |          1 |          1 |          0 |          0 |          1 |
+| components                                                                           |         38 |      5,678 |        212 |        249 |      6,139 |
+| components\BackToTop                                                                 |          1 |        105 |          0 |          7 |        112 |
+| components\Breadcrumb                                                                |          1 |         73 |          3 |          7 |         83 |
+| components\Charts                                                                    |          4 |        687 |          4 |         22 |        713 |
+| components\Charts (Files)                                                            |          3 |        639 |          0 |         17 |        656 |
+| components\Charts\mixins                                                             |          1 |         48 |          4 |          5 |         57 |
+| components\DndList                                                                   |          1 |        155 |          2 |         10 |        167 |
+| components\DragSelect                                                                |          1 |         59 |          2 |          5 |         66 |
+| components\Dropzone                                                                  |          1 |        265 |         11 |         22 |        298 |
+| components\ErrorLog                                                                  |          1 |         75 |          0 |          4 |         79 |
+| components\GithubCorner                                                              |          1 |         51 |          0 |          4 |         55 |
+| components\Hamburger                                                                 |          1 |         41 |          0 |          4 |         45 |
+| components\HeaderSearch                                                              |          1 |        160 |          8 |         13 |        181 |
+| components\ImageCropper                                                              |          5 |      1,968 |         99 |         14 |      2,081 |
+| components\ImageCropper (Files)                                                      |          1 |      1,688 |         84 |          8 |      1,780 |
+| components\ImageCropper\utils                                                        |          4 |        280 |         15 |          6 |        301 |
+| components\Pagination                                                                |          1 |         98 |          0 |          4 |        102 |
+| components\PanThumb                                                                  |          1 |        118 |         12 |         13 |        143 |
+| components\RightPanel                                                                |          1 |        147 |          0 |         10 |        157 |
+| components\Screenfull                                                                |          1 |         57 |          0 |          4 |         61 |
+| components\Share                                                                     |          1 |        101 |          0 |          3 |        104 |
+| components\SizeSelect                                                                |          1 |         52 |          1 |          5 |         58 |
+| components\Sticky                                                                    |          1 |         90 |          0 |          2 |         92 |
+| components\SvgIcon                                                                   |          1 |         57 |          1 |          5 |         63 |
+| components\TextHoverEffect                                                           |          1 |        100 |          1 |         13 |        114 |
+| components\ThemePicker                                                               |          1 |        150 |          0 |         26 |        176 |
+| components\Tinymce                                                                   |          5 |        353 |         53 |         29 |        435 |
+| components\Tinymce (Files)                                                           |          4 |        246 |         52 |         25 |        323 |
+| components\Tinymce\components                                                        |          1 |        107 |          1 |          4 |        112 |
+| components\Upload                                                                    |          3 |        411 |          0 |         13 |        424 |
+| components\UploadExcel                                                               |          1 |        134 |          6 |          6 |        146 |
+| components\UploadExcelButton                                                         |          1 |        171 |          9 |          4 |        184 |
+| dataModel                                                                            |          5 |        100 |          0 |          5 |        105 |
+| filters                                                                              |          1 |         53 |         28 |          8 |         89 |
+| icons                                                                                |         66 |         91 |         17 |          7 |        115 |
+| icons (Files)                                                                        |          2 |         11 |         17 |          7 |         35 |
+| icons\svg                                                                            |         64 |         80 |          0 |          0 |         80 |
+| layout                                                                               |         15 |      1,162 |         48 |         92 |      1,302 |
+| layout (Files)                                                                       |          1 |         97 |          0 |         10 |        107 |
+| layout\components                                                                    |         13 |      1,025 |         40 |         78 |      1,143 |
+| layout\components (Files)                                                            |          3 |        209 |          3 |         27 |        239 |
+| layout\components\Settings                                                           |          1 |        135 |          1 |          6 |        142 |
+| layout\components\Sidebar                                                            |          6 |        317 |         16 |         27 |        360 |
+| layout\components\TagsView                                                           |          2 |        361 |         20 |         17 |        398 |
+| layout\components\notification                                                       |          1 |          3 |          0 |          1 |          4 |
+| layout\mixin                                                                         |          1 |         40 |          8 |          4 |         52 |
+| mixins                                                                               |          4 |        185 |         27 |          6 |        218 |
+| router                                                                               |          1 |        250 |        156 |         13 |        419 |
+| store                                                                                |         11 |        641 |         56 |         71 |        768 |
+| store (Files)                                                                        |          2 |         36 |          9 |          7 |         52 |
+| store\modules                                                                        |          9 |        605 |         47 |         64 |        716 |
+| styles                                                                               |          8 |        637 |         37 |        147 |        821 |
+| utils                                                                                |         15 |        790 |        298 |         93 |      1,181 |
+| vendor                                                                               |          2 |        204 |         53 |         25 |        282 |
+| views                                                                                |         65 |      8,627 |        367 |        314 |      9,308 |
+| views\charts                                                                         |          3 |         57 |          0 |         15 |         72 |
+| views\codeDict                                                                       |          4 |        487 |         36 |         16 |        539 |
+| views\codeDict (Files)                                                               |          1 |        194 |         26 |          5 |        225 |
+| views\codeDict\components                                                            |          3 |        293 |         10 |         11 |        314 |
+| views\dashboard                                                                      |         14 |      1,570 |         20 |         71 |      1,661 |
+| views\dashboard (Files)                                                              |          1 |         29 |          0 |          3 |         32 |
+| views\dashboard\admin                                                                |         12 |      1,471 |         20 |         63 |      1,554 |
+| views\dashboard\admin (Files)                                                        |          1 |        110 |          4 |          7 |        121 |
+| views\dashboard\admin\components                                                     |         11 |      1,361 |         16 |         56 |      1,433 |
+| views\dashboard\admin\components (Files)                                             |          7 |        799 |          0 |         47 |        846 |
+| views\dashboard\admin\components\TodoList                                            |          3 |        512 |         12 |          7 |        531 |
+| views\dashboard\admin\components\mixins                                              |          1 |         50 |          4 |          2 |         56 |
+| views\dashboard\editor                                                               |          1 |         70 |          0 |          5 |         75 |
+| views\department                                                                     |          4 |        355 |          6 |         14 |        375 |
+| views\department (Files)                                                             |          1 |        160 |          4 |          5 |        169 |
+| views\department\components                                                          |          3 |        195 |          2 |          9 |        206 |
+| views\error-page                                                                     |          2 |        305 |          0 |          8 |        313 |
+| views\excel                                                                          |          7 |        390 |          5 |         24 |        419 |
+| views\excel (Files)                                                                  |          4 |        293 |          5 |         18 |        316 |
+| views\excel\components                                                               |          3 |         97 |          0 |          6 |        103 |
+| views\formula                                                                        |          6 |      1,298 |         35 |         23 |      1,356 |
+| views\formula (Files)                                                                |          3 |      1,127 |         34 |         14 |      1,175 |
+| views\formula\components                                                             |          3 |        171 |          1 |          9 |        181 |
+| views\login                                                                          |          3 |        347 |         34 |         33 |        414 |
+| views\login (Files)                                                                  |          2 |        289 |         23 |         29 |        341 |
+| views\login\components                                                               |          1 |         58 |         11 |          4 |         73 |
+| views\permission                                                                     |          4 |        388 |         18 |         39 |        445 |
+| views\permission (Files)                                                             |          3 |        357 |         18 |         37 |        412 |
+| views\permission\components                                                          |          1 |         31 |          0 |          2 |         33 |
+| views\redirect                                                                       |          1 |         12 |          0 |          1 |         13 |
+| views\report                                                                         |          2 |        138 |          5 |          7 |        150 |
+| views\salary                                                                         |         11 |      2,408 |        167 |         44 |      2,619 |
+| views\salary (Files)                                                                 |          4 |      1,789 |        151 |         21 |      1,961 |
+| views\salary\components                                                              |          6 |        610 |         16 |         21 |        647 |
+| views\salary\dict                                                                    |          1 |          9 |          0 |          2 |         11 |
+| views\userManage                                                                     |          4 |        872 |         41 |         19 |        932 |
+| views\userManage (Files)                                                             |          1 |        450 |         40 |          6 |        496 |
+| views\userManage\components                                                          |          3 |        422 |          1 |         13 |        436 |
++--------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                             | language   | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| g:\MyVue\vue-element-admin\src\App.vue                                               | Vue        |         10 |          0 |          2 |         12 |
+| g:\MyVue\vue-element-admin\src\api\OA.js                                             | JavaScript |          9 |          4 |          2 |         15 |
+| g:\MyVue\vue-element-admin\src\api\RSA.js                                            | JavaScript |         25 |          0 |          3 |         28 |
+| g:\MyVue\vue-element-admin\src\api\codeDict.js                                       | JavaScript |         55 |         20 |          7 |         82 |
+| g:\MyVue\vue-element-admin\src\api\department.js                                     | JavaScript |         54 |         20 |          6 |         80 |
+| g:\MyVue\vue-element-admin\src\api\employee.js                                       | JavaScript |         79 |         36 |          8 |        123 |
+| g:\MyVue\vue-element-admin\src\api\enum.js                                           | JavaScript |         37 |         17 |          4 |         58 |
+| g:\MyVue\vue-element-admin\src\api\formularSlv.js                                    | JavaScript |         37 |          0 |          5 |         42 |
+| g:\MyVue\vue-element-admin\src\api\import.js                                         | JavaScript |         32 |         20 |          3 |         55 |
+| g:\MyVue\vue-element-admin\src\api\qiniu.js                                          | JavaScript |          7 |          0 |          2 |          9 |
+| g:\MyVue\vue-element-admin\src\api\remote-search.js                                  | JavaScript |         15 |          0 |          3 |         18 |
+| g:\MyVue\vue-element-admin\src\api\report.js                                         | JavaScript |         19 |          0 |          3 |         22 |
+| g:\MyVue\vue-element-admin\src\api\role.js                                           | JavaScript |         33 |          0 |          6 |         39 |
+| g:\MyVue\vue-element-admin\src\api\salary.js                                         | JavaScript |        157 |          1 |         17 |        175 |
+| g:\MyVue\vue-element-admin\src\api\salaryType.js                                     | JavaScript |        109 |         13 |         12 |        134 |
+| g:\MyVue\vue-element-admin\src\api\test.js                                           | JavaScript |         14 |          0 |          2 |         16 |
+| g:\MyVue\vue-element-admin\src\api\user.js                                           | JavaScript |         28 |          0 |          5 |         33 |
+| g:\MyVue\vue-element-admin\src\api\welfare.js                                        | JavaScript |         17 |          0 |          3 |         20 |
+| g:\MyVue\vue-element-admin\src\assets\custom-theme\index.css                         | CSS        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\components\BackToTop\index.vue                        | Vue        |        105 |          0 |          7 |        112 |
+| g:\MyVue\vue-element-admin\src\components\Breadcrumb\index.vue                       | Vue        |         73 |          3 |          7 |         83 |
+| g:\MyVue\vue-element-admin\src\components\Charts\Keyboard.vue                        | Vue        |        152 |          0 |          4 |        156 |
+| g:\MyVue\vue-element-admin\src\components\Charts\LineMarker.vue                      | Vue        |        222 |          0 |          6 |        228 |
+| g:\MyVue\vue-element-admin\src\components\Charts\MixChart.vue                        | Vue        |        265 |          0 |          7 |        272 |
+| g:\MyVue\vue-element-admin\src\components\Charts\mixins\resize.js                    | JavaScript |         48 |          4 |          5 |         57 |
+| g:\MyVue\vue-element-admin\src\components\DndList\index.vue                          | Vue        |        155 |          2 |         10 |        167 |
+| g:\MyVue\vue-element-admin\src\components\DragSelect\index.vue                       | Vue        |         59 |          2 |          5 |         66 |
+| g:\MyVue\vue-element-admin\src\components\Dropzone\index.vue                         | Vue        |        265 |         11 |         22 |        298 |
+| g:\MyVue\vue-element-admin\src\components\ErrorLog\index.vue                         | Vue        |         75 |          0 |          4 |         79 |
+| g:\MyVue\vue-element-admin\src\components\GithubCorner\index.vue                     | Vue        |         51 |          0 |          4 |         55 |
+| g:\MyVue\vue-element-admin\src\components\Hamburger\index.vue                        | Vue        |         41 |          0 |          4 |         45 |
+| g:\MyVue\vue-element-admin\src\components\HeaderSearch\index.vue                     | Vue        |        160 |          8 |         13 |        181 |
+| g:\MyVue\vue-element-admin\src\components\ImageCropper\index.vue                     | Vue        |      1,688 |         84 |          8 |      1,780 |
+| g:\MyVue\vue-element-admin\src\components\ImageCropper\utils\data2blob.js            | JavaScript |         11 |          8 |          1 |         20 |
+| g:\MyVue\vue-element-admin\src\components\ImageCropper\utils\effectRipple.js         | JavaScript |         32 |          7 |          1 |         40 |
+| g:\MyVue\vue-element-admin\src\components\ImageCropper\utils\language.js             | JavaScript |        230 |          0 |          3 |        233 |
+| g:\MyVue\vue-element-admin\src\components\ImageCropper\utils\mimes.js                | JavaScript |          7 |          0 |          1 |          8 |
+| g:\MyVue\vue-element-admin\src\components\Pagination\index.vue                       | Vue        |         98 |          0 |          4 |        102 |
+| g:\MyVue\vue-element-admin\src\components\PanThumb\index.vue                         | Vue        |        118 |         12 |         13 |        143 |
+| g:\MyVue\vue-element-admin\src\components\RightPanel\index.vue                       | Vue        |        147 |          0 |         10 |        157 |
+| g:\MyVue\vue-element-admin\src\components\Screenfull\index.vue                       | Vue        |         57 |          0 |          4 |         61 |
+| g:\MyVue\vue-element-admin\src\components\Share\DropdownMenu.vue                     | Vue        |        101 |          0 |          3 |        104 |
+| g:\MyVue\vue-element-admin\src\components\SizeSelect\index.vue                       | Vue        |         52 |          1 |          5 |         58 |
+| g:\MyVue\vue-element-admin\src\components\Sticky\index.vue                           | Vue        |         90 |          0 |          2 |         92 |
+| g:\MyVue\vue-element-admin\src\components\SvgIcon\index.vue                          | Vue        |         57 |          1 |          5 |         63 |
+| g:\MyVue\vue-element-admin\src\components\TextHoverEffect\Mallki.vue                 | Vue        |        100 |          1 |         13 |        114 |
+| g:\MyVue\vue-element-admin\src\components\ThemePicker\index.vue                      | Vue        |        150 |          0 |         26 |        176 |
+| g:\MyVue\vue-element-admin\src\components\Tinymce\components\EditorImage.vue         | Vue        |        107 |          1 |          4 |        112 |
+| g:\MyVue\vue-element-admin\src\components\Tinymce\dynamicLoadScript.js               | JavaScript |         48 |          4 |          8 |         60 |
+| g:\MyVue\vue-element-admin\src\components\Tinymce\index.vue                          | Vue        |        194 |         43 |         11 |        248 |
+| g:\MyVue\vue-element-admin\src\components\Tinymce\plugins.js                         | JavaScript |          2 |          3 |          3 |          8 |
+| g:\MyVue\vue-element-admin\src\components\Tinymce\toolbar.js                         | JavaScript |          2 |          2 |          3 |          7 |
+| g:\MyVue\vue-element-admin\src\components\UploadExcelButton\index.vue                | Vue        |        171 |          9 |          4 |        184 |
+| g:\MyVue\vue-element-admin\src\components\UploadExcel\index.vue                      | Vue        |        134 |          6 |          6 |        146 |
+| g:\MyVue\vue-element-admin\src\components\Upload\SingleImage.vue                     | Vue        |        130 |          0 |          5 |        135 |
+| g:\MyVue\vue-element-admin\src\components\Upload\SingleImage2.vue                    | Vue        |        127 |          0 |          4 |        131 |
+| g:\MyVue\vue-element-admin\src\components\Upload\SingleImage3.vue                    | Vue        |        154 |          0 |          4 |        158 |
+| g:\MyVue\vue-element-admin\src\dataModel\CodeDictModel.js                            | JavaScript |         10 |          0 |          1 |         11 |
+| g:\MyVue\vue-element-admin\src\dataModel\DepartmentModel.js                          | JavaScript |         16 |          0 |          1 |         17 |
+| g:\MyVue\vue-element-admin\src\dataModel\EmployeeModel.js                            | JavaScript |         44 |          0 |          1 |         45 |
+| g:\MyVue\vue-element-admin\src\dataModel\SalaryMstModel.js                           | JavaScript |         14 |          0 |          1 |         15 |
+| g:\MyVue\vue-element-admin\src\dataModel\SalaryTypeModel.js                          | JavaScript |         16 |          0 |          1 |         17 |
+| g:\MyVue\vue-element-admin\src\filters\index.js                                      | JavaScript |         53 |         28 |          8 |         89 |
+| g:\MyVue\vue-element-admin\src\icons\index.js                                        | JavaScript |          6 |          4 |          2 |         12 |
+| g:\MyVue\vue-element-admin\src\icons\svg\404.svg                                     | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\biz-permission.svg                          | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\bug.svg                                     | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\chart.svg                                   | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\clipboard.svg                               | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\codeDict.svg                                | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\component.svg                               | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\dashboard.svg                               | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\dashboard2.svg                              | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\dashboard3.svg                              | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\department.svg                              | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\documentation.svg                           | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\drag.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\edit.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\education.svg                               | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\email.svg                                   | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\example.svg                                 | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\excel.svg                                   | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\exit-fullscreen.svg                         | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\eye-open.svg                                | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\eye.svg                                     | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\form.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\formular.svg                                | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\formularmanage.svg                          | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\fullscreen.svg                              | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\guide.svg                                   | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\icon.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\international.svg                           | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\language.svg                                | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\link.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\list.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\lock.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\mapping.svg                                 | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\message.svg                                 | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\money.svg                                   | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\nested.svg                                  | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\num1.svg                                    | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\num2.svg                                    | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\num3.svg                                    | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\num4.svg                                    | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\num5.svg                                    | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\password.svg                                | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\pdf.svg                                     | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\people.svg                                  | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\peoples.svg                                 | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\qq.svg                                      | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\report.svg                                  | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\salary-icon.svg                             | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\scale.svg                                   | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\scale_white.svg                             | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\search.svg                                  | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\shopping.svg                                | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\size.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\skill.svg                                   | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\star.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\tab.svg                                     | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\table.svg                                   | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\theme.svg                                   | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\tree-table.svg                              | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\tree.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\user.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\users.svg                                   | XML        |          2 |          0 |          0 |          2 |
+| g:\MyVue\vue-element-admin\src\icons\svg\wechat.svg                                  | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svg\zip.svg                                     | XML        |          1 |          0 |          0 |          1 |
+| g:\MyVue\vue-element-admin\src\icons\svgo.yml                                        | YAML       |          5 |         13 |          5 |         23 |
+| g:\MyVue\vue-element-admin\src\layout\components\AppMain.vue                         | Vue        |         53 |          3 |          7 |         63 |
+| g:\MyVue\vue-element-admin\src\layout\components\Navbar.vue                          | Vue        |        151 |          0 |         19 |        170 |
+| g:\MyVue\vue-element-admin\src\layout\components\Settings\index.vue                  | Vue        |        135 |          1 |          6 |        142 |
+| g:\MyVue\vue-element-admin\src\layout\components\Sidebar\FixiOSBug.js                | JavaScript |         24 |          2 |          1 |         27 |
+| g:\MyVue\vue-element-admin\src\layout\components\Sidebar\Item.vue                    | Vue        |         38 |          5 |          4 |         47 |
+| g:\MyVue\vue-element-admin\src\layout\components\Sidebar\Link.vue                    | Vue        |         42 |          1 |          3 |         46 |
+| g:\MyVue\vue-element-admin\src\layout\components\Sidebar\Logo.vue                    | Vue        |         78 |          1 |          9 |         88 |
+| g:\MyVue\vue-element-admin\src\layout\components\Sidebar\SidebarItem.vue             | Vue        |         84 |          6 |          7 |         97 |
+| g:\MyVue\vue-element-admin\src\layout\components\Sidebar\index.vue                   | Vue        |         51 |          1 |          3 |         55 |
+| g:\MyVue\vue-element-admin\src\layout\components\TagsView\ScrollPane.vue             | Vue        |         81 |          4 |         10 |         95 |
+| g:\MyVue\vue-element-admin\src\layout\components\TagsView\index.vue                  | Vue        |        280 |         16 |          7 |        303 |
+| g:\MyVue\vue-element-admin\src\layout\components\index.js                            | JavaScript |          5 |          0 |          1 |          6 |
+| g:\MyVue\vue-element-admin\src\layout\components\notification\index.vue              | Vue        |          3 |          0 |          1 |          4 |
+| g:\MyVue\vue-element-admin\src\layout\index.vue                                      | Vue        |         97 |          0 |         10 |        107 |
+| g:\MyVue\vue-element-admin\src\layout\mixin\ResizeHandler.js                         | JavaScript |         40 |          8 |          4 |         52 |
+| g:\MyVue\vue-element-admin\src\main.js                                               | JavaScript |         56 |         19 |         12 |         87 |
+| g:\MyVue\vue-element-admin\src\mixins\confirm.js                                     | JavaScript |         41 |          5 |          1 |         47 |
+| g:\MyVue\vue-element-admin\src\mixins\resize.js                                      | JavaScript |         59 |          5 |          2 |         66 |
+| g:\MyVue\vue-element-admin\src\mixins\search.js                                      | JavaScript |         22 |          0 |          1 |         23 |
+| g:\MyVue\vue-element-admin\src\mixins\tablePage.js                                   | JavaScript |         63 |         17 |          2 |         82 |
+| g:\MyVue\vue-element-admin\src\permission.js                                         | JavaScript |         77 |         22 |          8 |        107 |
+| g:\MyVue\vue-element-admin\src\router\index.js                                       | JavaScript |        250 |        156 |         13 |        419 |
+| g:\MyVue\vue-element-admin\src\settings.js                                           | JavaScript |          8 |         24 |          7 |         39 |
+| g:\MyVue\vue-element-admin\src\store\getters.js                                      | JavaScript |         20 |          4 |          1 |         25 |
+| g:\MyVue\vue-element-admin\src\store\index.js                                        | JavaScript |         16 |          5 |          6 |         27 |
+| g:\MyVue\vue-element-admin\src\store\modules\app.js                                  | JavaScript |         90 |          0 |          5 |         95 |
+| g:\MyVue\vue-element-admin\src\store\modules\errorLog.js                             | JavaScript |         25 |          0 |          4 |         29 |
+| g:\MyVue\vue-element-admin\src\store\modules\formula.js                              | JavaScript |         25 |          0 |          5 |         30 |
+| g:\MyVue\vue-element-admin\src\store\modules\permission.js                           | JavaScript |         51 |         13 |          7 |         71 |
+| g:\MyVue\vue-element-admin\src\store\modules\salary.js                               | JavaScript |         25 |          0 |          4 |         29 |
+| g:\MyVue\vue-element-admin\src\store\modules\settings.js                             | JavaScript |         28 |          1 |          7 |         36 |
+| g:\MyVue\vue-element-admin\src\store\modules\tagsView.js                             | JavaScript |        156 |          3 |         12 |        171 |
+| g:\MyVue\vue-element-admin\src\store\modules\universal.js                            | JavaScript |         87 |          1 |          4 |         92 |
+| g:\MyVue\vue-element-admin\src\store\modules\user.js                                 | JavaScript |        118 |         29 |         16 |        163 |
+| g:\MyVue\vue-element-admin\src\styles\btn.scss                                       | SCSS       |         83 |          0 |         17 |        100 |
+| g:\MyVue\vue-element-admin\src\styles\element-ui.scss                                | SCSS       |         68 |          7 |         16 |         91 |
+| g:\MyVue\vue-element-admin\src\styles\element-variables.scss                         | SCSS       |         13 |         10 |          9 |         32 |
+| g:\MyVue\vue-element-admin\src\styles\index.scss                                     | SCSS       |        176 |          6 |         37 |        219 |
+| g:\MyVue\vue-element-admin\src\styles\mixin.scss                                     | SCSS       |         56 |          0 |         11 |         67 |
+| g:\MyVue\vue-element-admin\src\styles\sidebar.scss                                   | SCSS       |        180 |          6 |         41 |        227 |
+| g:\MyVue\vue-element-admin\src\styles\transition.scss                                | SCSS       |         35 |          4 |         10 |         49 |
+| g:\MyVue\vue-element-admin\src\styles\variables.scss                                 | SCSS       |         26 |          4 |          6 |         36 |
+| g:\MyVue\vue-element-admin\src\utils\auth.js                                         | JavaScript |         11 |          5 |          5 |         21 |
+| g:\MyVue\vue-element-admin\src\utils\clipboard.js                                    | JavaScript |         29 |          0 |          4 |         33 |
+| g:\MyVue\vue-element-admin\src\utils\error-log.js                                    | JavaScript |         34 |          5 |          4 |         43 |
+| g:\MyVue\vue-element-admin\src\utils\excel.js                                        | JavaScript |         85 |         12 |          4 |        101 |
+| g:\MyVue\vue-element-admin\src\utils\file.js                                         | JavaScript |          8 |          0 |          1 |          9 |
+| g:\MyVue\vue-element-admin\src\utils\get-page-title.js                               | JavaScript |          8 |          1 |          2 |         11 |
+| g:\MyVue\vue-element-admin\src\utils\hash.js                                         | JavaScript |         12 |          0 |          1 |         13 |
+| g:\MyVue\vue-element-admin\src\utils\index.js                                        | JavaScript |        235 |        100 |         23 |        358 |
+| g:\MyVue\vue-element-admin\src\utils\open-window.js                                  | JavaScript |         12 |          9 |          5 |         26 |
+| g:\MyVue\vue-element-admin\src\utils\permission.js                                   | JavaScript |         14 |          5 |          3 |         22 |
+| g:\MyVue\vue-element-admin\src\utils\request.js                                      | JavaScript |         57 |         69 |          5 |        131 |
+| g:\MyVue\vue-element-admin\src\utils\scroll-to.js                                    | JavaScript |         39 |         15 |          5 |         59 |
+| g:\MyVue\vue-element-admin\src\utils\stringAdvanced.js                               | JavaScript |        201 |         33 |         20 |        254 |
+| g:\MyVue\vue-element-admin\src\utils\time.js                                         | JavaScript |          6 |          4 |          1 |         11 |
+| g:\MyVue\vue-element-admin\src\utils\validate.js                                     | JavaScript |         39 |         40 |         10 |         89 |
+| g:\MyVue\vue-element-admin\src\vendor\Export2Excel.js                                | JavaScript |        182 |         52 |         23 |        257 |
+| g:\MyVue\vue-element-admin\src\vendor\Export2Zip.js                                  | JavaScript |         22 |          1 |          2 |         25 |
+| g:\MyVue\vue-element-admin\src\views\charts\keyboard.vue                             | Vue        |         19 |          0 |          5 |         24 |
+| g:\MyVue\vue-element-admin\src\views\charts\line.vue                                 | Vue        |         19 |          0 |          5 |         24 |
+| g:\MyVue\vue-element-admin\src\views\charts\mix-chart.vue                            | Vue        |         19 |          0 |          5 |         24 |
+| g:\MyVue\vue-element-admin\src\views\codeDict\components\dialog.vue                  | Vue        |        195 |          8 |          5 |        208 |
+| g:\MyVue\vue-element-admin\src\views\codeDict\components\index.js                    | JavaScript |          2 |          0 |          1 |          3 |
+| g:\MyVue\vue-element-admin\src\views\codeDict\components\search.vue                  | Vue        |         96 |          2 |          5 |        103 |
+| g:\MyVue\vue-element-admin\src\views\codeDict\index.vue                              | Vue        |        194 |         26 |          5 |        225 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\BarChart.vue         | Vue        |         98 |          0 |          5 |        103 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\BoxCard.vue          | Vue        |        114 |          0 |          5 |        119 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\LineChart.vue        | Vue        |        133 |          0 |          3 |        136 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\PanelGroup.vue       | Vue        |        213 |          0 |         22 |        235 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\PieChart.vue         | Vue        |         76 |          0 |          4 |         80 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\RaddarChart.vue      | Vue        |        112 |          0 |          5 |        117 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\TodoList\Todo.vue    | Vue        |         80 |          0 |          2 |         82 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\TodoList\index.scss  | SCSS       |        309 |         11 |          1 |        321 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\TodoList\index.vue   | Vue        |        123 |          1 |          4 |        128 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\TransactionTable.vue | Vue        |         53 |          0 |          3 |         56 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\components\mixins\resize.js     | JavaScript |         50 |          4 |          2 |         56 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\admin\index.vue                       | Vue        |        110 |          4 |          7 |        121 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\editor\index.vue                      | Vue        |         70 |          0 |          5 |         75 |
+| g:\MyVue\vue-element-admin\src\views\dashboard\index.vue                             | Vue        |         29 |          0 |          3 |         32 |
+| g:\MyVue\vue-element-admin\src\views\department\components\dialog.vue                | Vue        |        105 |          1 |          3 |        109 |
+| g:\MyVue\vue-element-admin\src\views\department\components\index.js                  | JavaScript |          2 |          0 |          1 |          3 |
+| g:\MyVue\vue-element-admin\src\views\department\components\search.vue                | Vue        |         88 |          1 |          5 |         94 |
+| g:\MyVue\vue-element-admin\src\views\department\index.vue                            | Vue        |        160 |          4 |          5 |        169 |
+| g:\MyVue\vue-element-admin\src\views\error-page\401.vue                              | Vue        |         80 |          0 |          4 |         84 |
+| g:\MyVue\vue-element-admin\src\views\error-page\404.vue                              | Vue        |        225 |          0 |          4 |        229 |
+| g:\MyVue\vue-element-admin\src\views\excel\components\AutoWidthOption.vue            | Vue        |         33 |          0 |          2 |         35 |
+| g:\MyVue\vue-element-admin\src\views\excel\components\BookTypeOption.vue             | Vue        |         38 |          0 |          2 |         40 |
+| g:\MyVue\vue-element-admin\src\views\excel\components\FilenameOption.vue             | Vue        |         26 |          0 |          2 |         28 |
+| g:\MyVue\vue-element-admin\src\views\excel\export-excel.vue                          | Vue        |         54 |          2 |          4 |         60 |
+| g:\MyVue\vue-element-admin\src\views\excel\merge-header.vue                          | Vue        |         96 |          0 |          6 |        102 |
+| g:\MyVue\vue-element-admin\src\views\excel\select-excel.vue                          | Vue        |        105 |          0 |          3 |        108 |
+| g:\MyVue\vue-element-admin\src\views\excel\upload-excel.vue                          | Vue        |         38 |          3 |          5 |         46 |
+| g:\MyVue\vue-element-admin\src\views\formula\components\index.js                     | JavaScript |          2 |          0 |          1 |          3 |
+| g:\MyVue\vue-element-admin\src\views\formula\components\search.vue                   | Vue        |        107 |          1 |          5 |        113 |
+| g:\MyVue\vue-element-admin\src\views\formula\components\tagshow.vue                  | Vue        |         62 |          0 |          3 |         65 |
+| g:\MyVue\vue-element-admin\src\views\formula\detail.vue                              | Vue        |        596 |         18 |          3 |        617 |
+| g:\MyVue\vue-element-admin\src\views\formula\index.vue                               | Vue        |        310 |         13 |          5 |        328 |
+| g:\MyVue\vue-element-admin\src\views\formula\mapping.vue                             | Vue        |        221 |          3 |          6 |        230 |
+| g:\MyVue\vue-element-admin\src\views\login\auth-redirect.vue                         | Vue        |         15 |          0 |          1 |         16 |
+| g:\MyVue\vue-element-admin\src\views\login\components\SocialSignin.vue               | Vue        |         58 |         11 |          4 |         73 |
+| g:\MyVue\vue-element-admin\src\views\login\index.vue                                 | Vue        |        274 |         23 |         28 |        325 |
+| g:\MyVue\vue-element-admin\src\views\permission\components\SwitchRoles.vue           | Vue        |         31 |          0 |          2 |         33 |
+| g:\MyVue\vue-element-admin\src\views\permission\directive.vue                        | Vue        |        101 |          0 |         11 |        112 |
+| g:\MyVue\vue-element-admin\src\views\permission\page.vue                             | Vue        |         17 |          0 |          3 |         20 |
+| g:\MyVue\vue-element-admin\src\views\permission\role.vue                             | Vue        |        239 |         18 |         23 |        280 |
+| g:\MyVue\vue-element-admin\src\views\redirect\index.vue                              | Vue        |         12 |          0 |          1 |         13 |
+| g:\MyVue\vue-element-admin\src\views\report\content.vue                              | Vue        |         58 |          0 |          3 |         61 |
+| g:\MyVue\vue-element-admin\src\views\report\index.vue                                | Vue        |         80 |          5 |          4 |         89 |
+| g:\MyVue\vue-element-admin\src\views\salary\components\detailDialog.vue              | Vue        |        193 |          4 |          4 |        201 |
+| g:\MyVue\vue-element-admin\src\views\salary\components\formItem.vue                  | Vue        |         99 |          1 |          6 |        106 |
+| g:\MyVue\vue-element-admin\src\views\salary\components\index.js                      | JavaScript |          2 |          0 |          1 |          3 |
+| g:\MyVue\vue-element-admin\src\views\salary\components\input.vue                     | Vue        |        149 |          8 |          4 |        161 |
+| g:\MyVue\vue-element-admin\src\views\salary\components\salaryItem.vue                | Vue        |          3 |          0 |          1 |          4 |
+| g:\MyVue\vue-element-admin\src\views\salary\components\search.vue                    | Vue        |        164 |          3 |          5 |        172 |
+| g:\MyVue\vue-element-admin\src\views\salary\dict\searchTypeDict.js                   | JavaScript |          9 |          0 |          2 |         11 |
+| g:\MyVue\vue-element-admin\src\views\salary\index.vue                                | Vue        |        322 |          8 |          4 |        334 |
+| g:\MyVue\vue-element-admin\src\views\salary\salaryAdd.vue                            | Vue        |        689 |        102 |          6 |        797 |
+| g:\MyVue\vue-element-admin\src\views\salary\salaryDetail.vue                         | Vue        |        580 |         41 |          7 |        628 |
+| g:\MyVue\vue-element-admin\src\views\salary\welfare.vue                              | Vue        |        198 |          0 |          4 |        202 |
+| g:\MyVue\vue-element-admin\src\views\userManage\components\index.js                  | JavaScript |          2 |          0 |          1 |          3 |
+| g:\MyVue\vue-element-admin\src\views\userManage\components\search.vue                | Vue        |        184 |          1 |          6 |        191 |
+| g:\MyVue\vue-element-admin\src\views\userManage\components\userDialog.vue            | Vue        |        236 |          0 |          6 |        242 |
+| g:\MyVue\vue-element-admin\src\views\userManage\index.vue                            | Vue        |        450 |         40 |          6 |        496 |
+| Total                                                                                |            |     19,297 |      1,495 |      1,150 |     21,942 |
++--------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
