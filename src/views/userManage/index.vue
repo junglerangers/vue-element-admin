@@ -99,7 +99,7 @@
               <el-button type="primary" size="small" icon="el-icon-plus" title="Excel追加数据" />
             </el-upload>
             <ExportExcel :search-model="searchModel" />
-            <el-button type="primary" size="small" icon="el-icon-user-solid" title="手工添加员工信息" @click="dialogVisibleEmployeeManualAdd=true" />
+            <el-button type="primary" size="small" icon="el-icon-user-solid" title="手工添加员工信息" @click="handleViewUser()" />
           </el-button-group>
         </template>
         <template slot-scope="scope">
@@ -109,7 +109,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <user-dialog :current-user="CurrentModel" :dialog-visible="dialogVisible" @toggleVisible="toggleDialogVisible" />
+    <user-dialog :month-no="monthNo" :current-user="CurrentModel" :dialog-visible="dialogVisible" @toggleVisible="toggleDialogVisible" />
     <div class="block footer pagination_fixed_footer" :style="{width:footerWidth}">
       <el-pagination
         :current-page.sync="page_currentPage"
@@ -149,47 +149,6 @@
         <el-button type="primary" @click="employeeInfoCopy">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog
-      title="人员信息手工添加"
-      :visible.sync="dialogVisibleEmployeeManualAdd"
-      :close-on-click-modal="false"
-      :destroy-on-close="true"
-      width="30%"
-    >
-      <el-form ref="ManualAddEmployeeForm" label-width="100px" :model="ManualEmployeeModel" :rules="rules">
-        <el-form-item label="人员编号" prop="emP_CODE">
-          <el-input v-model="ManualEmployeeModel.emP_CODE" />
-        </el-form-item>
-        <el-form-item label="人员姓名" prop="emP_NAME">
-          <el-input v-model="ManualEmployeeModel.emP_NAME" />
-        </el-form-item>
-        <el-form-item label="人员性质" prop="kinD_CODE">
-          <el-select v-model="ManualEmployeeModel.kinD_CODE" placeholder="人员性质" class="sub-advance-input" clearable filterable>
-            <el-option v-for="item in natureList" :key="item.Code" :label="item.Label" :value="item.Code" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="人员性质2" prop="kinD_CODE2">
-          <el-select v-model="ManualEmployeeModel.kinD_CODE2" placeholder="人员性质2" class="sub-advance-input" clearable filterable>
-            <el-option v-for="item in nature2List" :key="item.Code" :label="item.Label" :value="item.Code" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="人员科室" prop="depT_NAME">
-          <el-input v-model="ManualEmployeeModel.depT_NAME" />
-        </el-form-item>
-        <el-form-item label="实际岗位" prop="emP_CLASS">
-          <el-select v-model="ManualEmployeeModel.emP_CLASS" placeholder="实际岗位" class="sub-advance-input" clearable filterable>
-            <el-option v-for="item in typeList" :key="item.Code" :label="item.Label" :value="item.Code" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="聘任资格" prop="qualification">
-          <el-input v-model="ManualEmployeeModel.qualification" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="ManualAddEmployeeSubmit">立即创建</el-button>
-          <el-button @click="dialogVisibleEmployeeManualAdd=false">取消</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
   </div>
 </template>
 
@@ -200,7 +159,7 @@ import resize from '@/mixins/resize'
 import tablePage from '@/mixins/tablePage'
 import searchMethod from '@/mixins/search'
 import confirm from '@/mixins/confirm'
-import { pageQuery, isExist as isEmployeeExist, copyEmployee, UpdSalaryStatus, ManualAddEmployee } from '@/api/employee'
+import { pageQuery, isExist as isEmployeeExist, copyEmployee, UpdSalaryStatus } from '@/api/employee'
 import { getCurrentTime } from '@/utils/time'
 import { upload as Excelupload } from '@/utils/excel'
 import { getEmployeeByExcel as employeeImport, AddEmployeeByExcel as employeeAdd } from '@/api/import'
@@ -219,7 +178,6 @@ export default {
     return {
       loading: false,
       dialogVisibleEmployeeCopy: false,
-      dialogVisibleEmployeeManualAdd: false,
       startCopyMonth: '',
       CurrentModel: Object.assign({}, defaultModel), // 当前选中的用户
       dialogVisible: false, // 对话框是否可见
@@ -232,15 +190,6 @@ export default {
         monthNo: ''
       },
       ManualEmployeeModel: {},
-      rules: {
-        emP_CODE: [{ required: true, message: '请输入人员编号', trigger: 'blur' }],
-        emP_NAME: [{ required: true, message: '请输入人员姓名', trigger: 'change' }],
-        kinD_CODE: [{ required: true, message: '请选择人员性质', trigger: 'change' }],
-        kinD_CODE2: [{ required: true, message: '请选择人员性质2', trigger: 'change' }],
-        depT_NAME: [{ required: true, message: '请输入人员科室', trigger: 'change' }],
-        emP_CLASS: [{ required: true, message: '请选择实际岗位', trigger: 'change' }],
-        qualification: [{ required: true, message: '请输入聘任资格', trigger: 'change' }]
-      },
       /**
        * 员工表单属性字典
        */
@@ -307,7 +256,25 @@ export default {
       this.loading = false
     },
     handleViewUser(scope) {
-      this.CurrentModel = Object.assign({}, scope.row)
+      var data = scope?.row
+      // console.log(scope.row)
+      // console.log(data.EMP_NAME)
+      if (data == null) {
+        data = {
+          EMP_CODE: '',
+          EMP_NAME: '',
+          KIND_CODE: '',
+          KIND_NAME: '',
+          KIND_CODE2: '',
+          KIND_CODE2_NAME: '',
+          DEPT_CODE: '',
+          DEPT_NAME: '',
+          EMP_CLASS: '',
+          EMP_CLASSNAME: '',
+          QUALIFICATION: ''
+        }
+      }
+      this.CurrentModel = Object.assign({}, data)
       this.dialogVisible = true
     },
     decorateMonthChange(value) {
@@ -454,40 +421,6 @@ export default {
           this.getDataList()
         })
       // 调用相应的批量更新接口
-    },
-    async ManualAddEmployeeSubmit() {
-      this.$refs['ManualAddEmployeeForm'].validate(async(valid) => {
-        if (valid) {
-          var year = this.monthNo.slice(0, 4)
-          var month = parseInt(this.monthNo.substring(5, 7)) - 1
-          var beginDate = getCurrentTime(new Date(year, month, 2))
-          var endDate = getCurrentTime(new Date(year, month + 1, 1, 23, 59, 59))
-          this.ManualEmployeeModel.begindate = beginDate
-          this.ManualEmployeeModel.enddate = endDate
-          // console.log(this.ManualEmployeeModel)
-          await ManualAddEmployee(this.ManualEmployeeModel).then((res) => {
-            this.$message({
-              message: '员工新增成功!',
-              type: 'success'
-            })
-            this.dialogVisibleEmployeeManualAdd = false
-            this.$refs.ManualAddEmployeeForm.resetFields()
-            this.ManualEmployeeModel = {
-              emP_CODE: '',
-              emP_NAME: '',
-              kinD_CODE: '',
-              kinD_CODE2: '',
-              depT_NAME: '',
-              emP_CLASS: '',
-              qualification: ''
-            }
-            this.getDataList()
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
     },
     /**
      * 控制所有选中人员
