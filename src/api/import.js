@@ -71,6 +71,7 @@ export function DeptImport(params) {
  */
 export function EmployeeImport(params) {
   return request({
+    timeout: 1000 * 500,
     url: 'http://10.88.88.193:5000/api/BasicManage/Employee/Import',
     method: 'post',
     data: params
