@@ -156,7 +156,7 @@ export const asyncRoutes = [
         component: () => import('@/views/salary/welfare'),
         name: 'welfare',
         meta: {
-          title: '奖金福利导入',
+          title: '薪资数据同步',
           icon: 'num3',
           roles: ['admin']
         }

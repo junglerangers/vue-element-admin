@@ -52,3 +52,27 @@ export function SalaryImport(params) {
     data: params
   })
 }
+/**
+ * 导入这个月的部门信息
+ * @param {} params
+ * @returns
+ */
+export function DeptImport(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/Department/Import',
+    method: 'post',
+    data: params
+  })
+}
+/**
+ * 导入这个月的员工信息
+ * @param {} params
+ * @returns
+ */
+export function EmployeeImport(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/Employee/Import',
+    method: 'post',
+    data: params
+  })
+}

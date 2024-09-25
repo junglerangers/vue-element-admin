@@ -17,13 +17,21 @@
       获取工资与银行卡信息:<el-date-picker v-model="monthTime3" type="month" placeholder="请选择相应月份" :clearable="false" />
       <el-button type="primary" @click="updateSalaryandBankcard">获取</el-button>
     </div>
+    <div>
+      人事部门信息:<el-date-picker v-model="monthTime4" type="month" placeholder="请选择相应月份" :clearable="false" />
+      <el-button type="primary" @click="ImportDept">获取</el-button>
+    </div>
+    <div>
+      人事员工信息:<el-date-picker v-model="monthTime5" type="month" placeholder="请选择相应月份" :clearable="false" />
+      <el-button type="primary" @click="ImportEmployee">获取</el-button>
+    </div>
   </div>
 </template>
 
 <script>
 import { Import, CompInsCal } from '@/api/welfare'
 import { getCurrentTime } from '@/utils/time'
-import { SalaryImport } from '@/api/import'
+import { SalaryImport, DeptImport, EmployeeImport } from '@/api/import'
 import { mapActions } from 'vuex'
 
 export default {
@@ -32,6 +40,8 @@ export default {
       monthTime: '',
       monthTime2: '',
       monthTime3: '',
+      monthTime4: '',
+      monthTime5: '',
       loading: false,
       dataObject: {
         dataList: [
@@ -165,6 +175,142 @@ export default {
       })
       this.addEvent(task)
       SalaryImport(params)
+        .then(res => {
+          task.taskState = '完成'
+          task.endTime = getCurrentTime()
+        })
+        .catch(err => {
+          console.log(err)
+          task.endTime = getCurrentTime()
+          task.taskState = '错误'
+          task.info = err
+        })
+        .finally(() => {
+          const h = this.$createElement
+          this.$notify({
+            title: '通知',
+            message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+            duration: 5000
+          })
+        })
+    },
+    ImportDept() {
+      if (!this.monthTime4) {
+        this.$message.error('请先选择时间后再操作!')
+        return
+      }
+      var date = new Date(this.monthTime4)
+      var temp =
+        date.getFullYear() +
+        '-' +
+        (1 + date.getMonth()).toString().padStart(2, '0')
+      var params = {
+        'monthNo': temp
+      }
+      console.log(params)
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: temp + '导入人事部门信息',
+        startTime: getCurrentTime(),
+        endTime: '',
+        taskState: '运行中',
+        info: ''
+      }
+      this.$message({
+        message: temp + '人事部门信息开始导入,请稍等'
+      })
+      this.addEvent(task)
+      DeptImport(params)
+        .then(res => {
+          task.taskState = '完成'
+          task.endTime = getCurrentTime()
+        })
+        .catch(err => {
+          console.log(err)
+          task.endTime = getCurrentTime()
+          task.taskState = '错误'
+          task.info = err
+        })
+        .finally(() => {
+          const h = this.$createElement
+          this.$notify({
+            title: '通知',
+            message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+            duration: 5000
+          })
+        })
+    },
+    ImportEmployee() {
+      if (!this.monthTime5) {
+        this.$message.error('请先选择时间后再操作!')
+        return
+      }
+      var date = new Date(this.monthTime5)
+      var temp =
+        date.getFullYear() +
+        '-' +
+        (1 + date.getMonth()).toString().padStart(2, '0')
+      var params = {
+        'monthNo': temp
+      }
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: temp + '导入人事员工信息',
+        startTime: getCurrentTime(),
+        endTime: '',
+        taskState: '运行中',
+        info: ''
+      }
+      this.$message({
+        message: temp + '人事员工信息开始导入,请稍等'
+      })
+      this.addEvent(task)
+      EmployeeImport(params)
+        .then(res => {
+          task.taskState = '完成'
+          task.endTime = getCurrentTime()
+        })
+        .catch(err => {
+          console.log(err)
+          task.endTime = getCurrentTime()
+          task.taskState = '错误'
+          task.info = err
+        })
+        .finally(() => {
+          const h = this.$createElement
+          this.$notify({
+            title: '通知',
+            message: h('i', { style: 'color: #0084ff' }, task.taskName + task.taskState),
+            duration: 5000
+          })
+        })
+    },
+    importGeneric(fun, monthTime, taskName) {
+      if (monthTime) {
+        this.$message.error('请先选择时间后再操作!')
+        return
+      }
+      var date = new Date(monthTime)
+      var temp =
+        date.getFullYear() +
+        '-' +
+        (1 + date.getMonth()).toString().padStart(2, '0')
+      var params = {
+        'monthNo': temp
+      }
+      var task = {
+        taskID: Math.floor(Math.random() * 100),
+        taskName: temp + taskName,
+        startTime: getCurrentTime(),
+        endTime: '',
+        taskState: '运行中',
+        info: ''
+      }
+      this.$message({
+        message: temp + taskName + '开始导入,请稍等'
+      })
+      this.addEvent(task)
+      fun(params)
         .then(res => {
           task.taskState = '完成'
           task.endTime = getCurrentTime()

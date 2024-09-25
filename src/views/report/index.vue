@@ -76,6 +76,7 @@ export default {
     View(scope) {
       // console.log(scope.row)
       var url = scope.row.LINK_URL + '&ssoToken=' + encodeURIComponent(this.EncryptionCode)
+      console.log(url)
       this.$store.commit('universal/SET_REPORTURL', url)
       // 这里可以直接修改route中的meta信息吗?然后加上ID信息
       var id = scope.row.ID

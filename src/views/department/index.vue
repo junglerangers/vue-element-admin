@@ -20,7 +20,7 @@
       border
     >
       <el-table-column type="index" :index="page_CurrentIndex" width="50" align="center" label="序号" />
-      <el-table-column align="left" label="科室编号" width="100">
+      <el-table-column align="left" label="科室编号" width="150">
         <template slot-scope="scope">
           {{ scope.row.DEPT_CODE }}
         </template>
