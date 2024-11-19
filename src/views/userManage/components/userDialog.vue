@@ -67,7 +67,7 @@
             聘任资格
           </template>
           <el-form-item class="inline-user-form-item" prop="QUALIFICATION">
-            <el-input v-model="rawUser.QUALIFICATION" size="mini" class="userinput" :disabled="DISABLELED.QUALIFICATION_DISABLE" />
+            <el-input v-model="rawUser.QUALIFICATION" size="mini" :style="{width:'200px'}" class="userinput" :disabled="DISABLELED.QUALIFICATION_DISABLE" />
           </el-form-item>
         </el-descriptions-item>
         <el-descriptions-item span="2">
@@ -82,10 +82,10 @@
         <el-descriptions-item span="1">
           <template slot="label">
             <i class="el-icon-notebook-1" />
-            人员性质2
+            工作单位
           </template>
-          <el-form-item class="inline-user-form-item" prop="KIND_CODE2_NAME">
-            <el-select v-model="rawUser.KIND_CODE2_NAME" placeholder="请选择" size="mini" class="userinput" :disabled="DISABLELED.KIND_CODE2_NAME_DISABLE" @change="KindCode2Change">
+          <el-form-item class="inline-user-form-item" prop="KIND_NAME2">
+            <el-select v-model="rawUser.KIND_NAME2" placeholder="请选择" size="mini" :style="{width:'200px'}" class="userinput" :disabled="DISABLELED.KIND_CODE2_NAME_DISABLE" @change="KindCode2Change">
               <el-option v-for="item in Nature2List" :key="item.Code" :value="item.Code" :label="item.Label" />
             </el-select>
           </el-form-item>
@@ -108,7 +108,15 @@
             {{ rawUser.ENDDATE|timeFormatter }}
           </el-form-item>
         </el-descriptions-item>
-        <el-descriptions-item />
+        <el-descriptions-item span="1">
+          <template slot="label">
+            <i class="el-icon-notebook-1" />
+            工作职位
+          </template>
+          <el-form-item class="inline-user-form-item" prop="POSITION">
+            <el-input v-model="rawUser.POSITION" />
+          </el-form-item>
+        </el-descriptions-item>
         <el-descriptions-item>
           <template slot="label">
             <i class="el-icon-office-building" />
@@ -218,7 +226,7 @@ export default {
         EMP_CODE: [{ required: true, message: '请输入人员编号', trigger: 'blur' }],
         EMP_NAME: [{ required: true, message: '请输入人员姓名', trigger: 'change' }],
         KIND_NAME: [{ required: true, message: '请选择人员性质', trigger: 'change' }],
-        KIND_CODE2_NAME: [{ required: true, message: '请选择人员性质2', trigger: 'change' }],
+        KIND_NAME2: [{ required: true, message: '请选择人员工作单位', trigger: 'change' }],
         DEPT_NAME: [{ required: true, message: '请输入人员科室', trigger: 'change' }],
         EMP_CLASSNAME: [{ required: true, message: '请选择实际岗位', trigger: 'change' }],
         QUALIFICATION: [{ required: true, message: '请输入聘任资格', trigger: 'change' }]
@@ -291,13 +299,15 @@ export default {
           emP_CODE: this.rawUser.EMP_CODE,
           emP_NAME: this.rawUser.EMP_NAME,
           kinD_CODE: this.rawUser.KIND_CODE,
-          kinD_NAME: this.NatureList.find(element => element.Code === Number(this.rawUser.KIND_CODE)).Label, //
+          kinD_NAME: this.NatureList.find(element => Number(element.Code) === Number(this.rawUser.KIND_CODE)).Label, //
           kinD_CODE2: this.rawUser.KIND_CODE2,
           emP_CLASS: this.rawUser.EMP_CLASS,
-          emP_CLASSNAME: this.EmpClassList.find(element => element.Code === Number(this.rawUser.EMP_CLASS)).Label, //
-          qualification: this.rawUser.QUALIFICATION
+          emP_CLASSNAME: this.EmpClassList.find(element => Number(element.Code) === Number(this.rawUser.EMP_CLASS)).Label, //
+          qualification: this.rawUser.QUALIFICATION,
+          position: this.rawUser.POSITION
         }
-        // console.log(UpdateUser)
+        // console.log(this.Nature2List)
+        console.log(UpdateUser)
         await UpdateEmployee(UpdateUser).then(res => {
           this.$message({
             message: '员工信息更新成功!',
@@ -343,6 +353,7 @@ export default {
       // this.$refs.userForm.resetFields()
       // console.log('dialogInitial open')
       // console.log(this.rawUser.EMP_NAME)
+      // 1 为新增用户;2 为修改用户
       if (this.currentUser?.AUTOID == null) {
         this.opType = 1
       } else {
@@ -366,7 +377,7 @@ export default {
           EMP_CLASSNAME_DISABLE: false,
           QUALIFICATION_DISABLE: false,
           DEPT_NAME_DISABLE: false,
-          KIND_CODE2_NAME_DISABLE: true
+          KIND_CODE2_NAME_DISABLE: false
         }
           this.Title = '人员详细信息'; break
         default:break

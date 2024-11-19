@@ -66,7 +66,8 @@
       </el-collapse-item>
       <el-collapse-item :title="opOrder[1].index+'.'+opOrder[1].info" name="2">
         <p v-if="hasEmployeeInfo">本月已经有员工信息数据</p>
-        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="dialogVisibleEmployeeCopy=true">导入员工数据(从上月复制)</el-button>
+        <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="employeeInfoImport">从人事导入员工与部门信息</el-button>
+        <!-- <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1" @click="dialogVisibleEmployeeCopy=true">导入员工数据(从上月复制)</el-button>
         <el-upload
           action="blank"
           :show-file-list="false"
@@ -86,9 +87,9 @@
           :disabled="active!==2"
         >
           <el-button type="primary" plain :style="{'margin-left':'50px'}" :disabled="active!==1">员工数据追加(Excel)</el-button>
-        </el-upload>
+        </el-upload> -->
         <el-divider content-position="center">
-          请先获取数据(上述三种方式任选其一)
+          请先获取数据(上述方式任选其一)
           <i class="el-icon-s-custom" />
           再进行数据追加操作,最后点击下一步
         </el-divider>
@@ -145,8 +146,8 @@
       </span>
     </el-dialog>
     <el-dialog
-      title="人员信息复制选择框"
-      :visible.sync="dialogVisibleEmployeeCopy"
+      title="人事人员部门信息导入选择框"
+      :visible.sync="dialogVisibleEmployeeImport"
       width="30%"
     >
       <div class="block">
@@ -157,19 +158,11 @@
             placeholder="选择月"
             class="year-class"
           /><span class="must">*</span>
-          至
-          <el-date-picker
-            v-model="params"
-            type="month"
-            placeholder="选择月"
-            disabled
-            class="month-class"
-          />
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisibleEmployeeCopy = false">取 消</el-button>
-        <el-button type="primary" @click="employeeInfoCopy">确 定</el-button>
+        <el-button @click="dialogVisibleEmployeeImport = false">取 消</el-button>
+        <el-button type="primary" @click="employeeInfoImport">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -184,7 +177,7 @@ import { localCopy, isExist as salaryTypeIsExist } from '@/api/salaryType'
 import { localAdd, localImport as salaryImport, UpdateMst, isExist as salaryDetailExist } from '@/api/salary'
 import { upload as Excelupload } from '@/utils/excel'
 import { mapActions } from 'vuex'
-import { getEmployeeByExcel as employeeImport, AddEmployeeByExcel as employeeAdd, SalaryImport } from '@/api/import'
+import { getEmployeeByExcel as employeeImport, AddEmployeeByExcel as employeeAdd, SalaryImport, DeptImport, EmployeeImport } from '@/api/import'
 import { getCurrentTime } from '@/utils/time'
 
 export default {
@@ -202,9 +195,9 @@ export default {
        */
       dialogVisible: false,
       /**
-       * 人员复制时间选择框界面是否展示
+       * 人事人员部门导入时间选择框界面是否展示
        */
-      dialogVisibleEmployeeCopy: false,
+      dialogVisibleEmployeeImport: false,
       /**
        * 控制进度条进度位置
        */
@@ -724,6 +717,38 @@ export default {
         })
           .finally(() => {
             this.dialogVisibleEmployeeCopy = false
+          })
+      }
+    },
+    /**
+     * 从人事系统导入员工与部门信息
+     */
+    async employeeInfoImport() {
+      if (!this.timeTest()) {
+        return
+      }
+      var sign = await this.beforeRmoeteTest(isEmployeeExist)
+      if (!sign) {
+        // this.dialogVisibleEmployeeCopy = false
+      } else {
+        // DeptImport, EmployeeImport
+        var params = {
+          'monthNo': this.params
+        }
+        console.log(params)
+        var task1 = Promise.resolve(EmployeeImport(params))
+        var task2 = Promise.resolve(DeptImport(params))
+        console.log('start')
+        this.loading = true
+        Promise.all([task1, task2]).then(() => {
+          this.$message({
+            message: '人事部门与员工信息导入成功!',
+            type: 'success'
+          })
+          console.log('Finish')
+        })
+          .finally(() => {
+            this.loading = false
           })
       }
     },
