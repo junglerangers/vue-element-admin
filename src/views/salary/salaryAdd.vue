@@ -735,7 +735,7 @@ export default {
         var params = {
           'monthNo': this.params
         }
-        console.log(params)
+        // console.log(params)
         var task1 = Promise.resolve(EmployeeImport(params))
         var task2 = Promise.resolve(DeptImport(params))
         console.log('start')

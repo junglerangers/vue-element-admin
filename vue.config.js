@@ -20,6 +20,8 @@ const name = defaultSettings.title || 'Vue 网站' // page title
 // port = 9527 npm run dev OR npm run dev --port = 9527
 const port = process.env.port || process.env.npm_config_port || 9527 // dev port
 
+const version = new Date().getTime()
+
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
   /**
@@ -50,6 +52,17 @@ module.exports = {
     // 拦截所有用户向前端服务器发出的请求
     before: require('./mock/mock-server.js') // 在执行所有服务和服务中的中间件前执行
   },
+  filenameHashing: false,
+  css: {
+    // 是否使用 css 分离插件 ExtractTextPlugin
+    extract: {
+      // 输出编译后的文件名称：【文件名称.时间戳】、【文件名称.版本号.时间戳】...
+      filename: `css/[name].${version}.css`,
+      chunkFilename: `css/[name].${version}.css`
+      // filename: `css/[name].${process.env.VUE_APP_VERSION}.${version}.css`,
+      // chunkFilename: `css/[name].${process.env.VUE_APP_VERSION}.${version}.css`
+    }
+  },
   configureWebpack: {
     // 调整webpack的配置方式
     // provide the app's title in webpack's name field, so that
@@ -61,6 +74,12 @@ module.exports = {
       alias: {
         '@': resolve('src') // 给目录/src取一个别名
       }
+    },
+    output: { // 输出编译后的文件名称：【文件名称.时间戳】、【文件名称.版本号.时间戳】...
+      filename: `js/[name].${version}.js`,
+      chunkFilename: `js/[name].${version}.js`
+      // filename: `js/[name].${process.env.VUE_APP_VERSION}.${version}.js`,
+      // chunkFilename: `js/[name].${process.env.VUE_APP_VERSION}.${version}.js`
     }
   },
   chainWebpack(config) {
