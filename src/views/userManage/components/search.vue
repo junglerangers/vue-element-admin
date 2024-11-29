@@ -50,6 +50,16 @@
             <el-option v-for="item in hosAreaList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
+        <el-form-item label="停薪周期">
+          <el-select v-model="txzq" placeholder="停薪周期" class="sub-advance-input" clearable filterable>
+            <el-option v-for="item in txzqList" :key="item.Code" :label="item.Label" :value="item.Code" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="人员属库">
+          <el-select v-model="searchModel.ryk" :style="{'width':'250px'}" placeholder="人员库" class="sub-advance-input" multiple clearable filterable>
+            <el-option v-for="item in rykList" :key="item.Name" :label="item.Label" :value="item.Name" />
+          </el-select>
+        </el-form-item>
         <el-button class="primary" @click="searchEmpty">清空搜索</el-button>
       </el-form>
     </transition>
@@ -58,7 +68,7 @@
 
 <script>
 import { getGridList } from '@/api/department'
-import { getNatureList, getHosAreaList, getEmpClassList } from '@/api/enum'
+import { getNatureList, getHosAreaList, getEmpClassList, getRYKList } from '@/api/enum'
 
 const mapDict = {
   '人员编号': 'EMP_CODE',
@@ -83,9 +93,17 @@ export default {
       typeList: [], // 人员类型列表
       natureList: [], // 人员性质表
       hosAreaList: [], // 院区表
+      rykList: [], // 人员库表
+      txzqList: [
+        { Code: 1, Label: '近一月' },
+        { Code: 2, Label: '近两月' },
+        { Code: 3, Label: '近三月' },
+        { Code: 6, Label: '近半年' }
+      ], // 停薪周期表
       searchtype: '人员编号',
       advanceSearchSign: true,
       searchContent: '',
+      txzq: '', // 停薪周期
       /** 搜索模型 */
       searchModel: {
         DEPT_NAME: '', // 科室名称
@@ -130,6 +148,9 @@ export default {
     getHosAreaList().then(res => {
       this.hosAreaList = res.data
     })
+    getRYKList().then(res => {
+      this.rykList = res.data
+    })
     var params = {
       monthNo: this.monthNo
     }
@@ -141,7 +162,15 @@ export default {
     searchHandler() {
       if (!this.advanceSearchSign) {
         this.searchModel[mapDict[this.searchtype]] = this.searchContent
+      } else {
+        if (this.txzq) {
+          const today = new Date()
+          this.searchModel.resignetime = today.toISOString().split('T')[0]
+          today.setMonth(today.getMonth() - this.txzq)
+          this.searchModel.resignbtime = new Date(today.getFullYear(), today.getMonth(), 2).toISOString().split('T')[0]
+        }
       }
+      console.log(this.searchModel)
       this.$emit('search', this.searchModel)
     },
     handleCommand(command) {

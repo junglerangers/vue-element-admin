@@ -176,3 +176,16 @@ export function getEmpClassList() {
     }
   })
 }
+/**
+ *
+ * @returns 获取人员库信息
+ */
+export function getRYKList() {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BasicManage/Eunms/GetList', // 假地址 自行替换
+    method: 'post',
+    data: {
+      enumsName: 'RYK'
+    }
+  })
+}

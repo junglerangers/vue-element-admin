@@ -172,3 +172,19 @@ export function localPartImport(params) {
     }
   })
 }
+
+/**
+ *
+ * @param {{string,string}} params
+ * @returns 明细表导出Excel
+ */
+export function AnnualIncomeExp(params) {
+  return request({
+    url: 'http://10.88.88.193:5000/api/BusiManage/Salary/AnnualIncomeExp',
+    method: 'post',
+    timeout: 1000 * 600,
+    data: {
+      ...params
+    }
+  })
+}
