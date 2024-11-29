@@ -51,7 +51,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="减员时间">
-          <el-select v-model="txzq" placeholder="停薪周期" class="sub-advance-input" clearable filterable>
+          <el-select v-model="txzq" placeholder="减员时间" class="sub-advance-input" clearable filterable>
             <el-option v-for="item in txzqList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
@@ -170,8 +170,11 @@ export default {
         if (this.txzq) {
           const today = new Date()
           this.searchModel.resignetime = today.toISOString().split('T')[0]
-          today.setMonth(today.getMonth() - this.txzq)
-          this.searchModel.resignbtime = new Date(today.getFullYear(), today.getMonth(), 2).toISOString().split('T')[0]
+          var date = new Date(this.monthNo)
+          // console.log(date)
+          date.setMonth(date.getMonth() - this.txzq)
+          // console.log(date)
+          this.searchModel.resignbtime = new Date(date.getFullYear(), date.getMonth(), 2).toISOString().split('T')[0]
         }
       }
       console.log(this.searchModel)
