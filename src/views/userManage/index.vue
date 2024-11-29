@@ -55,6 +55,16 @@
           {{ scope.row.EMP_CLASSNAME }}
         </template>
       </el-table-column>
+      <el-table-column align="center" label="减员时间" width="160">
+        <template slot-scope="scope">
+          {{ scope.row.RESIGNTIME }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="人员库" width="100">
+        <template slot-scope="scope">
+          {{ scope.row.RYKNAME }}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="发放状态" width="100">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.STATUS === '0'" type="success">正常</el-tag>

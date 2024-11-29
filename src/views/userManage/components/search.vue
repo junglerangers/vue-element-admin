@@ -98,7 +98,8 @@ export default {
         { Code: 1, Label: '近一月' },
         { Code: 2, Label: '近两月' },
         { Code: 3, Label: '近三月' },
-        { Code: 6, Label: '近半年' }
+        { Code: 6, Label: '近半年' },
+        { Code: 12, Label: '近一年' }
       ], // 停薪周期表
       searchtype: '人员编号',
       advanceSearchSign: true,

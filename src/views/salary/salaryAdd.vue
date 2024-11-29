@@ -165,6 +165,16 @@
         <el-button type="primary" @click="employeeInfoImport">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="人事信息导入确认框"
+      :visible.sync="dialogVisiblePersonnelImport"
+      width="30%"
+    >
+      <span>{{ personnelImportTips }}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogVisiblePersonnelImport = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -198,6 +208,8 @@ export default {
        * 人事人员部门导入时间选择框界面是否展示
        */
       dialogVisibleEmployeeImport: false,
+      dialogVisiblePersonnelImport: false,
+      personnelImportTips: '',
       /**
        * 控制进度条进度位置
        */
@@ -738,14 +750,12 @@ export default {
         // console.log(params)
         var task1 = Promise.resolve(EmployeeImport(params))
         var task2 = Promise.resolve(DeptImport(params))
-        console.log('start')
+        // console.log('start')
         this.loading = true
-        Promise.all([task1, task2]).then(() => {
-          this.$message({
-            message: '人事部门与员工信息导入成功!',
-            type: 'success'
-          })
-          console.log('Finish')
+        Promise.all([task1, task2]).then((res) => {
+          this.personnelImportTips = res[0].message
+          this.dialogVisiblePersonnelImport = true
+          // console.log('Finish')
         })
           .finally(() => {
             this.loading = false

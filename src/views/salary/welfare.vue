@@ -25,6 +25,11 @@
       人事员工信息:<el-date-picker v-model="monthTime5" type="month" placeholder="请选择相应月份" :clearable="false" />
       <el-button type="primary" @click="ImportEmployee">获取</el-button>
     </div>
+    <div>
+      总收入报表导出:<el-date-picker v-model="monthTime6Start" type="month" placeholder="请选择相应月份" :clearable="false" />
+      至<el-date-picker v-model="monthTime6End" type="month" placeholder="请选择相应月份" :clearable="false" />
+      <el-button type="primary" @click="ExportSalaryInfo">获取</el-button>
+    </div>
   </div>
 </template>
 
@@ -32,6 +37,7 @@
 import { Import, CompInsCal } from '@/api/welfare'
 import { getCurrentTime } from '@/utils/time'
 import { SalaryImport, DeptImport, EmployeeImport } from '@/api/import'
+import { AnnualIncomeExp } from '@/api/salary'
 import { mapActions } from 'vuex'
 
 export default {
@@ -42,6 +48,8 @@ export default {
       monthTime3: '',
       monthTime4: '',
       monthTime5: '',
+      monthTime6Start: '',
+      monthTime6End: '',
       loading: false,
       dataObject: {
         dataList: [
@@ -75,18 +83,43 @@ export default {
     ImportEmployee() {
       this.importGeneric(EmployeeImport, this.monthTime5, '人事员工信息导入')
     },
-    importGeneric(fun, monthTime, taskName) {
-      if (!monthTime) {
-        this.$message.error('请先选择时间后再操作!')
+    ExportSalaryInfo() {
+      if (!this.monthTime6Start || !this.monthTime6End) {
+        this.$message.error('请先选择开始时间与结束时间后再操作!')
         return
       }
-      var date = new Date(monthTime)
-      var temp =
+      var date = new Date(this.monthTime6Start)
+      var temp1 =
+        date.getFullYear() +
+        '-' +
+        (1 + date.getMonth()).toString().padStart(2, '0')
+      date = new Date(this.monthTime6End)
+      var temp2 =
         date.getFullYear() +
         '-' +
         (1 + date.getMonth()).toString().padStart(2, '0')
       var params = {
-        'monthNo': temp
+        'beginMonthNo': temp1,
+        'endMonthNo': temp2
+      }
+      // console.log(params)
+      this.importGeneric(AnnualIncomeExp, '', '总收入报表导出', params)
+    },
+    importGeneric(fun, monthTime, taskName, params = null) {
+      var temp = ''
+      if (!params) {
+        if (!monthTime) {
+          this.$message.error('请先选择时间后再操作!')
+          return
+        }
+        var date = new Date(monthTime)
+        temp =
+          date.getFullYear() +
+          '-' +
+          (1 + date.getMonth()).toString().padStart(2, '0')
+        params = {
+          'monthNo': temp
+        }
       }
       var task = {
         taskID: Math.floor(Math.random() * 100),

@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import fileRequest from '@/utils/file-request'
 
 export function localAdd(params) {
   return request({
@@ -179,7 +180,7 @@ export function localPartImport(params) {
  * @returns 明细表导出Excel
  */
 export function AnnualIncomeExp(params) {
-  return request({
+  return fileRequest({
     url: 'http://10.88.88.193:5000/api/BusiManage/Salary/AnnualIncomeExp',
     method: 'post',
     timeout: 1000 * 600,
