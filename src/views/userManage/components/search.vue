@@ -46,11 +46,11 @@
           </el-select>
         </el-form-item>
         <el-form-item label="院区名称">
-          <el-select v-model="searchModel.HOSAREA" placeholder="院区名称" class="sub-advance-input">
+          <el-select v-model="searchModel.HOSAREA" placeholder="院区名称" class="sub-advance-input" clearable>
             <el-option v-for="item in hosAreaList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
-        <el-form-item label="停薪周期">
+        <el-form-item label="减员时间">
           <el-select v-model="txzq" placeholder="停薪周期" class="sub-advance-input" clearable filterable>
             <el-option v-for="item in txzqList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
@@ -83,7 +83,10 @@ const defaultSearchModel = {
   STATUS: '', // 人员工资发放状态
   KIND_CODE: '', // 人员性质
   EMP_CLASS: '', // 人员分类
-  HOSAREA: '' // 院区名称
+  HOSAREA: '', // 院区名称
+  'ryk': '', // 人员库
+  'resignbtime': '', //
+  'resignetime': ''
 }
 
 export default {
@@ -184,6 +187,7 @@ export default {
     },
     searchEmpty() {
       this.searchModel = Object.assign({}, defaultSearchModel)
+      this.txzq = ''
     }
   }
 }

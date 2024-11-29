@@ -28,7 +28,7 @@
     <div>
       总收入报表导出:<el-date-picker v-model="monthTime6Start" type="month" placeholder="请选择相应月份" :clearable="false" />
       至<el-date-picker v-model="monthTime6End" type="month" placeholder="请选择相应月份" :clearable="false" />
-      <el-button type="primary" @click="ExportSalaryInfo">获取</el-button>
+      <el-button type="primary" @click="ExportSalaryInfo">导出</el-button>
     </div>
   </div>
 </template>
