@@ -45,18 +45,18 @@
             <el-option v-for="item in typeList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
-        <el-form-item label="院区名称">
-          <el-select v-model="searchModel.HOSAREA" placeholder="院区名称" class="sub-advance-input" clearable>
-            <el-option v-for="item in hosAreaList" :key="item.Code" :label="item.Label" :value="item.Code" />
+        <el-form-item label="单位名称">
+          <el-select v-model="searchModel.KIND_CODE2" placeholder="单位名称" class="sub-advance-input" clearable>
+            <el-option v-for="item in KIND_CODE2List" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
         <el-form-item label="减员时间">
-          <el-select v-model="txzq" placeholder="减员时间" class="sub-advance-input" clearable filterable>
+          <el-select v-model="txzq" placeholder="减员时间" class="sub-advance-input" clearable filterable @clear="cleartxzq">
             <el-option v-for="item in txzqList" :key="item.Code" :label="item.Label" :value="item.Code" />
           </el-select>
         </el-form-item>
-        <el-form-item label="人员属库">
-          <el-select v-model="searchModel.ryk" :style="{'width':'250px'}" placeholder="人员库" class="sub-advance-input" multiple clearable filterable>
+        <el-form-item label="人员属库" :style="{'width':'600px'}">
+          <el-select v-model="searchModel.ryk" :style="{'width':'500px'}" placeholder="人员库" class="sub-advance-input" multiple clearable filterable>
             <el-option v-for="item in rykList" :key="item.Name" :label="item.Label" :value="item.Name" />
           </el-select>
         </el-form-item>
@@ -68,7 +68,7 @@
 
 <script>
 import { getGridList } from '@/api/department'
-import { getNatureList, getHosAreaList, getEmpClassList, getRYKList } from '@/api/enum'
+import { getNatureList, getEmpClassList, getRYKList, getNature2List } from '@/api/enum'
 
 const mapDict = {
   '人员编号': 'EMP_CODE',
@@ -86,7 +86,8 @@ const defaultSearchModel = {
   HOSAREA: '', // 院区名称
   'ryk': '', // 人员库
   'resignbtime': '', //
-  'resignetime': ''
+  'resignetime': '',
+  'KIND_CODE2': ''// 单位
 }
 
 export default {
@@ -97,6 +98,7 @@ export default {
       natureList: [], // 人员性质表
       hosAreaList: [], // 院区表
       rykList: [], // 人员库表
+      KIND_CODE2List: [], // 单位表
       txzqList: [
         { Code: 1, Label: '近一月' },
         { Code: 2, Label: '近两月' },
@@ -149,11 +151,14 @@ export default {
     getEmpClassList().then(res => {
       this.typeList = res.data
     })
-    getHosAreaList().then(res => {
-      this.hosAreaList = res.data
-    })
+    // getHosAreaList().then(res => {
+    //   this.hosAreaList = res.data
+    // })
     getRYKList().then(res => {
       this.rykList = res.data
+    })
+    getNature2List().then(res => {
+      this.KIND_CODE2List = res.data
     })
     var params = {
       monthNo: this.monthNo
@@ -168,8 +173,8 @@ export default {
         this.searchModel[mapDict[this.searchtype]] = this.searchContent
       } else {
         if (this.txzq) {
-          const today = new Date()
-          this.searchModel.resignetime = today.toISOString().split('T')[0]
+          // const today = new Date()
+          // this.searchModel.resignetime = today.toISOString().split('T')[0]
           var date = new Date(this.monthNo)
           // console.log(date)
           date.setMonth(date.getMonth() - this.txzq)
@@ -191,6 +196,10 @@ export default {
     searchEmpty() {
       this.searchModel = Object.assign({}, defaultSearchModel)
       this.txzq = ''
+    },
+    cleartxzq() {
+      this.txzq = ''
+      this.searchModel.resignbtime = ''
     }
   }
 }

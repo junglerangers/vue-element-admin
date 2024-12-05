@@ -35,6 +35,11 @@
           {{ scope.row.EMP_NAME }}
         </template>
       </el-table-column>
+      <el-table-column align="center" label="单位名称" width="200">
+        <template slot-scope="scope">
+          {{ scope.row.KIND_NAME2 }}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="科室" width="200">
         <template slot-scope="scope">
           {{ scope.row.DEPT_NAME }}
